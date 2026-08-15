@@ -1,5 +1,9 @@
 .DS_Store
 .cache/
-.agents/
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/catalog/
+!.agents/skills/catalog/**
 skills-lock.json
 node_modules/

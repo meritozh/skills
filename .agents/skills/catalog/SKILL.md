@@ -1,11 +1,15 @@
 ---
 name: catalog
 description: Manage this skills collection. Add or remove an upstream skill in catalog.json, create a first-party skill under skills/, vendor remotes with sync, or check status. Use when the user wants to change the collection, add a skill from another repo, create their own skill here, run /catalog, or asks 加一个 skill / 同步合集 / 这个合集里有什么.
+metadata:
+  internal: true
 ---
 
 # Catalog
 
-This repo is a personal skills collection. `catalog.json` is the only list of what belongs here. Remote skills are copied into `skills/` so they can be read in git. First-party skills are written here and never overwritten by sync.
+Repo-local meta skill for maintaining this collection. It lives in `.agents/skills/catalog` so agents working in this repo can invoke it, and `npx skills add` will not ship it with the public set.
+
+`catalog.json` is the only list of what belongs in the collection. Remote skills are copied into `skills/` so they can be read in git. First-party collection skills are written under `skills/` and are never overwritten by sync.
 
 ## Read first
 

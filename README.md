@@ -6,9 +6,7 @@ Personal Agent Skills collection. Upstream skills are vendored into `skills/` so
 
 ## First-party
 
-| Skill | Source | Description |
-| --- | --- | --- |
-| [catalog](skills/catalog/SKILL.md) | `.` | Manage this skills collection. Add or remove an upstream skill in catalog.json, create a first-party skill under skills/, vendor remotes with sync, or check status. Use when the user wants to change the collection, add a skill from another repo, create their own skill here, run /catalog, or asks 加一个 skill / 同步合集 / 这个合集里有什么. |
+_None._
 
 ## Vendored
 
@@ -79,11 +77,12 @@ Create `skills/<name>/SKILL.md` with `name` and `description` frontmatter. The l
 ## Layout
 
 ```
-catalog.json          # which remotes, which names
-sources.lock.json     # vendored provenance (written by sync)
-skills/<name>/        # the collection, readable in git
-scripts/cli.mjs       # sync | status | install
-third_party/          # upstream license files
+catalog.json                 # which remotes, which names
+sources.lock.json            # vendored provenance (written by sync)
+skills/<name>/               # the published collection
+.agents/skills/catalog/      # repo-local meta skill
+scripts/cli.mjs              # sync | status | install
+third_party/                 # upstream license files
 ```
 
 `catalog.json` fields: `global` (must be true), `agents` (passed to `npx skills add`), `sources[]` with `source` (`owner/repo`, git URL, or `.`) and `skills` (names, or `*` for local).
