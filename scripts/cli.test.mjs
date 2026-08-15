@@ -15,8 +15,12 @@ import {
   loadCatalog,
   matchRequestedSkills,
   normalizeSkillName,
+  parseFrontmatter,
   parseSkillName,
   planSync,
+  listSkills,
+  renderSkillsIndex,
+  updateReadme,
   resolveGitUrl,
   runInstall,
   runStatus,
@@ -74,6 +78,50 @@ test('parseSkillName reads frontmatter and normalizes', () => {
   assert.equal(parseSkillName('---\nname: Code Review\ndescription: x\n---\n', 'fallback'), 'code-review');
   assert.equal(parseSkillName('---\nname: "tdd"\ndescription: x\n---\n', 'fallback'), 'tdd');
   assert.equal(parseSkillName('# no frontmatter\n', 'fallback'), 'fallback');
+});
+
+test('parseFrontmatter reads quoted and folded descriptions', () => {
+  const quoted = parseFrontmatter('---\nname: hunt\ndescription: "Finds root cause."\n---\n');
+  assert.equal(quoted.name, 'hunt');
+  assert.equal(quoted.description, 'Finds root cause.');
+
+  const folded = parseFrontmatter(
+    '---\nname: kill-ai-slop\ndescription: >-\n  Find and remove AI slop\n  from a web project.\n---\n'
+  );
+  assert.equal(folded.description, 'Find and remove AI slop from a web project.');
+
+  const single = parseFrontmatter("---\nname: kami\ndescription: 'Typeset: \"PDF\"'\n---\n");
+  assert.equal(single.description, 'Typeset: "PDF"');
+});
+
+test('listSkills splits first-party and vendored and updateReadme rewrites the index', () => {
+  const root = tempDir();
+  writeSkill(join(root, 'skills', 'catalog'), 'catalog');
+  writeSkill(join(root, 'skills', 'alpha'), 'alpha');
+  const lock = {
+    version: 1,
+    skills: { alpha: { source: 'acme/kit', skillPath: 'skills/alpha/SKILL.md', commit: 'aaa' } },
+  };
+  const lists = listSkills(join(root, 'skills'), lock);
+  assert.deepEqual(
+    lists.firstParty.map((s) => s.name),
+    ['catalog']
+  );
+  assert.equal(lists.firstParty[0].source, '.');
+  assert.equal(lists.vendored[0].name, 'alpha');
+  assert.equal(lists.vendored[0].source, 'acme/kit');
+  assert.match(lists.vendored[0].description, /Test skill alpha/);
+
+  const readme = join(root, 'README.md');
+  writeFileSync(readme, '# skills\n\nIntro.\n\n## Install\n\nHi.\n');
+  assert.equal(updateReadme(readme, lists), true);
+  const body = readFileSync(readme, 'utf8');
+  assert.match(body, /## First-party/);
+  assert.match(body, /\[catalog\]\(skills\/catalog\/SKILL.md\)/);
+  assert.match(body, /\[acme\/kit\]\(https:\/\/github.com\/acme\/kit\)/);
+  assert.match(body, /## Install/);
+  assert.equal(updateReadme(readme, lists), false);
+  assert.match(renderSkillsIndex(lists), /<!-- skills-index:start -->/);
 });
 
 test('discoverSkills finds nested and root skills', () => {

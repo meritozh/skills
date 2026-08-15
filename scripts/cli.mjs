@@ -17,7 +17,10 @@ import { fileURLToPath } from 'node:url';
 export const SKILLS_PACKAGE = 'skills@latest';
 export const LOCK_FILE = 'sources.lock.json';
 export const CATALOG_FILE = 'catalog.json';
+export const README_FILE = 'README.md';
 export const LOCK_VERSION = 1;
+export const README_INDEX_START = '<!-- skills-index:start -->';
+export const README_INDEX_END = '<!-- skills-index:end -->';
 
 const SKIP_WALK_DIRS = new Set([
   '.git',
@@ -81,11 +84,62 @@ function unquote(value) {
 }
 
 export function parseSkillName(skillMdContent, fallback) {
+  return parseFrontmatter(skillMdContent).name ?? fallback;
+}
+
+function unescapeYamlDoubleQuoted(value) {
+  return value.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+}
+
+function unescapeYamlSingleQuoted(value) {
+  return value.replace(/''/g, "'");
+}
+
+function parseYamlBlock(lines, startIndex, indicator) {
+  const block = [];
+  let index = startIndex + 1;
+  while (index < lines.length) {
+    const line = lines[index];
+    if (line === '' || /^\s+/.test(line)) {
+      block.push(line.replace(/^ {2}/, ''));
+      index += 1;
+      continue;
+    }
+    break;
+  }
+  const raw = block.join(indicator.startsWith('>') ? ' ' : '\n');
+  return { value: raw.replace(/\s+/g, ' ').trim(), nextIndex: index };
+}
+
+export function parseFrontmatter(skillMdContent) {
   const match = skillMdContent.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  if (!match) return fallback;
-  const nameLine = match[1].match(/^name:\s*(.+)$/m);
-  if (!nameLine) return fallback;
-  return normalizeSkillName(unquote(nameLine[1]));
+  if (!match) return { name: null, description: '' };
+
+  const lines = match[1].split(/\r?\n/);
+  let name = null;
+  let description = '';
+
+  for (let i = 0; i < lines.length; i++) {
+    const field = lines[i].match(/^(name|description):\s*(.*)$/);
+    if (!field) continue;
+    const [, key, rest] = field;
+    let value = rest;
+    if (rest === '>' || rest === '>-' || rest === '|' || rest === '|-') {
+      const block = parseYamlBlock(lines, i, rest);
+      value = block.value;
+      i = block.nextIndex - 1;
+    } else if (rest.startsWith('"') && rest.endsWith('"') && rest.length >= 2) {
+      value = unescapeYamlDoubleQuoted(rest.slice(1, -1));
+    } else if (rest.startsWith("'") && rest.endsWith("'") && rest.length >= 2) {
+      value = unescapeYamlSingleQuoted(rest.slice(1, -1));
+    } else {
+      value = unquote(rest);
+    }
+    if (key === 'name') name = normalizeSkillName(value);
+    if (key === 'description') description = value.replace(/\s+/g, ' ').trim();
+  }
+
+  return { name, description };
 }
 
 function posixJoin(...parts) {
@@ -248,15 +302,98 @@ export function claimedRemoteNames(catalog) {
 }
 
 export function firstPartyNamesOnDisk(skillsDir, lock) {
-  if (!existsSync(skillsDir)) return [];
-  const names = [];
+  return listSkills(skillsDir, lock).firstParty.map((skill) => skill.name);
+}
+
+export function listSkills(skillsDir, lock) {
+  const firstParty = [];
+  const vendored = [];
+  if (!existsSync(skillsDir)) return { firstParty, vendored };
+
   for (const entry of readdirSync(skillsDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
-    if (!existsSync(join(skillsDir, entry.name, 'SKILL.md'))) continue;
-    const name = normalizeSkillName(entry.name);
-    if (!lock.skills[name]) names.push(name);
+    const skillMd = join(skillsDir, entry.name, 'SKILL.md');
+    if (!existsSync(skillMd)) continue;
+    const parsed = parseFrontmatter(readFileSync(skillMd, 'utf8'));
+    const name = parsed.name || normalizeSkillName(entry.name);
+    const item = {
+      name,
+      description: parsed.description,
+      source: lock.skills[name]?.source ?? '.',
+    };
+    if (lock.skills[name]) vendored.push(item);
+    else firstParty.push(item);
   }
-  return names.sort();
+
+  firstParty.sort((a, b) => a.name.localeCompare(b.name));
+  vendored.sort((a, b) => a.name.localeCompare(b.name) || a.source.localeCompare(b.source));
+  return { firstParty, vendored };
+}
+
+export function formatSourceCell(source) {
+  if (source === '.' || isLocalSource(source)) return '`.`';
+  if (/^[^/]+\/[^/]+$/.test(source)) return `[${source}](https://github.com/${source})`;
+  return source;
+}
+
+export function escapeTableCell(text) {
+  return String(text || '')
+    .replace(/\s+/g, ' ')
+    .replace(/\|/g, '\\|')
+    .trim();
+}
+
+export function renderSkillTable(items) {
+  if (items.length === 0) return '_None._';
+  const rows = [
+    '| Skill | Source | Description |',
+    '| --- | --- | --- |',
+    ...items.map((item) => {
+      const skill = `[${item.name}](skills/${item.name}/SKILL.md)`;
+      return `| ${skill} | ${formatSourceCell(item.source)} | ${escapeTableCell(item.description)} |`;
+    }),
+  ];
+  return rows.join('\n');
+}
+
+export function renderSkillsIndex(lists) {
+  return [
+    README_INDEX_START,
+    '',
+    '## First-party',
+    '',
+    renderSkillTable(lists.firstParty),
+    '',
+    '## Vendored',
+    '',
+    renderSkillTable(lists.vendored),
+    '',
+    '_Generated by `node scripts/cli.mjs sync`. Do not edit these tables by hand._',
+    '',
+    README_INDEX_END,
+  ].join('\n');
+}
+
+export function updateReadme(readmePath, lists) {
+  if (!existsSync(readmePath)) return false;
+  const current = readFileSync(readmePath, 'utf8');
+  const block = renderSkillsIndex(lists);
+  const start = current.indexOf(README_INDEX_START);
+  const end = current.indexOf(README_INDEX_END);
+  let next;
+  if (start !== -1 && end !== -1 && end >= start) {
+    next = current.slice(0, start) + block + current.slice(end + README_INDEX_END.length);
+  } else {
+    const intro = current.match(/^# [^\n]+\n+(?:(?!^## ).*\n+)*/m);
+    if (intro) {
+      next = current.slice(0, intro[0].length) + block + '\n\n' + current.slice(intro[0].length);
+    } else {
+      next = `${block}\n\n${current}`;
+    }
+  }
+  if (next === current) return false;
+  writeFileSync(readmePath, next);
+  return true;
 }
 
 export function resolveGitUrl(source) {
@@ -656,6 +793,7 @@ export async function runSync(root, { dryRun = false, fetchSource = fetchGitSour
     lockPath: join(root, LOCK_FILE),
     lock,
   });
+  updateReadme(join(root, README_FILE), listSkills(join(root, 'skills'), lock));
   return plan;
 }
 
