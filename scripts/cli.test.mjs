@@ -256,12 +256,12 @@ test('statusReport marks missing, ok, stale, and first-party', () => {
   );
 });
 
-test('buildInstallCommand uses pinned npx skills, global flag, and agents', () => {
+test('buildInstallCommand uses latest npx skills, global flag, and agents', () => {
   const { cmd, args } = buildInstallCommand(validCatalog(), '/repo');
   assert.equal(cmd, 'npx');
   assert.deepEqual(args, [
     '--yes',
-    'skills@1.5.22',
+    'skills@latest',
     'add',
     '/repo',
     '--skill',

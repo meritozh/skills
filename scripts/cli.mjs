@@ -14,7 +14,7 @@ import {
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const SKILLS_PACKAGE = 'skills@1.5.22';
+export const SKILLS_PACKAGE = 'skills@latest';
 export const LOCK_FILE = 'sources.lock.json';
 export const CATALOG_FILE = 'catalog.json';
 export const LOCK_VERSION = 1;
