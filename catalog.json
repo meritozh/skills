@@ -1,0 +1,45 @@
+{
+  "global": true,
+  "agents": ["claude-code", "codex", "cursor"],
+  "sources": [
+    {
+      "source": "tw93/Waza",
+      "skills": ["think", "hunt", "check", "write", "ui", "health", "learn", "read"]
+    },
+    {
+      "source": "tw93/kami",
+      "skills": ["kami"]
+    },
+    {
+      "source": "yetone/kill-ai-slop",
+      "skills": ["kill-ai-slop"]
+    },
+    {
+      "source": "Tencent/WeChatReading",
+      "skills": ["weread-skills"]
+    },
+    {
+      "source": "mattpocock/skills",
+      "skills": [
+        "ask-matt",
+        "code-review",
+        "codebase-design",
+        "diagnosing-bugs",
+        "grilling",
+        "improve-codebase-architecture",
+        "prototype",
+        "setup-matt-pocock-skills",
+        "tdd",
+        "to-spec",
+        "triage",
+        "wayfinder",
+        "research",
+        "domain-modeling"
+      ]
+    },
+    {
+      "source": ".",
+      "skills": ["*"]
+    }
+  ]
+}

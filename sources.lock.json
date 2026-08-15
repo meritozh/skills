@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "skills": {
+    "ask-matt": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/engineering/ask-matt/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "check": {
+      "source": "tw93/Waza",
+      "skillPath": "skills/check/SKILL.md",
+      "commit": "3f135d26dab706d889b93b7ca0f4ab37f6b07579"
+    },
+    "code-review": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/engineering/code-review/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "codebase-design": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/engineering/codebase-design/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "diagnosing-bugs": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "domain-modeling": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/engineering/domain-modeling/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "grilling": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/productivity/grilling/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "health": {
+      "source": "tw93/Waza",
+      "skillPath": "skills/health/SKILL.md",
+      "commit": "3f135d26dab706d889b93b7ca0f4ab37f6b07579"
+    },
+    "hunt": {
+      "source": "tw93/Waza",
+      "skillPath": "skills/hunt/SKILL.md",
+      "commit": "3f135d26dab706d889b93b7ca0f4ab37f6b07579"
+    },
+    "improve-codebase-architecture": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "kami": {
+      "source": "tw93/kami",
+      "skillPath": "SKILL.md",
+      "commit": "8bf6f46f74b5b640fa5612736a5cd24c724b7eca"
+    },
+    "kill-ai-slop": {
+      "source": "yetone/kill-ai-slop",
+      "skillPath": "skill/SKILL.md",
+      "commit": "96d1ca568a1db7e1ef9a381644c744440f816ee4"
+    },
+    "learn": {
+      "source": "tw93/Waza",
+      "skillPath": "skills/learn/SKILL.md",
+      "commit": "3f135d26dab706d889b93b7ca0f4ab37f6b07579"
+    },
+    "prototype": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/engineering/prototype/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "read": {
+      "source": "tw93/Waza",
+      "skillPath": "skills/read/SKILL.md",
+      "commit": "3f135d26dab706d889b93b7ca0f4ab37f6b07579"
+    },
+    "research": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/engineering/research/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "setup-matt-pocock-skills": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "tdd": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/engineering/tdd/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "think": {
+      "source": "tw93/Waza",
+      "skillPath": "skills/think/SKILL.md",
+      "commit": "3f135d26dab706d889b93b7ca0f4ab37f6b07579"
+    },
+    "to-spec": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/engineering/to-spec/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "triage": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/engineering/triage/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "ui": {
+      "source": "tw93/Waza",
+      "skillPath": "skills/ui/SKILL.md",
+      "commit": "3f135d26dab706d889b93b7ca0f4ab37f6b07579"
+    },
+    "wayfinder": {
+      "source": "mattpocock/skills",
+      "skillPath": "skills/engineering/wayfinder/SKILL.md",
+      "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df"
+    },
+    "weread-skills": {
+      "source": "Tencent/WeChatReading",
+      "skillPath": "skills/SKILL.md",
+      "commit": "315698a8da1810fab0bbf24a52b38a6960e54cdc"
+    },
+    "write": {
+      "source": "tw93/Waza",
+      "skillPath": "skills/write/SKILL.md",
+      "commit": "3f135d26dab706d889b93b7ca0f4ab37f6b07579"
+    }
+  }
+}
