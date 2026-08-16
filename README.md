@@ -6,13 +6,16 @@ Personal Agent Skills collection. Upstream skills are vendored into `skills/` so
 
 ## First-party
 
-_None._
+| Skill | Source | Description |
+| --- | --- | --- |
+| [design-style](skills/design-style/SKILL.md) | `.` | Initialize and maintain a root DESIGN.md from the user's style brief, following the Stitch DESIGN.md specification. Use when the user runs /design-style. |
+| [iterate](skills/iterate/SKILL.md) | `.` | Run an exclusive feature, fix, refactor, note, or general planning workflow and write the result under docs/. Use when the user runs /iterate. |
+| [project](skills/project/SKILL.md) | `.` | Manage this repo's project status in CONTEXT.md. Only accepts init, startup, release-solo, or release. Use when the user runs /project. |
 
 ## Vendored
 
 | Skill | Source | Description |
 | --- | --- | --- |
-| [ask-matt](skills/ask-matt/SKILL.md) | [mattpocock/skills](https://github.com/mattpocock/skills) | Ask which skill or flow fits your situation. A router over the skills in this repo. |
 | [check](skills/check/SKILL.md) | [tw93/Waza](https://github.com/tw93/Waza) | Reviews code diffs, PRs, issue queues, release readiness, commits, pushes, publishing, and project audits. Use when users ask in any language for code review, issue or PR triage, release gates, publishing follow-through, or project audits. Not for debugging root causes or prose review. |
 | [code-review](skills/code-review/SKILL.md) | [mattpocock/skills](https://github.com/mattpocock/skills) | Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes — Standards (does the code follow this repo's documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Runs both reviews in parallel sub-agents and reports them side by side. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to "review since X". |
 | [codebase-design](skills/codebase-design/SKILL.md) | [mattpocock/skills](https://github.com/mattpocock/skills) | Shared vocabulary for designing deep modules. Use when the user wants to design or improve a module's interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, or when another skill needs the deep-module vocabulary. |
@@ -21,6 +24,7 @@ _None._
 | [grilling](skills/grilling/SKILL.md) | [mattpocock/skills](https://github.com/mattpocock/skills) | Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases. |
 | [health](skills/health/SKILL.md) | [tw93/Waza](https://github.com/tw93/Waza) | Runs a budget-aware agent-assisted engineering health audit for instruction/config drift, hooks/MCP, verifier surfaces, and AI maintainability. Use when users ask in any language to audit Claude, Codex, Pi, agent instructions, MCP or hooks, verifier coverage, or AI-maintainability drift. Not for debugging application code or reviewing PRs. |
 | [hunt](skills/hunt/SKILL.md) | [tw93/Waza](https://github.com/tw93/Waza) | Finds root cause before applying fixes for errors, crashes, regressions, failing tests, broken behavior, and screenshot-reported defects. Use when users report in any language errors, crashes, broken behavior, regressions, failing tests, screenshot evidence, or something that used to work and now fails. Not for code review or new features. |
+| [implement](skills/implement/SKILL.md) | [mattpocock/skills](https://github.com/mattpocock/skills) | Implement a piece of work based on a spec or set of tickets. |
 | [improve-codebase-architecture](skills/improve-codebase-architecture/SKILL.md) | [mattpocock/skills](https://github.com/mattpocock/skills) | Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick. |
 | [kami](skills/kami/SKILL.md) | [tw93/kami](https://github.com/tw93/kami) | Typeset professional documents and product landing pages: resumes, one-pagers, white papers, letters, portfolios, slide decks, landing pages. Warm parchment, ink-blue accent, serif-led hierarchy. CN uses TsangerJinKai02, EN uses Charter, JA uses YuMincho (best-effort). Triggers on "做 PDF / 排版 / 一页纸 / 白皮书 / 作品集 / 简历 / PPT / slides / Marp / markdown slides / マークダウンのスライド / 落地页 / 官网 / landing page / product page", or "build me a resume / make a one-pager / design a slide deck / turn this into a PDF / make this presentable / create a landing page". |
 | [kill-ai-slop](skills/kill-ai-slop/SKILL.md) | [yetone/kill-ai-slop](https://github.com/yetone/kill-ai-slop) | Find and remove AI slop — the generic, machine-default visual and copy tics of vibe-coded products — from a web project. Use when the user asks to "kill AI slop", "de-slop", "remove the AI look", "make this not look AI-generated", or clean up a landing page / UI / docs that feels templated. Detects and fixes the catalogue of tells: indigo→violet gradients, gradient-clip headlines, the default semantic palette, one-hue status boxes, atmospheric gradients, serif-italic emphasis, highlighted keywords, AI copywriting voice ("not just X — it's Y"), emoji everywhere, glowing status dots, wobbling spinners, colored-left-border callouts, pastel icon tiles, glassmorphism, over-rounding, oversized shadows, borders that die at corners, badge & pill spam, AI-drawn SVG icons, kickers over every heading, flat type hierarchies, invented stat rows, 01/02/03 section markers, cards nested in cards, the default Inter/Space Grotesk look, and more. Works on HTML/CSS, React/Vue/Svelte/Astro, Tailwind, PHP, and Markdown copy. |
@@ -32,7 +36,6 @@ _None._
 | [tdd](skills/tdd/SKILL.md) | [mattpocock/skills](https://github.com/mattpocock/skills) | Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", or wants integration tests. |
 | [think](skills/think/SKILL.md) | [tw93/Waza](https://github.com/tw93/Waza) | Turns rough ideas into approved, decision-complete plans with validated structure before coding. Use when users ask in any language for planning, architecture, design direction, feasibility, value judgment, or whether a feature is worth doing before implementation. Not for bug fixes or small edits. |
 | [to-spec](skills/to-spec/SKILL.md) | [mattpocock/skills](https://github.com/mattpocock/skills) | Turn the current conversation into a spec and publish it to the project issue tracker — no interview, just synthesis of what you've already discussed. |
-| [triage](skills/triage/SKILL.md) | [mattpocock/skills](https://github.com/mattpocock/skills) | Move issues and external PRs through a state machine of triage roles — categorise, verify, grill if needed, and write agent-ready briefs. |
 | [ui](skills/ui/SKILL.md) | [tw93/Waza](https://github.com/tw93/Waza) | Produces distinctive, production-grade UI for pages, components, visual interfaces, typography, and screenshot-driven polish. Use when users ask in any language for UI, page, component, frontend, typography, screenshot-grounded visual polish, or complaints that a screen looks unclear, ugly, inconsistent, or visually wrong. Not for backend logic or data pipelines. |
 | [wayfinder](skills/wayfinder/SKILL.md) | [mattpocock/skills](https://github.com/mattpocock/skills) | Plan a huge chunk of work — more than one agent session can hold — as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear. |
 | [weread-skills](skills/weread-skills/SKILL.md) | [Tencent/WeChatReading](https://github.com/Tencent/WeChatReading) | 微信读书助手 — 搜索书籍、管理书架、查看笔记划线、浏览书评、阅读统计、发现推荐好书 |
@@ -77,9 +80,11 @@ Create `skills/<name>/SKILL.md` with `name` and `description` frontmatter. The l
 ## Layout
 
 ```
-catalog.json                 # which remotes, which names
+catalog.json                 # remotes, names, and groupings
 sources.lock.json            # vendored provenance (written by sync)
 skills/<name>/               # the published collection
+.claude-plugin/marketplace.json  # CLI groups (generated)
+skills.sh.json               # skills.sh groups (generated)
 .agents/skills/catalog/      # repo-local meta skill
 scripts/cli.mjs              # sync | status | install
 third_party/                 # upstream license files

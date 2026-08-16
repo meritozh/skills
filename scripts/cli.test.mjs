@@ -19,8 +19,11 @@ import {
   parseSkillName,
   planSync,
   listSkills,
+  renderMarketplaceJson,
   renderSkillsIndex,
+  renderSkillsShJson,
   updateReadme,
+  writeGeneratedConfigs,
   resolveGitUrl,
   runInstall,
   runStatus,
@@ -163,6 +166,50 @@ test('validateCatalog rejects collisions, project scope, and bad entries', () =>
     /cannot mix/
   );
   assert.match(validateCatalog({ global: true, agents: [], sources: [] })[0], /agents/);
+  assert.match(
+    validateCatalog(
+      validCatalog({
+        groupings: [
+          { name: 'general', skills: ['alpha'] },
+          { name: 'engineering', skills: ['alpha'] },
+        ],
+      })
+    ).join('\n'),
+    /in both/
+  );
+  assert.match(
+    validateCatalog(validCatalog({ groupings: [{ name: 'general', skills: ['*'] }] })).join('\n'),
+    /cannot contain "\*"/
+  );
+});
+
+test('writeGeneratedConfigs emits marketplace and skills.sh grouping files', () => {
+  const root = tempDir();
+  writeSkill(join(root, 'skills', 'alpha'), 'alpha');
+  const catalog = validCatalog({
+    notGrouped: 'bottom',
+    groupings: [
+      {
+        name: 'general',
+        title: 'General',
+        description: 'Everyday skills.',
+        skills: ['alpha'],
+      },
+    ],
+  });
+  writeGeneratedConfigs(root, catalog, ['alpha']);
+  const marketplace = JSON.parse(readFileSync(join(root, '.claude-plugin', 'marketplace.json'), 'utf8'));
+  assert.deepEqual(marketplace.plugins[0], {
+    name: 'general',
+    source: './',
+    skills: ['./skills/alpha'],
+  });
+  const page = JSON.parse(readFileSync(join(root, 'skills.sh.json'), 'utf8'));
+  assert.equal(page.notGrouped, 'bottom');
+  assert.deepEqual(page.groupings[0].skills, ['alpha']);
+  assert.throws(() => writeGeneratedConfigs(root, catalog, []), /not in skills/);
+  assert.deepEqual(renderMarketplaceJson(catalog).plugins[0].name, 'general');
+  assert.equal(renderSkillsShJson(catalog).groupings[0].title, 'General');
 });
 
 test('claimedRemoteNames ignores local source', () => {

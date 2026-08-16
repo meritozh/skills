@@ -287,7 +287,131 @@ export function validateCatalog(catalog) {
       }
     }
   }
+
+  if (catalog.notGrouped !== undefined && catalog.notGrouped !== 'top' && catalog.notGrouped !== 'bottom') {
+    errors.push('notGrouped must be "top" or "bottom"');
+  }
+  errors.push(...validateGroupings(catalog, claimed));
   return errors;
+}
+
+const GROUP_NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+export function titleCaseName(name) {
+  return String(name)
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+export function validateGroupings(catalog, claimed = new Map()) {
+  const errors = [];
+  if (catalog.groupings === undefined) return errors;
+  if (!Array.isArray(catalog.groupings)) {
+    errors.push('groupings must be an array');
+    return errors;
+  }
+
+  const groupNames = new Set();
+  const groupedSkills = new Map();
+  const hasStarSource = (catalog.sources ?? []).some((entry) => entry.skills?.includes('*'));
+
+  for (const [index, group] of catalog.groupings.entries()) {
+    const prefix = `groupings[${index}]`;
+    if (!group || typeof group !== 'object') {
+      errors.push(`${prefix} must be an object`);
+      continue;
+    }
+    if (typeof group.name !== 'string' || !GROUP_NAME.test(group.name)) {
+      errors.push(`${prefix}.name must be kebab-case`);
+    } else if (groupNames.has(group.name)) {
+      errors.push(`grouping "${group.name}" is declared twice`);
+    } else {
+      groupNames.add(group.name);
+    }
+    if (group.title !== undefined && (typeof group.title !== 'string' || !group.title.trim())) {
+      errors.push(`${prefix}.title must be a non-empty string when set`);
+    }
+    if (
+      group.description !== undefined &&
+      (typeof group.description !== 'string' || !group.description.trim())
+    ) {
+      errors.push(`${prefix}.description must be a non-empty string when set`);
+    }
+    if (!Array.isArray(group.skills) || group.skills.length === 0) {
+      errors.push(`${prefix}.skills must be a non-empty array`);
+      continue;
+    }
+    if (group.skills.includes('*')) {
+      errors.push(`${prefix}.skills cannot contain "*"`);
+      continue;
+    }
+    if (group.skills.some((name) => typeof name !== 'string' || !name.trim())) {
+      errors.push(`${prefix}.skills must contain only non-empty strings`);
+      continue;
+    }
+    for (const raw of group.skills) {
+      const name = normalizeSkillName(raw);
+      const previous = groupedSkills.get(name);
+      if (previous) {
+        errors.push(`skill "${name}" is in both "${previous}" and "${group.name}"`);
+      } else {
+        groupedSkills.set(name, group.name);
+      }
+      if (!hasStarSource && claimed.size > 0 && !claimed.has(name)) {
+        errors.push(`skill "${name}" in "${group.name}" is not listed in any source`);
+      }
+    }
+  }
+  return errors;
+}
+
+export function groupingMembershipErrors(catalog, knownNames) {
+  const known = new Set([...knownNames].map(normalizeSkillName));
+  const errors = [];
+  for (const group of catalog.groupings ?? []) {
+    for (const raw of group.skills ?? []) {
+      const name = normalizeSkillName(raw);
+      if (!known.has(name)) {
+        errors.push(`grouping "${group.name}" lists "${name}", which is not in skills/`);
+      }
+    }
+  }
+  return errors;
+}
+
+export function renderMarketplaceJson(catalog) {
+  return {
+    name: 'skills',
+    plugins: (catalog.groupings ?? []).map((group) => ({
+      name: group.name,
+      source: './',
+      skills: group.skills.map((skill) => `./skills/${normalizeSkillName(skill)}`),
+    })),
+  };
+}
+
+export function renderSkillsShJson(catalog) {
+  return {
+    $schema: 'https://skills.sh/schemas/skills.sh.schema.json',
+    notGrouped: catalog.notGrouped === 'top' ? 'top' : 'bottom',
+    groupings: (catalog.groupings ?? []).map((group) => ({
+      title: group.title?.trim() || titleCaseName(group.name),
+      ...(group.description?.trim() ? { description: group.description.trim() } : {}),
+      skills: group.skills.map(normalizeSkillName),
+    })),
+  };
+}
+
+export function writeGeneratedConfigs(root, catalog, knownNames) {
+  const errors = groupingMembershipErrors(catalog, knownNames);
+  if (errors.length) throw new Error(errors.join('\n'));
+  mkdirSync(join(root, '.claude-plugin'), { recursive: true });
+  writeFileSync(
+    join(root, '.claude-plugin', 'marketplace.json'),
+    JSON.stringify(renderMarketplaceJson(catalog), null, 2) + '\n'
+  );
+  writeFileSync(join(root, 'skills.sh.json'), JSON.stringify(renderSkillsShJson(catalog), null, 2) + '\n');
 }
 
 export function claimedRemoteNames(catalog) {
@@ -793,7 +917,13 @@ export async function runSync(root, { dryRun = false, fetchSource = fetchGitSour
     lockPath: join(root, LOCK_FILE),
     lock,
   });
-  updateReadme(join(root, README_FILE), listSkills(join(root, 'skills'), lock));
+  const listed = listSkills(join(root, 'skills'), lock);
+  updateReadme(join(root, README_FILE), listed);
+  writeGeneratedConfigs(
+    root,
+    catalog,
+    [...listed.firstParty, ...listed.vendored].map((skill) => skill.name)
+  );
   return plan;
 }
 

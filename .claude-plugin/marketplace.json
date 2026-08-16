@@ -1,0 +1,44 @@
+{
+  "name": "skills",
+  "plugins": [
+    {
+      "name": "general",
+      "source": "./",
+      "skills": [
+        "./skills/design-style",
+        "./skills/grilling",
+        "./skills/kami",
+        "./skills/kill-ai-slop",
+        "./skills/learn",
+        "./skills/read",
+        "./skills/weread-skills",
+        "./skills/write"
+      ]
+    },
+    {
+      "name": "engineering",
+      "source": "./",
+      "skills": [
+        "./skills/check",
+        "./skills/code-review",
+        "./skills/codebase-design",
+        "./skills/diagnosing-bugs",
+        "./skills/domain-modeling",
+        "./skills/health",
+        "./skills/hunt",
+        "./skills/implement",
+        "./skills/iterate",
+        "./skills/project",
+        "./skills/improve-codebase-architecture",
+        "./skills/prototype",
+        "./skills/research",
+        "./skills/setup-matt-pocock-skills",
+        "./skills/tdd",
+        "./skills/think",
+        "./skills/to-spec",
+        "./skills/ui",
+        "./skills/wayfinder"
+      ]
+    }
+  ]
+}

@@ -1,6 +1,50 @@
 {
   "global": true,
   "agents": ["claude-code", "codex", "cursor"],
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "name": "general",
+      "title": "General",
+      "description": "Reading, writing, research, and other non-code workflows.",
+      "skills": [
+        "design-style",
+        "grilling",
+        "kami",
+        "kill-ai-slop",
+        "learn",
+        "read",
+        "weread-skills",
+        "write"
+      ]
+    },
+    {
+      "name": "engineering",
+      "title": "Engineering",
+      "description": "Planning, debugging, review, and implementation workflows.",
+      "skills": [
+        "check",
+        "code-review",
+        "codebase-design",
+        "diagnosing-bugs",
+        "domain-modeling",
+        "health",
+        "hunt",
+        "implement",
+        "iterate",
+        "project",
+        "improve-codebase-architecture",
+        "prototype",
+        "research",
+        "setup-matt-pocock-skills",
+        "tdd",
+        "think",
+        "to-spec",
+        "ui",
+        "wayfinder"
+      ]
+    }
+  ],
   "sources": [
     {
       "source": "tw93/Waza",
@@ -21,7 +65,6 @@
     {
       "source": "mattpocock/skills",
       "skills": [
-        "ask-matt",
         "code-review",
         "codebase-design",
         "diagnosing-bugs",
@@ -31,9 +74,9 @@
         "setup-matt-pocock-skills",
         "tdd",
         "to-spec",
-        "triage",
         "wayfinder",
         "research",
+        "implement",
         "domain-modeling"
       ]
     },
