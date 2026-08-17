@@ -81,11 +81,6 @@
       "skillPath": "skills/engineering/research/SKILL.md",
       "commit": "068b6e0c62393147daf03530149cdce209c93da8"
     },
-    "setup-matt-pocock-skills": {
-      "source": "mattpocock/skills",
-      "skillPath": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
-      "commit": "068b6e0c62393147daf03530149cdce209c93da8"
-    },
     "tdd": {
       "source": "mattpocock/skills",
       "skillPath": "skills/engineering/tdd/SKILL.md",
