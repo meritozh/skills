@@ -8,12 +8,16 @@
       "title": "General",
       "description": "Reading, writing, research, and other non-code workflows.",
       "skills": [
+        "convince-me",
         "design-style",
-        "grilling",
+        "grill-me",
         "kami",
         "kill-ai-slop",
         "learn",
+        "pre-mortem",
         "read",
+        "steelman",
+        "weak-spots",
         "weread-skills",
         "write"
       ]
@@ -30,7 +34,6 @@
         "domain-modeling",
         "health",
         "hunt",
-        "implement",
         "iterate",
         "project",
         "improve-codebase-architecture",
@@ -38,7 +41,6 @@
         "research",
         "tdd",
         "think",
-        "to-spec",
         "ui",
         "wayfinder"
       ]
@@ -67,15 +69,22 @@
         "code-review",
         "codebase-design",
         "diagnosing-bugs",
-        "grilling",
         "improve-codebase-architecture",
         "prototype",
         "tdd",
-        "to-spec",
         "wayfinder",
         "research",
-        "implement",
         "domain-modeling"
+      ]
+    },
+    {
+      "source": "rahul-kulkarni105/skills",
+      "skills": [
+        "convince-me",
+        "grill-me",
+        "pre-mortem",
+        "steelman",
+        "weak-spots"
       ]
     },
     {

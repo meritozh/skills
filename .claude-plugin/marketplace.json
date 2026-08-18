@@ -5,12 +5,16 @@
       "name": "general",
       "source": "./",
       "skills": [
+        "./skills/convince-me",
         "./skills/design-style",
-        "./skills/grilling",
+        "./skills/grill-me",
         "./skills/kami",
         "./skills/kill-ai-slop",
         "./skills/learn",
+        "./skills/pre-mortem",
         "./skills/read",
+        "./skills/steelman",
+        "./skills/weak-spots",
         "./skills/weread-skills",
         "./skills/write"
       ]
@@ -26,7 +30,6 @@
         "./skills/domain-modeling",
         "./skills/health",
         "./skills/hunt",
-        "./skills/implement",
         "./skills/iterate",
         "./skills/project",
         "./skills/improve-codebase-architecture",
@@ -34,7 +37,6 @@
         "./skills/research",
         "./skills/tdd",
         "./skills/think",
-        "./skills/to-spec",
         "./skills/ui",
         "./skills/wayfinder"
       ]

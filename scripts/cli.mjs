@@ -616,8 +616,12 @@ export function fetchGitSource(source, cacheDir, run = defaultRun) {
   const dest = join(cacheDir, sanitizeSource(source));
   mkdirSync(cacheDir, { recursive: true });
   if (isUsableGitRepo(dest, run)) {
-    run('git', ['-C', dest, 'fetch', '--depth', '1', 'origin']);
-    run('git', ['-C', dest, 'reset', '--hard', 'FETCH_HEAD']);
+    try {
+      run('git', ['-C', dest, 'fetch', '--depth', '1', 'origin']);
+      run('git', ['-C', dest, 'reset', '--hard', 'FETCH_HEAD']);
+    } catch {
+      // Keep the last successful checkout when the network drops.
+    }
   } else {
     cloneSparse(url, dest, run);
   }

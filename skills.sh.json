@@ -6,12 +6,16 @@
       "title": "General",
       "description": "Reading, writing, research, and other non-code workflows.",
       "skills": [
+        "convince-me",
         "design-style",
-        "grilling",
+        "grill-me",
         "kami",
         "kill-ai-slop",
         "learn",
+        "pre-mortem",
         "read",
+        "steelman",
+        "weak-spots",
         "weread-skills",
         "write"
       ]
@@ -27,7 +31,6 @@
         "domain-modeling",
         "health",
         "hunt",
-        "implement",
         "iterate",
         "project",
         "improve-codebase-architecture",
@@ -35,7 +38,6 @@
         "research",
         "tdd",
         "think",
-        "to-spec",
         "ui",
         "wayfinder"
       ]

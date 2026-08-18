@@ -11,5 +11,6 @@ licenses are stored under `third_party/` after `node scripts/cli.mjs sync`.
 | [yetone/kill-ai-slop](https://github.com/yetone/kill-ai-slop) | Apache-2.0 |
 | [Tencent/WeChatReading](https://github.com/Tencent/WeChatReading) | Apache-2.0 |
 | [mattpocock/skills](https://github.com/mattpocock/skills) | MIT |
+| [rahul-kulkarni105/skills](https://github.com/rahul-kulkarni105/skills) | CC BY 4.0 |
 
 Original files in this repository (the catalog, CLI, first-party skills, and docs) are MIT. See `LICENSE`.
