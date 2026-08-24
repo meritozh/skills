@@ -28,6 +28,8 @@
         "./skills/codebase-design",
         "./skills/diagnosing-bugs",
         "./skills/domain-modeling",
+        "./skills/gpui",
+        "./skills/gpui-component",
         "./skills/health",
         "./skills/hunt",
         "./skills/iterate",

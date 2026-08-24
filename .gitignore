@@ -7,3 +7,11 @@
 !.agents/skills/catalog/**
 skills-lock.json
 node_modules/
+
+
+# DoubaoADK
+.doubaoadk/
+specs/
+.coco/
+.claude/
+.trae/

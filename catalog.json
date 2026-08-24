@@ -32,6 +32,8 @@
         "codebase-design",
         "diagnosing-bugs",
         "domain-modeling",
+        "gpui",
+        "gpui-component",
         "health",
         "hunt",
         "iterate",
