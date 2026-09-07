@@ -156,7 +156,7 @@ truncated = len(raw) > limit
 text = raw[:limit].decode("utf-8", errors="replace")
 text = re.sub(r"-----BEGIN [^-\r\n]+-----.*?(?:-----END [^-\r\n]+-----|\Z)", "[REDACTED PRIVATE KEY]", text, flags=re.I | re.S)
 text = re.sub(r"\b(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9]{12,}|github_pat_[A-Za-z0-9_]{12,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[A-Z0-9]{16}|eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,})\b", "[REDACTED]", text)
-text = re.sub(r"(?P<name>\b(?:authorization|password|passwd|pwd|token|secret|api[_-]?key)\b)(?P<separator>\s*[:=]\s*)(?:Bearer\s+|Basic\s+)?(?:\"[^\"\r\n]*(?:\"|(?=\r?\n|\Z))|\x27[^\x27\r\n]*(?:\x27|(?=\r?\n|\Z))|[^\s,;]+)", lambda m: m.group("name") + m.group("separator") + "[REDACTED]", text, flags=re.I)
+text = re.sub(r"(?<![A-Za-z0-9_-])(?P<name>-{0,2}(?P<quote>[\x22\x27]?)(?:[A-Za-z0-9]+[_-])*(?:secret[_-]access[_-]key|private[_-]?key|api[_-]?key|authorization|password|passwd|pwd|token|secret)(?P=quote))(?![A-Za-z0-9_-])(?P<separator>\s*[:=]\s*)(?:Bearer\s+|Basic\s+)?(?:\"(?:\\[^\r\n]|[^\"\\\r\n])*(?:\"|\\?(?=\r?\n|\Z))|\x27(?:\\[^\r\n]|[^\x27\\\r\n])*(?:\x27|\\?(?=\r?\n|\Z))|[^\s,;]+)", lambda m: m.group("name") + m.group("separator") + "[REDACTED]", text, flags=re.I)
 text = re.sub(r"(?<![A-Za-z0-9_])(?:~[/\\]|/(?:Users|home|private|tmp|var|etc|opt|Volumes)/)[^\s`\"\x27<>]+", "[PATH]", text)
 text = re.sub(r"(?<![A-Za-z0-9_])(?:[A-Za-z]:\\|\\\\)[^\s`\"\x27<>]+", "[PATH]", text)
 text = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]", "", text)
@@ -490,7 +490,7 @@ print_skill_descriptions() {
     echo "(unavailable: skill description parser)"
     return
   fi
-  out=$(collect_skill_descriptions_raw | sort -u | awk 'NR <= 101')
+  out=$(printf '%s\n' "$HEALTH_SKILL_DESCRIPTIONS" | sort -u | awk 'NR <= 101')
   if [ -n "$out" ]; then
     count=$(printf '%s\n' "$out" | wc -l | tr -d ' ')
     printf '%s\n' "$out" | awk 'NR <= 100' | redact_health_stream
@@ -508,7 +508,7 @@ print_skill_description_summary() {
     echo "skill_descriptions: unavailable"
     return
   fi
-  out=$(collect_skill_descriptions_raw | sort -u)
+  out=$(printf '%s\n' "$HEALTH_SKILL_DESCRIPTIONS" | sort -u)
   if [ -z "$out" ]; then
     echo "skill_descriptions: 0"
     return
@@ -531,12 +531,12 @@ print_skill_description_summary() {
 
 skill_description_word_count() {
   local words
-  words=$(collect_skill_descriptions_raw | wc -w | tr -d ' ')
+  words=$(printf '%s\n' "$HEALTH_SKILL_DESCRIPTIONS" | wc -w | tr -d ' ')
   printf '%s\n' "${words:-0}"
 }
 
 skill_description_context_unit_count() {
-  collect_skill_descriptions_raw | context_units_from_stream
+  printf '%s\n' "$HEALTH_SKILL_DESCRIPTIONS" | context_units_from_stream
 }
 
 list_skill_files() {
@@ -850,6 +850,8 @@ echo "=== settings.local.json ==="
 print_settings_summary "$SETTINGS"
 
 echo "[4/12] Rules + skill descriptions..."
+# One per-run snapshot keeps inventory and both budget estimates consistent.
+HEALTH_SKILL_DESCRIPTIONS=$(collect_skill_descriptions_raw)
 echo "=== rules/ ==="
 if [ "$MODE" = "deep" ]; then
   print_rule_files
@@ -941,7 +943,7 @@ print(f'servers({count}):', ', '.join(safe_names))
 if count > 20:
     print('server_names_truncated:', count - 20)
 est = count * 25 * 200
-print(f'est_tokens: ~{est} ({round(est/2000)}% of 200K)')
+print(f'est_tokens: ~{est} (inventory estimate: 25 tools/server x 200 tokens/tool; actual loaded cost unknown)')
 
 print('=== MCP FILESYSTEM ===')
 if isinstance(servers, list):

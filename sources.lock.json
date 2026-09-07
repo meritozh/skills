@@ -4,17 +4,17 @@
     "check": {
       "source": "tw93/Waza",
       "skillPath": "skills/check/SKILL.md",
-      "commit": "9fbf0ab2e33e26e4b77eac57f4c53170a2b15186"
+      "commit": "2ae9e487a97bc101ca23b7f5a8fd3389c1ecffe2"
     },
     "code-review": {
       "source": "mattpocock/skills",
       "skillPath": "skills/engineering/code-review/SKILL.md",
-      "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76"
+      "commit": "3cca18b368ae95cdbdebbff572ccafa662551015"
     },
     "codebase-design": {
       "source": "mattpocock/skills",
       "skillPath": "skills/engineering/codebase-design/SKILL.md",
-      "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76"
+      "commit": "3cca18b368ae95cdbdebbff572ccafa662551015"
     },
     "convince-me": {
       "source": "rahul-kulkarni105/skills",
@@ -24,12 +24,12 @@
     "diagnosing-bugs": {
       "source": "mattpocock/skills",
       "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
-      "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76"
+      "commit": "3cca18b368ae95cdbdebbff572ccafa662551015"
     },
     "domain-modeling": {
       "source": "mattpocock/skills",
       "skillPath": "skills/engineering/domain-modeling/SKILL.md",
-      "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76"
+      "commit": "3cca18b368ae95cdbdebbff572ccafa662551015"
     },
     "grill-me": {
       "source": "rahul-kulkarni105/skills",
@@ -39,22 +39,22 @@
     "health": {
       "source": "tw93/Waza",
       "skillPath": "skills/health/SKILL.md",
-      "commit": "9fbf0ab2e33e26e4b77eac57f4c53170a2b15186"
+      "commit": "2ae9e487a97bc101ca23b7f5a8fd3389c1ecffe2"
     },
     "hunt": {
       "source": "tw93/Waza",
       "skillPath": "skills/hunt/SKILL.md",
-      "commit": "9fbf0ab2e33e26e4b77eac57f4c53170a2b15186"
+      "commit": "2ae9e487a97bc101ca23b7f5a8fd3389c1ecffe2"
     },
     "improve-codebase-architecture": {
       "source": "mattpocock/skills",
       "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
-      "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76"
+      "commit": "3cca18b368ae95cdbdebbff572ccafa662551015"
     },
     "kami": {
       "source": "tw93/kami",
-      "skillPath": "SKILL.md",
-      "commit": "62d43c39df4a30ad4d37d86e9c63daa04d192332"
+      "skillPath": "skills/kami/SKILL.md",
+      "commit": "6dda23fa598a6af4381bb85d95686dd9dd2630c0"
     },
     "kill-ai-slop": {
       "source": "yetone/kill-ai-slop",
@@ -64,7 +64,7 @@
     "learn": {
       "source": "tw93/Waza",
       "skillPath": "skills/learn/SKILL.md",
-      "commit": "9fbf0ab2e33e26e4b77eac57f4c53170a2b15186"
+      "commit": "2ae9e487a97bc101ca23b7f5a8fd3389c1ecffe2"
     },
     "pre-mortem": {
       "source": "rahul-kulkarni105/skills",
@@ -74,17 +74,17 @@
     "prototype": {
       "source": "mattpocock/skills",
       "skillPath": "skills/engineering/prototype/SKILL.md",
-      "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76"
+      "commit": "3cca18b368ae95cdbdebbff572ccafa662551015"
     },
     "read": {
       "source": "tw93/Waza",
       "skillPath": "skills/read/SKILL.md",
-      "commit": "9fbf0ab2e33e26e4b77eac57f4c53170a2b15186"
+      "commit": "2ae9e487a97bc101ca23b7f5a8fd3389c1ecffe2"
     },
     "research": {
       "source": "mattpocock/skills",
       "skillPath": "skills/engineering/research/SKILL.md",
-      "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76"
+      "commit": "3cca18b368ae95cdbdebbff572ccafa662551015"
     },
     "steelman": {
       "source": "rahul-kulkarni105/skills",
@@ -94,22 +94,22 @@
     "tdd": {
       "source": "mattpocock/skills",
       "skillPath": "skills/engineering/tdd/SKILL.md",
-      "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76"
+      "commit": "3cca18b368ae95cdbdebbff572ccafa662551015"
     },
     "think": {
       "source": "tw93/Waza",
       "skillPath": "skills/think/SKILL.md",
-      "commit": "9fbf0ab2e33e26e4b77eac57f4c53170a2b15186"
+      "commit": "2ae9e487a97bc101ca23b7f5a8fd3389c1ecffe2"
     },
     "ui": {
       "source": "tw93/Waza",
       "skillPath": "skills/ui/SKILL.md",
-      "commit": "9fbf0ab2e33e26e4b77eac57f4c53170a2b15186"
+      "commit": "2ae9e487a97bc101ca23b7f5a8fd3389c1ecffe2"
     },
     "wayfinder": {
       "source": "mattpocock/skills",
       "skillPath": "skills/engineering/wayfinder/SKILL.md",
-      "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76"
+      "commit": "3cca18b368ae95cdbdebbff572ccafa662551015"
     },
     "weak-spots": {
       "source": "rahul-kulkarni105/skills",
@@ -124,7 +124,7 @@
     "write": {
       "source": "tw93/Waza",
       "skillPath": "skills/write/SKILL.md",
-      "commit": "9fbf0ab2e33e26e4b77eac57f4c53170a2b15186"
+      "commit": "2ae9e487a97bc101ca23b7f5a8fd3389c1ecffe2"
     }
   }
 }

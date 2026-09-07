@@ -30,13 +30,12 @@ MCP configuration:
 - If `~/.claude/projects/.../tool-results/*` denials show breakage, output a `python3` one-liner that appends the narrowest missing path
 
 Model name validation:
-- Check settings.local.json for `model` fields. Valid model IDs follow the pattern `claude-*` (e.g., `claude-opus-4-6`, `claude-sonnet-4-6`, `claude-haiku-4-5-20251001`). Any non-`claude-*` model ID (e.g., a provider-specific alias or outdated name) is [!] -- a wrong model name silently wastes the entire session with no output.
-- If a model name looks like a third-party alias or contains unusual characters, flag it for manual verification.
+- Check configured `model` values against the selected runtime and provider. Official aliases such as `sonnet`, `opus`, and `haiku`, full model IDs, and provider deployment names have different valid forms; no universal prefix test establishes validity. Use current runtime documentation or an observed resolution error. Unknown names remain unverified, not Critical.
 
 Prompt cache hygiene:
 - Check CLAUDE.md or hooks for dynamic timestamps/dates in system context, they break prompt cache
 - Check if hooks or skills non-deterministically reorder tool definitions
-- Flag mid-session model switches like Opus→Haiku→Opus, they rebuild cache and can cost more
+- Flag mid-session model switches (Opus to Haiku and back), they rebuild cache and can cost more
 - If model switching is detected, recommend subagents instead
 
 Three-layer defense consistency:

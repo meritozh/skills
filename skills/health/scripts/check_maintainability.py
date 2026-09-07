@@ -106,10 +106,14 @@ SECRET_TOKEN_RE = re.compile(
     r"[A-Za-z0-9_-]{10,})\b"
 )
 SECRET_ASSIGNMENT_RE = re.compile(
-    r"(?P<name>\b(?:authorization|password|passwd|pwd|token|secret|api[_-]?key)\b)"
-    r"(?P<separator>\s*[:=]\s*)(?:Bearer\s+|Basic\s+)?"
-    r"(?:\"[^\"\r\n]*(?:\"|(?=\r?\n|\Z))|'[^'\r\n]*(?:'|(?=\r?\n|\Z))|"
-    r"[^\s,;]+)",
+    r"(?<![A-Za-z0-9_-])"
+    r"(?P<name>-{0,2}(?P<quote>[\x22\x27]?)(?:[A-Za-z0-9]+[_-])*"
+    r"(?:secret[_-]access[_-]key|private[_-]?key|api[_-]?key|"
+    r"authorization|password|passwd|pwd|token|secret)(?P=quote))"
+    r"(?![A-Za-z0-9_-])"
+    r"(?P<separator>\s*[:=]\s*)"
+    r"(?:Bearer\s+|Basic\s+)?(?:\"(?:\\[^\r\n]|[^\"\\\r\n])*(?:\"|\\?(?=\r?\n|\Z))|"
+    r"\x27(?:\\[^\r\n]|[^\x27\\\r\n])*(?:\x27|\\?(?=\r?\n|\Z))|[^\s,;]+)",
     re.IGNORECASE,
 )
 PRIVATE_PATH_RE = re.compile(
@@ -915,13 +919,22 @@ def main() -> int:
         hollow_verifiers,
         missing_references,
         make_targets,
-        _package_scripts,
+        package_scripts,
     ) = verification_surface(root, instruction_files, files)
     stable_make_targets = sorted(make_targets & {"check", "test", "verify"})
+    stable_package_commands = {
+        f"npm run {name}" for name in package_scripts & {"check", "test", "verify"}
+    } & set(verifier_evidence)
     wrapper_warnings: list[str] = []
-    if len(commands) >= 2 and is_repo_file(root / "Makefile", root) and not stable_make_targets:
+    if (
+        len(commands) >= 2
+        and is_repo_file(root / "Makefile", root)
+        and not stable_make_targets
+        and not stable_package_commands
+    ):
         wrapper_warnings.append(
-            "multiple verification commands discovered but Makefile lacks check/test/verify wrapper"
+            "multiple verification commands discovered without a recognized make/npm default; "
+            "check documented or native entrypoints before recommending a wrapper"
         )
 
     decision_artifacts = {
