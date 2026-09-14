@@ -8,7 +8,7 @@ This is not a UI framework. It is a constraint system for print, designed to kee
 
 **The ten invariants** (each has a real cost, think before overriding):
 
-1. Page background parchment `#f5f4ed`, never pure white
+1. Default page background parchment `#f5f4ed`; the white-paper print variant in production.md is the explicit exception
 2. Single accent: ink-blue `#1B365D`, no second chromatic color
 3. All grays warm-toned (yellow-brown undertone), no cool blue-grays
 4. One serif family per page for headlines and body. Add a distinct sans only for genuine UI chrome
@@ -17,7 +17,7 @@ This is not a UI framework. It is a constraint system for print, designed to kee
 7. Letter-spacing: Chinese body 0.3pt for comfortable reading; English body 0; tracking only for short labels and overlines
 8. Tag backgrounds must be solid hex, never rgba (WeasyPrint renders a double rectangle)
 9. Surfaces are flat by default; whisper shadows are reserved for real floating screenshots, popovers, or overlays
-10. **No italic in print templates**. No `font-style: italic` in any PDF template or demo. Exception: landing page (screen-only) uses italic for poetic lines (gallery captions, feature subtitles, footer ethos)
+10. **No italic in print templates**. No `font-style: italic` in any PDF template or demo. Exception: landing page (screen-only) allows italic for captions, feature subtitles, and a closing tagline; these need not be poetic
 
 This system is a fusion of Anthropic's visual language and real Chinese / English resume iteration. Details below.
 
@@ -195,6 +195,26 @@ Print documents are **tighter** than English web body. English web typically run
 - Small labels (< 10pt): +0.2 to +0.5pt for readability
 - All-caps overlines: +0.5 to +1pt mandatory
 - **Slide-specific**: print tracking x0.5 at slide scale. Eyebrow max 3px (not 8px), display titles -0.5pt. Large type at 40pt+ will look scattered at print tracking values
+
+### External principles cross-check
+
+A cross-check against Pierrick Calvez, "A Five-Minute Guide to Better Typography" (external reference, read once for calibration, not reprinted here). Where the guide agrees with Kami it sharpens a rule already stated above; where it conflicts, the Kami invariant wins. Use this list to resist "improving" Kami toward habits that suit a Western multi-weight editorial page but break this constraint system.
+
+**Agrees with Kami (apply):**
+
+- **Set blocks, not glyphs.** Type is a beautiful group of letters, not a group of beautiful letters. Judge a paragraph as a shape and an even gray field, not one admirable character at a time. This is why Kami pins measure, line-height, and tracking per context rather than tuning individual words.
+- **Optical alignment beats mathematical alignment.** Text is aligned when it looks aligned, not when the box edges match. Nudge the optical edge back when a quotation mark, a bullet, a large display cap, or a hanging figure pushes a line visually past the margin. This is the same instinct behind the existing display-tracking and «cap both tracks» rules; it is a manual eyeball pass, not a token.
+- **Measure (line length) for reading body: about 40 to 70 characters per line.** Too wide and the eye loses the next line's start; too narrow and rhythm breaks. This is the character-count basis for the reading-measure caps already stated for screen prose (Section 11 «Documentation site», about 720px) and for the natural print measure held by the A4 margins in Section 3. Keep body reading inside this band; do not let a full-frame screen column run edge to edge.
+- **Line-spacing scales with measure and length.** Short blocks read fine near 1.2x the font size; long reading passages want roughly 1.5x. Map this onto Kami's locked tiers, do not invent your own: tight headlines 1.10-1.30, dense body 1.40-1.45, reading body 1.50-1.55. The guide's "1.5x" lands on Kami's reading tier; it is not a licence to reach 1.6+ on a print body (still forbidden above).
+- **Hierarchy comes from contrast, not ornament.** Separate levels with size, weight, and space, and when a step is unclear either skip a weight rather than adding a faint one, or open the size gap. Kami reaches the same end through its fixed ladder: use the next registered size step and the 500/400 weight pair, plus spacing, never a new in-between size (see «Ladder discipline») and never a decorative rule (see «Subtractive rule»).
+- **Left-align body; centre only short display lines.** Ragged-right left alignment gives the eye a stable return edge for running text. Centring is for a cover title, a short subtitle, or a single pinned callout line, never for paragraphs or lists. This matches the left-edge discipline in «Feature rows» and the centred-cover exceptions in the Deck Recipe.
+- **Kerning and tracking are optical tools for large and small type.** Spend them on display sizes and all-caps or small-caps labels, exactly where the Letter-spacing rules above already allow it. Do not track body copy for effect.
+
+**Conflicts with Kami (do not import):**
+
+- **Multi-weight typeface families.** The guide advises choosing a face with many weights (Light, Regular, Medium, Bold) and orchestrating them. Kami forbids this for the serif: body is 400, headings are 500, and that is the whole range. No 700 (synthetic bold is banned), no Light. Emphasis is carried by size, space, and ink-blue, per «Weight» and invariant 5. Do not add a weight step to a Kami serif document.
+- **Western ornamental punctuation habits.** Editorial guides written for English print lean on the em dash and decorative punctuation. Kami constrains dashes and decoration deliberately: see the no-em-dash rule in `AGENTS.md`, `references/anti-patterns.md` #28, and the list-marker rule in «Lists» (no faux en-dash bullets). Do not import em-dash-heavy phrasing or ornamental marks from the guide.
+- **Do not reprint the guide.** Keep this a distilled cross-check. Do not paste a full translation or a substantial verbatim excerpt of the source into the repo.
 
 ---
 
@@ -1137,7 +1157,7 @@ Certain copy surfaces must render as one line; a wrap there reads as a defect, n
 
 - Single-line at the desktop baseline (1280px): hero tagline, feature subtitles, benefit points, gallery captions, section ledes under ~12 words, footer ethos.
 - Single-line at 375px as well: key-fact tokens (price line, platform line, CTA labels, hero chips).
-- Fix order is fixed: cut words first, rephrase second, adjust layout last. Never shrink the font, never force it with `<br>`, never shave padding to buy one word of width.
+- Check container geometry and forced breaks first, then shorten redundant wording without losing facts or approved meaning. Never shrink the font, force it with `<br>`, or shave padding to buy one word of width.
 - Any component whose height depends on its text (carousel captions, rotating taglines) must be verified with the longest shipped locale; a wrap that appears in one locale makes the component jump between slides.
 - One wrap found means sweeping every surface in this list across every locale, not fixing the reported spot (see `AGENTS.md` «Critical Line-Break Scan» for the PDF-side counterpart).
 
@@ -1173,7 +1193,7 @@ Below the phone breakpoint, the information diet reverses: images first, words s
 - Quality chips, not a facts list. The tokens row should carry product *qualities* (good-looking, lightweight, AI-friendly), not an inventory (license, package manager, OS version). Push every hard fact to the footer or docs where it is referenceable. Pick about three.
 - No chip may repeat the tagline. Read tagline and chips together and cut any concept stated twice. If trimming a chip leaves an orphaned separator, the row should collapse to one clean line, not a dangling dot.
 - Wrap-safe chip separator. Put the middot on `span:not(:last-child)::after`, never on `::before` of the following item, so a chip that wraps to the next line never carries a leading dot. Use `color-mix(... 58%, transparent)` so the dot stays quieter than the text.
-- Line-widow discipline (title + tagline). Eliminate 1-2 word last lines by trimming the copy so the block rebalances, not by adding a `max-width` cap (a cap narrower than its container wraps early and leaves empty space on the right, which reads as a premature break). `text-wrap: balance` on the title and `pretty` on the tagline help only as a backstop; do not rely on them. Leave inherently-two-line notes alone.
+- Line-widow discipline (title + tagline). Use natural wrapping by default. Inspect container width and forced breaks before trimming redundant copy; preserve facts and approved meaning. Do not add a `max-width` cap merely to move a widow, or enable `balance` / `pretty` on body or tagline text by default. Deliberate headline balancing requires rendered verification. Leave inherently-two-line notes alone.
 
 ### Gallery
 
@@ -1185,7 +1205,7 @@ Below the phone breakpoint, the information diet reverses: images first, words s
 - Empty gallery: script exits cleanly; single-image gallery initializes caption/tab state without starting auto-rotate
 - Tabs: pill buttons 12px `--latin-ui`, active state uses brand-tint background
 - Click navigation: left half = previous, right half = next
-- Caption `.line`: italic serif, 14px olive. Poetic one-liners describing each screenshot
+- Caption `.line`: italic serif, 14px olive. Short captions explaining each screenshot or adding useful context
 - Rapid switching keeps caption and tab state synchronized with the visible frame; test by clicking faster than the transition duration, not just once per panel
 
 ### Links
@@ -1273,7 +1293,7 @@ For card grids whose content is written text (article listings, changelog indexe
 
 - Two-column grid: 200px name + 1fr description, 36px gap, separated by border-soft hairlines
 - Feature name: 22px brand, weight 500
-- Poetic subtitle: `<small>` below name, 13px olive, italic. One short line evoking the feature's character
+- Optional subtitle: `<small>` below name, 13px olive, italic. One short line adding useful context to the feature name
 - Description: 15px dark-warm, line-height 1.55
 - Tables stay editorial: no framed box, no tinted header bar, no vertical rules, no empty right gap. Content-sized columns, hairline row rules, a muted `--latin-ui` uppercase header. On phone, `display: block; overflow-x: auto` rather than cramming columns. A framed, tinted table adds weight without adding information.
 
@@ -1387,11 +1407,11 @@ not apply). Full pipeline and rationale in `references/mermaid.md`.
 
 Before declaring any screen change done, screenshot the real rendered surface; a type check or CSS-balance read is not enough. Several regressions (early wraps, orphaned separator dots, table overflow, missed pages) are invisible in source and only show in the render.
 
-- Capture at phone (375px, plus 320px for CTAs) and desktop (1280px), in every shipped locale.
-- Scan for line widows objectively: measure each text block's last-line width against its widest line and flag anything below about 13%. Eyeballing misses pages, and nested `<code>` hides widows from greps. Accept "0 widows" only after the check confirms it.
+- Capture at phone (375px, plus 320px for CTAs), desktop (1280px), both sides of each actual breakpoint, and an intermediate tablet width, in every shipped locale. These are verification samples, not instructions to add layout branches.
+- Measure each text block's last-line width against its widest line; a ratio below about 13% is a review candidate, not a defect verdict. Inspect the rendered context, including nested `<code>` and intentional short lines, before changing anything. Preserve natural, meaningful text rather than rewriting it to force the candidate count to zero.
 - Confirm CTAs reach their natural-width left-aligned resting state with no overflow, code is legible at the reduced mobile font, the gallery and any multi-column grids collapse to a single column, and total page overflow is zero.
 - Scan each screenshot for sparse blocks: a low-information region taller than about a quarter viewport, an empty grid slot, or a single item rattling in a multi-column row. Fix by tightening, merging, rewriting, or removing the weak block. Add content only when required evidence is genuinely missing, never to fill space.
-- Check every «Single-line surfaces» entry at both widths; key-fact tokens (price, platform, CTA) must hold one line at 375px.
+- Check every «Single-line surfaces» entry at its required widths; key-fact tokens (price, platform, CTA) must hold one line at 375px.
 - Long pages do not fit one viewport; use a capture helper that can scroll to a specific element (first code block, pager) before shooting.
 - Serve fresh bytes: browsers cache stylesheets and restore scroll positions, so a plain reload can screenshot the OLD css at the OLD scroll point and pass a broken change. Verify through a cache-busted URL (or a fresh-named temp copy of the page) and confirm the viewport actually shows the section under review before trusting the capture.
 
