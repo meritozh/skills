@@ -4,7 +4,7 @@
     "check": {
       "source": "tw93/Waza",
       "skillPath": "skills/check/SKILL.md",
-      "commit": "59323dee82b04fa8b9ad97a8ee503ca8aee7eb3c"
+      "commit": "c3b74dd5845b39a80a79c36bb82b028947674a05"
     },
     "code-review": {
       "source": "mattpocock/skills",
@@ -39,12 +39,12 @@
     "health": {
       "source": "tw93/Waza",
       "skillPath": "skills/health/SKILL.md",
-      "commit": "59323dee82b04fa8b9ad97a8ee503ca8aee7eb3c"
+      "commit": "c3b74dd5845b39a80a79c36bb82b028947674a05"
     },
     "hunt": {
       "source": "tw93/Waza",
       "skillPath": "skills/hunt/SKILL.md",
-      "commit": "59323dee82b04fa8b9ad97a8ee503ca8aee7eb3c"
+      "commit": "c3b74dd5845b39a80a79c36bb82b028947674a05"
     },
     "improve-codebase-architecture": {
       "source": "mattpocock/skills",
@@ -54,7 +54,7 @@
     "kami": {
       "source": "tw93/kami",
       "skillPath": "skills/kami/SKILL.md",
-      "commit": "a489e39633d1d6a044047bc9bf4452f7a65bb00a"
+      "commit": "5a7fa34e3804199e6fa28eea1c16057ece2f8f0f"
     },
     "kill-ai-slop": {
       "source": "yetone/kill-ai-slop",
@@ -64,7 +64,7 @@
     "learn": {
       "source": "tw93/Waza",
       "skillPath": "skills/learn/SKILL.md",
-      "commit": "59323dee82b04fa8b9ad97a8ee503ca8aee7eb3c"
+      "commit": "c3b74dd5845b39a80a79c36bb82b028947674a05"
     },
     "pre-mortem": {
       "source": "rahul-kulkarni105/skills",
@@ -79,7 +79,7 @@
     "read": {
       "source": "tw93/Waza",
       "skillPath": "skills/read/SKILL.md",
-      "commit": "59323dee82b04fa8b9ad97a8ee503ca8aee7eb3c"
+      "commit": "c3b74dd5845b39a80a79c36bb82b028947674a05"
     },
     "research": {
       "source": "mattpocock/skills",
@@ -99,12 +99,12 @@
     "think": {
       "source": "tw93/Waza",
       "skillPath": "skills/think/SKILL.md",
-      "commit": "59323dee82b04fa8b9ad97a8ee503ca8aee7eb3c"
+      "commit": "c3b74dd5845b39a80a79c36bb82b028947674a05"
     },
     "ui": {
       "source": "tw93/Waza",
       "skillPath": "skills/ui/SKILL.md",
-      "commit": "59323dee82b04fa8b9ad97a8ee503ca8aee7eb3c"
+      "commit": "c3b74dd5845b39a80a79c36bb82b028947674a05"
     },
     "wayfinder": {
       "source": "mattpocock/skills",
@@ -124,7 +124,7 @@
     "write": {
       "source": "tw93/Waza",
       "skillPath": "skills/write/SKILL.md",
-      "commit": "59323dee82b04fa8b9ad97a8ee503ca8aee7eb3c"
+      "commit": "c3b74dd5845b39a80a79c36bb82b028947674a05"
     }
   }
 }
