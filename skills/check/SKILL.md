@@ -52,10 +52,11 @@ Pick the mode that matches the user's intent, then read it in full before acting
 |---|---|
 | "implement this plan", `/think` output handed off | [Plan Execution](#plan-execution-mode) |
 | Diff or PR ready, "review", "看看代码", "合并前" | Default review (start at [Get the Diff](#get-the-diff)) |
-| "look at issues", "review PRs", "triage", "批量处理" | load `references/mode-triage.md` |
+| "look at issues", "review PRs", "triage", "批量处理", "all repos' issues", "其他仓库也扫一遍" | load `references/mode-triage.md` |
 | "is this worth a release", "值不值得发版" | load `references/mode-ship.md` (Release Worthiness Analysis) |
 | "commit", "push", "publish", "release", "close issue", "发布表情" | load `references/mode-ship.md` (Ship / Release Follow-through) |
 | "audit", "项目体检", "项目评分", "给项目打分", "深入分析项目代码", "scorecard", "linus review" | load `references/mode-audit.md` |
+| A review prompt, skill, persona, or model changed; "is review still catching bugs" | load `references/incident-ledger.md` (Replay eval) |
 | Document, PDF, prose review | Delegate to `/write` Document Review Mode, keeping it in the same completion ledger; without `/write`, use the available prose capability and name the limitation |
 
 Before any mode, run [Project Context Extraction](#project-context-extraction) and (if memory is in scope) [Durable Context Preflight](#durable-context-preflight).
@@ -81,12 +82,12 @@ Derive the review baseline from the user's words and current repository state. D
 
 - **All local or uncommitted changes**: inventory staged, unstaged, and untracked files, plus local commits ahead of the configured upstream. Being on the base branch does not make this scope ambiguous.
 - **PR or branch review**: use the merge base through the reviewed head, then add any dirty files in that checkout as a separate surface.
-- **Since the last release**: use the latest published stable tag through `HEAD`, not the local version field, then add dirty files.
+- **Since the last release**: resolve the latest stable from the delivery channel the product actually uses (feed, registry, store, or release host), map it to a source ref, and review through `HEAD`, then add dirty files. A stale release-host listing is not the baseline when another channel ships the product; a missing artifact-to-ref mapping stays an explicit gap.
 - **Recent N days or an explicit ref**: resolve that time/ref boundary through `HEAD`, then add dirty files.
 - **Known-good or previous working version**: compare that ref through `HEAD`; route to `/hunt` Bisect Mode only when the regression point itself is unknown.
 - **Whole-project audit**: use Audit Mode rather than pretending one diff is the repository.
 
-Freeze the resolved base, `HEAD`, worktree inventory, generated/distribution surfaces, and delegated scopes before review. Ask one narrow question only when two plausible baselines would materially change the verdict. If review fixes are applied or repository state moves, the old verdict expires: re-read `HEAD`, status, and the full resolved diff before signing off.
+Freeze the resolved base, `HEAD`, worktree inventory, generated/distribution surfaces, and delegated scopes before review. For a large inventory, reconcile the union of reviewed paths against that frozen set, including root files and cross-domain consumers; assignment alone is not coverage. Repeated locale or generated files may share a semantic check only when it accounts for every member, otherwise name the sampled and unread remainder separately. Ask one narrow question only when two plausible baselines would materially change the verdict. If review fixes are applied or repository state moves, the old verdict expires: re-read `HEAD`, status, and the full resolved diff before signing off.
 
 ## Scope
 
@@ -99,6 +100,8 @@ Measure the diff and classify depth:
 | **Deep** | 500+ lines, 10+ files, or touches auth/payments/data mutation | Base + all specialists + adversarial pass |
 
 State the depth before proceeding.
+
+Depth measures size; risk tier follows paths. A diff touching CI workflows, release or signing, the updater, auth, billing or license, installers, privilege, or deletion paths gets the project's heaviest gate and a human maintainer's review whatever its size or author; an agent's, bot's, or automated reviewer's approval never replaces that review. The method is the Risk tiers section of `references/project-context.md`.
 
 Explicit depth language overrides the size thresholds. "All", "全部", "deep", "深入", or "仔细" means whole-scope coverage of the resolved inventory, even when the textual diff is small; it does not permit skipping untracked files, generated mirrors, required artifacts, or pending reviewers.
 
@@ -154,6 +157,10 @@ Every finding needs the exact file:line, the specific input or state that trigge
 
 **HIGH and CRITICAL** also need why existing guards (validation, type system, upstream catch, framework default) do not already prevent it. Cannot show that? Downgrade to MEDIUM, or drop. "This *might* break under some condition" is not a HIGH.
 
+**Report shape.** Group findings by bug class, highest severity first, each class listing every same-class site with its file:line, then give the total; with none, write `no issues found` against the stated surface. Issues the diff did not introduce go in a separate `pre-existing` list and do not count toward the verdict.
+
+**Rounds converge.** One task gets at most three review/fix rounds. From round two, review only the new diff plus the re-checks Autofix Routing requires, and never re-report a finding already reported. A third round that still finds new problems stops the patch loop: return to [Question the Approach](#question-the-approach-not-just-the-diff). A class that comes back in a second round or a second review is fixed at its source (lint, source gate, type, routed rule), not site by site.
+
 ## Knowledge Sync
 
 If the diff introduces an invariant the project docs do not hold yet (a safety gate, a UI constraint, a release step, a cross-file sync requirement), it belongs in the narrowest tracked guidance every intended runtime reads, usually AGENTS.md. A review report or scorecard in the diff is evidence, not a durable doc: extract its stable rule instead of committing the snapshot. Apply a clear doc update as `safe_auto` or flag it as `doc debt`; with nothing new, sign-off says `doc debt: none`.
@@ -191,7 +198,7 @@ Use the project's known verification command appropriate to the changed surface.
 
 A failed check needs diagnosis; no detected command is a discovery gap, not proof of failure or of no verification surface. Inspect project docs, manifests, and CI for an appropriate check. Complete a read-only review with explicit evidence limits when no check is available. Block a fix or readiness claim only when required evidence is missing or failing, and ask for a command only if it cannot be recovered from project context.
 
-For bug fixes: a regression test that fails on the old code must exist before the fix is done, run red on that code (hunt's Regression guard rule). Establish expected behavior independently of the implementation: updating a snapshot does not prove it is correct. For agent instructions, keyword checks prove text retention only; behavior checks inspect tool actions and resulting files or artifacts, including forbidden side effects. Exercise a known-good and a known-bad case before relying on a new checker, and compare baseline and candidate under the same runtime and inputs.
+For bug fixes: a regression test that fails on the old code must exist before the fix is done, run red on that code (hunt's Regression guard rule). When the defect reached users or a published build and the project keeps an incident ledger, the same change adds its row; load `references/incident-ledger.md`. Establish expected behavior independently of the implementation: updating a snapshot does not prove it is correct. For agent instructions, keyword checks prove text retention only; behavior checks inspect tool actions and resulting files or artifacts, including forbidden side effects. Exercise a known-good and a known-bad case before relying on a new checker or a changed reviewer, and compare baseline and candidate under the same runtime and inputs; for a reviewer, the incident ledger's pre-fix code is the known-bad set and known-clean changes measure its noise.
 
 In a dirty or multi-agent checkout, a passing local build or test run is not proof your change is sound: unrelated WIP already in the tree can supply missing symbols, mask a break, or fail for reasons unrelated to you. Verify in isolation -- `git worktree add --detach <known-good-commit>`, `git apply` only the diff of the files you own, then build/test there. The clean isolated pass is the real signal; the contaminated local pass is not.
 
@@ -212,6 +219,7 @@ files changed:    N (+X -Y)
 scope:            on target / drift: [what] / removable: [what]
 user-visible delta: none / [entry, UI, copy, behavior added, removed, or changed]
 review depth:     quick / standard / deep
+risk tier:        [tier]: [gates], human review done / pending (only when a tier applies)
 hard stops:       N found, N fixed, N deferred
 sibling sweep:    N same-shape sites checked, N fixed / none found / not applicable
 specialists:      [security, architecture] or none
