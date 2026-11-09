@@ -1,6 +1,6 @@
 # Visual Quick-Fix Mode
 
-Loaded from `ui` when the ask is a bounded visual correction to an existing screen, not a new build.
+Loaded from `design-ui` when the ask is a bounded visual correction to an existing screen, not a new build.
 
 Activate when the user asks for a narrow visual repair with a concrete symptom: overflow, clipped or wrapped text, misalignment, spacing imbalance, contrast/readability, localized text not fitting, or compact responsive breakage. This is for fixing an existing surface, not redesigning it.
 
@@ -10,7 +10,7 @@ Flow:
 2. Name the exact visual defect in one sentence, then lock `target`, `preserve`, and `evidence` as defined in step 2 of `references/mode-screenshot-iteration.md`.
 3. Make the smallest material, geometry, spacing, contrast, typography, or text-fit change that fixes that defect. Do not redesign outside `target` to make the screenshot look coherent.
 4. Verify the real running surface or generated artifact against `target`, `preserve`, and `evidence`. When the component swaps content or state, check before/during/after and cold/warm paths; when one shared component or token is implicated, check every affected sibling rather than the reported instance. Also check long words, localized strings, compact states, and at least one narrow viewport when applicable. Terminal output counts as a rendered surface: after changing CLI-facing text or layout, re-run the command and read the actual output, checking column alignment, block spacing, and icon consistency across the whole output rather than only the changed line.
-5. The Boundary rule in `references/mode-screenshot-iteration.md` applies here too; when it trips, or the fix changes product behavior, stop and switch to that mode or to Lock the Direction First in `SKILL.md`.
+5. The Boundary rule in `references/mode-screenshot-iteration.md` applies here too; when it trips, or the fix changes product behavior, stop and switch to that mode or to Build a surface in `SKILL.md`.
 
 **Spacing unification rule.** A spacing or sizing value tuned three times that still looks off is structural, not numeric: collapse the N independent values into one shared named token (`Spacing.s4`, `--gap-content`), with outer container padding defaulting to the inner element gap. Spacing-as-a-system details live in `references/design-reference.md`.
 

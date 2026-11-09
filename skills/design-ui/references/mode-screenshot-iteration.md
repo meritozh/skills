@@ -1,6 +1,6 @@
 # Screenshot Iteration Mode
 
-Loaded from `ui` when the user supplies a screenshot of a rendered surface and wants it improved against that evidence.
+Loaded from `design-ui` when the user supplies a screenshot of a rendered surface and wants it improved against that evidence.
 
 Activate when the user sends a screenshot or image alongside a complaint ("这里很丑", "这个不对", "fix this", "looks wrong"). The existing product is the direction. Skip the five-question direction lock.
 
@@ -23,6 +23,6 @@ Activate when the user sends a screenshot or image alongside a complaint ("这�
 
 **Native screenshot handoff.** For native apps, once you have proven the app builds, runs, and can reach the target view, do not spend repeated cycles fighting focus, window ordering, or coordinate-click automation just to capture final visual proof. Make one bounded automation attempt. If it is flaky, name the exact screen and ask the user for the screenshot to iterate against. This is a visual QA boundary, not a substitute for build/run verification.
 
-**Boundary**: if the fix requires changing 3 or more components, or if it reveals a direction problem rather than a specific bug, pause and run the full direction lock before continuing.
+**Boundary**: if the fix requires changing 3 or more components, or if it reveals a direction problem rather than a specific bug, pause and run steps 1 to 3 of Build a surface in `SKILL.md` before continuing.
 
 **Redesign priority order** (when reworking an existing UI rather than building from scratch): font replacement first, then color cleanup, hover/active states, layout and whitespace, replacing generic components, adding loading/empty/error states, and typographic polish last. This order maximizes visual lift while minimizing the blast radius of each pass. Full rules, common traps, and absolute CSS bans all live in `references/design-reference.md`.
