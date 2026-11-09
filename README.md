@@ -14,7 +14,7 @@ Personal Agent Skills collection. Upstream skills are vendored into `skills/` so
 | [design-idea](skills/design-idea/SKILL.md) | `.` | Pressure-test one design idea in order — make the author earn the choice, steelman the option they rejected, then grill the strongest version with ranked failure scenarios. Use when a design, a direction, or "should we do X" needs testing before it becomes a plan. After the user confirms, record the idea and hand off to design-code. |
 | [design-ui](skills/design-ui/SKILL.md) | `.` | Produces distinctive production UI, screenshot-grounded visual polish, and a root DESIGN.md in the Stitch format. Use when building or restyling pages, components, or typography, or when asked to write or update DESIGN.md from a style brief. Not for backend logic, data pipelines, or shippable print documents. |
 | [diff-review](skills/diff-review/SKILL.md) | `.` | Reviews only the diff: a PR, uncommitted changes, or a change since a fixed point. Standards against the repo and a smell baseline, spec against the originating issue. Use when asked to review a diff before merge. Not for a whole-codebase review, root-cause debugging, shipping, or prose. |
-| [project](skills/project/SKILL.md) | `.` | Initialize or migrate this repo's principles into AGENTS.md, and make CLAUDE.md a symlink to it. Principles include how docs are organized and updated. Use when the user runs /project. |
+| [project](skills/project/SKILL.md) | `.` | Initialize or update this repo's principles in AGENTS.md, and make CLAUDE.md a symlink to it. Built-in principles cover project status, docs, small local commits, cleanup of intermediate artifacts, and architecture. Use when the user runs /project. |
 
 ## Vendored
 
