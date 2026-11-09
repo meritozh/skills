@@ -1,6 +1,6 @@
 # Two-axis review
 
-Loaded from the mode picker when the user pins a fixed point, or asks for standards versus spec. Run Worktree Safety Preflight first. This file then replaces Get the Diff through the written report. Hard Rules, Finding Quality Gate, and Sign-off in `SKILL.md` still apply.
+Loaded when the user pins a fixed point, or asks for standards versus spec. Run step 1 of `SKILL.md` (protect the worktree) first. This file then replaces steps 2 to 9. The quality gate and sign-off in `SKILL.md` still apply.
 
 Two axes, reported apart:
 

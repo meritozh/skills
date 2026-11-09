@@ -1,6 +1,6 @@
-# Release Surface Review Methods
+# Command and install surfaces
 
-Loaded on demand from `/diff-review` when a diff or release question touches one of these surfaces. The fill-in template shapes live in `project-context.md`; this file owns the review method.
+Loaded from `diff-review` step 6 when a diff touches a command or an installable surface. `project-context.md` holds the safety sink list this file refers to.
 
 ## CLI Command Surface
 
@@ -17,11 +17,3 @@ Verify the installed runtime contract, not just the source tree:
 3. Run an isolated install smoke when the surface is installable: fresh temp home/config/cache, add the marketplace or package, install the skill or plugin, list it, and invoke the smallest command or entrypoint that proves scripts and references resolve from the installed path.
 4. Filter generated mirrors and archives for cache/noise files such as `__pycache__`, `*.pyc`, `.pytest_cache`, `.ruff_cache`, `.mypy_cache`, `.DS_Store`, local logs, and screenshots unless the project explicitly ships them.
 5. If network, auth, or host tooling prevents the install smoke, state the missing layer as a blocker or gap. Do not replace installed-runtime proof with manifest JSON, source tests, or a successful local import.
-
-## Reworked Or Cancelled Release Gate
-
-1. Lock the review base to the last public stable tag or release artifact, then review through current `HEAD`. Do not limit the review to recent commits or the latest local diff.
-2. Record the exact base, `HEAD`, dirty state, origin sync, version fields, generated artifacts, release notes, package contents, CI, and remote distribution state. If any state changes mid-review, refresh the range and rerun the fast gates.
-3. Review by shipped risk surface: user-reported regressions, crash or hang paths, destructive operations, privilege or permission boundaries, background workers, startup or first-frame work, update feeds, package contents, and public support claims.
-4. Output two release decisions, not one: whether the preview or beta can keep taking user testing, and whether stable release prep can start.
-5. Every conclusion must name blockers, deferrable maintenance, commands that ran, and runtime or user-smoke coverage. Source tests alone cannot prove a reworked UI/native release ready.

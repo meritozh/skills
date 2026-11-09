@@ -27,7 +27,6 @@ Return findings as a plain list. For each finding:
 Mechanism: {how it can be exploited, one sentence}
 Fix: {specific corrective action}
 Class: security
-Autofix: manual
 ```
 
 Severity: CRITICAL (exploitable now), HIGH (exploitable with effort), MEDIUM (hardening gap), LOW (defense-in-depth).

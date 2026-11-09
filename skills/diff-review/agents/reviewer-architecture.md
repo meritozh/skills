@@ -25,7 +25,6 @@ Return findings as a plain list. For each finding:
 Impact: {what gets harder or breaks as the system grows, one sentence}
 Fix: {specific corrective action}
 Class: architecture
-Autofix: manual
 ```
 
 Severity: HIGH (will cause a breakage or forces a rewrite), MEDIUM (will slow future development), LOW (worth noting, not urgent).
