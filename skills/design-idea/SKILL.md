@@ -39,6 +39,16 @@ Stop at the test. Do not write a replacement design, an implementation plan, or 
 
 One round of questions. After they answer, write the full output even if a field stays thin.
 
+A bare preference gets only its missing fields as questions. For "we'll just use Redis for the job queue":
+
+```
+- Rejected: what else did you consider for the queue (Postgres with SKIP LOCKED, SQS, the current cron)?
+- Winning constraint: what about this workload makes Redis the winner: throughput, latency, or something you already run?
+- Cost of being wrong: if Redis loses jobs on a restart, what breaks, and where would you notice first?
+```
+
+Not: "Have you thought about whether Redis is the right choice?" That asks for a verdict, not a reason.
+
 ## Output
 
 When step 2 stops for a bare preference, ask only the missing questions. Otherwise:
@@ -82,7 +92,26 @@ What would change your mind?
 
 ## After confirmation
 
-When the user accepts the idea, update `docs/idea/<slug>.md` so it states the decision as it stands: what it is, what it is not, and the winning constraint. Update the existing file for that subject. Do not write `docs/design/`. The next step is `design-code`.
+When the user accepts the idea, update `docs/idea/<slug>.md` so it states the decision as it stands. Update the existing file for that subject. Do not write `docs/design/`. The next step is `design-code`.
+
+```markdown
+# <Idea title>
+
+<One sentence: the decision.>
+
+Winning constraint: <the constraint that makes this option win>
+Rejected: <the alternative>, which wins instead when <its condition>
+
+## Not this
+
+- <what the idea explicitly excludes>
+
+## Wrong-call signal
+
+<The first thing someone would see if this turns out to be the wrong call.>
+```
+
+The file states what is true now. Do not add a history of the debate, a plan, or next steps. Leave out a section with nothing to say.
 
 Until the user accepts, do not write that file.
 
