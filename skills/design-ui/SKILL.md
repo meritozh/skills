@@ -1,11 +1,12 @@
 ---
 name: design-ui
 description: "Produces distinctive production UI, screenshot-grounded visual polish, and a root DESIGN.md in the Stitch format. Use when building or restyling pages, components, or typography, or when asked to write or update DESIGN.md from a style brief. Not for backend logic, data pipelines, or shippable print documents."
-when_to_use: "做组件, 不好看, 不和谐, 不清晰, 很丑, 很怪, 很傻, 突兀, 不协调, 字体, 排版, UI, 截图, DESIGN.md, 设计规范, design style, build page, create component, make it look good, screenshot with visual complaint, font looks wrong"
-dispatch_intent: "UI, component, page, visual interface, frontend, DESIGN.md, artifact-grounded screenshot aesthetic complaint"
+disable-model-invocation: true
 ---
 
 # Design UI
+
+User-invoked only: follow this skill only when the user ran `/design-ui`. When the work belongs to another skill, name it (for example `/code-fix`), say why, and stop. Do not invoke it yourself.
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
@@ -19,7 +20,7 @@ Done means the real rendered surface was checked against the user's visual goal 
 - **Gut-feel complaints are aesthetic.** "很傻", "很怪", "突兀", "不协调", "不和谐" reject the look. They are not a bug report. A deterministic broken render, state, or timing path is `/code-fix`.
 - **Current evidence wins.** The screenshot, the rendered output, and the repo's `DESIGN.md` override memory and earlier preferences.
 - **UI copy cuts** follow the UI copy rules in [references/design-reference.md](references/design-reference.md), in every mode.
-- **Print documents route out.** A report, deck, resume, or paged PDF goes to a document typesetting skill when one is installed. Screen layout (app surfaces, components, web pages) stays here.
+- **Print documents are out of scope.** For a report, deck, resume, or paged PDF, tell the user to run a document typesetting skill (such as `/kami`) when one is installed, and stop. Screen layout (app surfaces, components, web pages) stays here.
 
 ## Pick the path
 

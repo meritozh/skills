@@ -1,0 +1,5 @@
+interface:
+  display_name: "Project"
+  short_description: "Write the repo's principles into AGENTS.md"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Design Code"
+  short_description: "Design a confirmed idea as deep modules"
+policy:
+  allow_implicit_invocation: false

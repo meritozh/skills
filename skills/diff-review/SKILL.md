@@ -1,11 +1,12 @@
 ---
 name: diff-review
 description: "Reviews only the diff: a PR, uncommitted changes, or a change since a fixed point. Standards against the repo and a smell baseline, spec against the originating issue. Use when asked to review a diff before merge. Not for a whole-codebase review, root-cause debugging, shipping, or prose."
-when_to_use: "diff review, review, 看看代码, 检查一下, 合并前, 看看PR, before merge, review since, code review"
-dispatch_intent: "Diff-scoped review, before merge, two-axis standards and spec review of a change"
+disable-model-invocation: true
 ---
 
 # Diff review
+
+User-invoked only: follow this skill only when the user ran `/diff-review`. When the work belongs to another skill, name it (for example `/code-fix`), say why, and stop. Do not invoke it yourself.
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 

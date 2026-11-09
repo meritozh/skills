@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Project
 
-User-invoked only. Do not start this skill unless the user ran `/project`. `/project` has no subcommand. A status change or a new rule comes from the user's words in the same message.
+User-invoked only. Do not start this skill unless the user ran `/project`. `/project` has no subcommand. When the work belongs to another skill, name it, say why, and stop. Do not invoke it yourself. A status change or a new rule comes from the user's words in the same message.
 
 Work at the git repo root. This skill writes the repo's principles: the standing rules every agent follows while working here. It does not discuss an idea (`design-idea`), design a module (`design-code`), review a diff (`diff-review`), diagnose a bug (`code-fix`), or review the whole codebase (`codebase-review`).
 

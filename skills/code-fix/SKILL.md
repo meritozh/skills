@@ -1,11 +1,12 @@
 ---
 name: code-fix
 description: "Finds the root cause with a tight red loop before any fix. Use when something errors, crashes, regresses, is slow, or used to work. Not for a diff review, a whole-codebase architecture review, or new features."
-when_to_use: "排查, 报错, 崩溃, 回归, 截图回归, 判断错误原因, 判断为什么报错, 反复修不好, diagnose, debug, regression, used to work, broke after update, why broken, not working, what's wrong, fix error, stack trace, slow, failing, 以前是好的"
-dispatch_intent: "Error, crash, regression, performance, screenshot-reported defect, test failure, stale cache, runtime boundary, why broken"
+disable-model-invocation: true
 ---
 
 # Code fix
+
+User-invoked only: follow this skill only when the user ran `/code-fix`. When the work belongs to another skill, name it (for example `/code-fix`), say why, and stop. Do not invoke it yourself.
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
@@ -200,7 +201,7 @@ Keep the bookkeeping in `git bisect`, including when you test a suspect commit b
 
 ### Reference mode
 
-List every reported and visible symptom in the user's words. Name the reference (last good commit, old build, fixture, screenshot). Define the pass/fail check before editing, then name the exact delta between current and reference. Do not turn a broken render, race, font pipeline, or state path into "style polish". Pure taste goes to `/design-ui`.
+List every reported and visible symptom in the user's words. Name the reference (last good commit, old build, fixture, screenshot). Define the pass/fail check before editing, then name the exact delta between current and reference. Do not turn a broken render, race, font pipeline, or state path into "style polish". Pure taste: tell the user to run `/design-ui`, and stop.
 
 ## Hard rules
 

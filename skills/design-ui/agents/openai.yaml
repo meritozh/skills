@@ -1,0 +1,5 @@
+interface:
+  display_name: "Design UI"
+  short_description: "Build or polish UI against the real render"
+policy:
+  allow_implicit_invocation: false

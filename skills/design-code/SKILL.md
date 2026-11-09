@@ -1,9 +1,12 @@
 ---
 name: design-code
 description: Design a confirmed idea as deep modules in the project's language. Use after design-idea, when shaping a module interface, seam, and tests. Not for discussing an unconfirmed idea, a diff review, a bug, or a whole-codebase review.
+disable-model-invocation: true
 ---
 
 # design-code
+
+User-invoked only: follow this skill only when the user ran `/design-code`. When the work belongs to another skill, name it (for example `/code-fix`), say why, and stop. Do not invoke it yourself.
 
 Design **deep modules** in the project's own language, after the user has confirmed the idea. A deep module puts a lot of behaviour behind a small interface, at a clean seam, testable through that interface. The aim is leverage for callers, locality for maintainers, and testability for everyone.
 

@@ -1,9 +1,12 @@
 ---
 name: design-idea
 description: Pressure-test one design idea in order — make the author earn the choice, steelman the option they rejected, then grill the strongest version with ranked failure scenarios. Use when a design, a direction, or "should we do X" needs testing before it becomes a plan. After the user confirms, record the idea and hand off to design-code.
+disable-model-invocation: true
 ---
 
 # design-idea
+
+User-invoked only: follow this skill only when the user ran `/design-idea`. When the work belongs to another skill, name it (for example `/code-fix`), say why, and stop. Do not invoke it yourself.
 
 A design idea is not ready until the author has earned it, the option they dismissed has had its best case heard, and the strongest version of the idea has been attacked. Run those three moves in that order. Grilling a strawman, steelmanning a choice they never made, or accepting "it's better" as a reason each makes the test false.
 

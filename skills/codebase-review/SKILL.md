@@ -1,9 +1,12 @@
 ---
 name: codebase-review
 description: "Review any codebase by what its real changes cost and what its failures leave behind, measured against its own shape, history, and claims. Write a self-contained HTML report outside docs/. Use for a whole-codebase review. Not for a diff or PR review, and not for root-cause debugging."
+disable-model-invocation: true
 ---
 
 # Codebase review
+
+User-invoked only: follow this skill only when the user ran `/codebase-review`. When the work belongs to another skill, name it (for example `/code-fix`), say why, and stop. Do not invoke it yourself.
 
 Review the repositories the user names. The subject is any codebase. Judge it with its own evidence, not against an imported ideal (clean architecture, microservices, DDD, plugins). Two questions decide every judgment:
 

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Codebase Review"
+  short_description: "Whole-codebase review by change cost and failure"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Code Fix"
+  short_description: "Find the root cause with a red loop, then fix"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Diff Review"
+  short_description: "Report-only review of a diff before merge"
+policy:
+  allow_implicit_invocation: false
