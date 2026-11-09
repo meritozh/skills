@@ -4,7 +4,7 @@
     "health": {
       "source": "tw93/Waza",
       "skillPath": "skills/health/SKILL.md",
-      "commit": "58217546cd94fcf5ddcde4265c00a9377ed3192c"
+      "commit": "09840da1610357704c9db7231410cc5f3f2617f9"
     },
     "kami": {
       "source": "tw93/kami",
@@ -14,17 +14,17 @@
     "learn": {
       "source": "tw93/Waza",
       "skillPath": "skills/learn/SKILL.md",
-      "commit": "58217546cd94fcf5ddcde4265c00a9377ed3192c"
+      "commit": "09840da1610357704c9db7231410cc5f3f2617f9"
     },
     "read": {
       "source": "tw93/Waza",
       "skillPath": "skills/read/SKILL.md",
-      "commit": "58217546cd94fcf5ddcde4265c00a9377ed3192c"
+      "commit": "09840da1610357704c9db7231410cc5f3f2617f9"
     },
     "write": {
       "source": "tw93/Waza",
       "skillPath": "skills/write/SKILL.md",
-      "commit": "58217546cd94fcf5ddcde4265c00a9377ed3192c"
+      "commit": "09840da1610357704c9db7231410cc5f3f2617f9"
     }
   }
 }
