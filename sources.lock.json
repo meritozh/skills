@@ -19,7 +19,7 @@
     "convince-me": {
       "source": "rahul-kulkarni105/skills",
       "skillPath": "skills/convince-me/SKILL.md",
-      "commit": "33da71fab646ced4970bf617b82976d9ac598d09"
+      "commit": "cb0bfc133431725a366dcc059c76cd3746decf45"
     },
     "diagnosing-bugs": {
       "source": "mattpocock/skills",
@@ -34,7 +34,7 @@
     "grill-me": {
       "source": "rahul-kulkarni105/skills",
       "skillPath": "skills/grill-me/SKILL.md",
-      "commit": "33da71fab646ced4970bf617b82976d9ac598d09"
+      "commit": "cb0bfc133431725a366dcc059c76cd3746decf45"
     },
     "health": {
       "source": "tw93/Waza",
@@ -54,7 +54,7 @@
     "kami": {
       "source": "tw93/kami",
       "skillPath": "skills/kami/SKILL.md",
-      "commit": "0605b1eb0955d8457afa61957de605443ab68802"
+      "commit": "e82bb390c9d6f63d3b0a54b7deb11b85ff4979c9"
     },
     "kill-ai-slop": {
       "source": "yetone/kill-ai-slop",
@@ -69,7 +69,7 @@
     "pre-mortem": {
       "source": "rahul-kulkarni105/skills",
       "skillPath": "skills/pre-mortem/SKILL.md",
-      "commit": "33da71fab646ced4970bf617b82976d9ac598d09"
+      "commit": "cb0bfc133431725a366dcc059c76cd3746decf45"
     },
     "prototype": {
       "source": "mattpocock/skills",
@@ -89,7 +89,7 @@
     "steelman": {
       "source": "rahul-kulkarni105/skills",
       "skillPath": "skills/steelman/SKILL.md",
-      "commit": "33da71fab646ced4970bf617b82976d9ac598d09"
+      "commit": "cb0bfc133431725a366dcc059c76cd3746decf45"
     },
     "tdd": {
       "source": "mattpocock/skills",
@@ -114,7 +114,7 @@
     "weak-spots": {
       "source": "rahul-kulkarni105/skills",
       "skillPath": "skills/weak-spots/SKILL.md",
-      "commit": "33da71fab646ced4970bf617b82976d9ac598d09"
+      "commit": "cb0bfc133431725a366dcc059c76cd3746decf45"
     },
     "weread-skills": {
       "source": "Tencent/WeChatReading",
