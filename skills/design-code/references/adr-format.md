@@ -1,24 +1,33 @@
 # ADR format
 
-A decision that passes the tests below is a section of `docs/design/<slug>.md`. Do not create `docs/adr/`.
+A decision that passes the tests below is a `###` entry under `## Decisions` in `docs/design/<slug>.md`. Do not create `docs/adr/`.
 
 ## Template
 
 ```md
-# {Short title of the decision}
+### {Short title of the decision}
 
 {1–3 sentences: the context, the decision, and why.}
 ```
 
-An ADR can be one paragraph. The value is recording that a decision was made and why.
+One paragraph is enough. The value is recording that a decision was made and why.
+
+Example:
+
+```md
+### Manual SQL instead of an ORM
+
+Reports join six tables with window functions, and the ORM generated N+1 queries we could not tune. Queries live in `reports/sql/` and are tested against PGlite.
+```
 
 ## Optional sections
 
-Add these only when they earn a place. Most ADRs need none of them.
+Add these only when they earn a place. Most decisions need none of them.
 
-- **Status** frontmatter (`proposed | accepted | deprecated | superseded by ADR-NNNN`), when a decision is revisited.
 - **Considered options**, when a rejected alternative is worth remembering.
 - **Consequences**, when a downstream effect is not obvious.
+
+When a decision changes, replace its text. The doc states the current decision, not its history.
 
 ## When to write one
 
@@ -28,7 +37,7 @@ All three must be true:
 2. **Surprising without context.** A later reader will ask why it was done this way.
 3. **A real trade-off.** Genuine alternatives existed, and one was picked for specific reasons.
 
-If any test fails, skip the ADR. Easy to reverse: reverse it later. Not surprising: nobody will wonder. No real alternative: there is nothing to record beyond the obvious.
+If any test fails, skip it. Easy to reverse: reverse it later. Not surprising: nobody will wonder. No real alternative: there is nothing to record beyond the obvious.
 
 ### What qualifies
 

@@ -23,7 +23,7 @@ Prompt each with its own technical brief: file paths, coupling, dependency categ
 - Optimize for the most common caller: the default case is trivial.
 - When a dependency crosses a real seam: design around ports and adapters.
 
-The brief uses the vocabulary in SKILL.md and the project's glossary, so every design names things the same way.
+The brief uses the vocabulary in SKILL.md and the `## Terms` of the design doc, so every design names things the same way.
 
 Each sub-agent outputs:
 
