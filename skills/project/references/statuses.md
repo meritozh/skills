@@ -1,6 +1,6 @@
 # Project statuses
 
-One of these three values is stored in the `## Project status` section of the repo-root `CONTEXT.md`.
+One of these three values is stored in the project-status principle in the repo-root `AGENTS.md`.
 
 | Status | Breaking changes | Persist data |
 | --- | --- | --- |
@@ -8,4 +8,4 @@ One of these three values is stored in the `## Project status` section of the re
 | `release-solo` | Same as `startup`. | Must migrate. Do not reset. |
 | `release` | Allowed for long-term better design, but also prefer the smallest compatible change when it does not trap the design. | Must migrate. Do not reset. |
 
-`init` is not a status. It creates `CONTEXT.md` (status `startup`) and `docs/` if they are missing.
+A missing `AGENTS.md` is created with status `startup`.

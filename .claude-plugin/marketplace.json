@@ -5,17 +5,10 @@
       "name": "general",
       "source": "./",
       "skills": [
-        "./skills/convince-me",
-        "./skills/design-style",
-        "./skills/grill-me",
+        "./skills/design-idea",
         "./skills/kami",
-        "./skills/kill-ai-slop",
         "./skills/learn",
-        "./skills/pre-mortem",
         "./skills/read",
-        "./skills/steelman",
-        "./skills/weak-spots",
-        "./skills/weread-skills",
         "./skills/write"
       ]
     },
@@ -23,24 +16,13 @@
       "name": "engineering",
       "source": "./",
       "skills": [
-        "./skills/check",
-        "./skills/code-review",
-        "./skills/codebase-design",
-        "./skills/diagnosing-bugs",
-        "./skills/domain-modeling",
-        "./skills/gpui",
-        "./skills/gpui-component",
+        "./skills/codebase-review",
+        "./skills/code-fix",
+        "./skills/diff-review",
+        "./skills/design-code",
+        "./skills/design-ui",
         "./skills/health",
-        "./skills/hunt",
-        "./skills/iterate",
-        "./skills/project",
-        "./skills/improve-codebase-architecture",
-        "./skills/prototype",
-        "./skills/research",
-        "./skills/tdd",
-        "./skills/think",
-        "./skills/ui",
-        "./skills/wayfinder"
+        "./skills/project"
       ]
     }
   ]

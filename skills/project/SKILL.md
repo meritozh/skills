@@ -1,47 +1,53 @@
 ---
 name: project
-description: Manage this repo's project status in CONTEXT.md. Only accepts init, startup, release-solo, or release. Use when the user runs /project.
+description: Initialize or migrate this repo's principles into AGENTS.md, and make CLAUDE.md a symlink to it. Principles include how docs are organized and updated. Use when the user runs /project.
 disable-model-invocation: true
-argument-hint: init|startup|release-solo|release
 ---
 
 # Project
 
-User-invoked only. Do not start this skill unless the user ran `/project`.
+User-invoked only. Do not start this skill unless the user ran `/project`. `/project` has no subcommand.
 
-Argument must be exactly one of: `init`, `startup`, `release-solo`, `release`. If missing or anything else, stop and print:
+Work at the git repo root. This skill initializes and migrates the repo's principles. A principle is a standing rule for how the repo is organized and kept current. How `docs/` is organized and updated is one principle. Others are added the same way. This skill does not discuss an idea (`design-idea`), design a module (`design-code`), review a diff (`diff-review`), diagnose a bug (`code-fix`), or review the whole codebase (`codebase-review`).
 
-```
-Usage: /project <init|startup|release-solo|release>
-```
+Principles live only in `AGENTS.md`, under `## Principles`. `CLAUDE.md` is a relative symlink to `AGENTS.md`.
 
-Status definitions: [references/statuses.md](references/statuses.md). That file is the only definition of what each status allows.
+The project-status principle is [references/statuses.md](references/statuses.md). The docs principle is [references/docs.md](references/docs.md). Each other principle is stated by the user.
 
-## Locate CONTEXT.md
+## Files
 
-Work at the git repo root. Status lives only in the root `CONTEXT.md`, section `## Project status`. Do not invent a second status file. Leave every other section (Language, etc.) untouched unless `init` is creating the file.
+Use the names `AGENTS.md` and `CLAUDE.md`. If the same name exists in another case, rename it to that spelling before writing. `AGENT.md` is not this file. When `AGENTS.md` is missing and `AGENT.md` exists, rename `AGENT.md` to `AGENTS.md`.
 
-## `init`
+**Migrate** before writing. Read the repo's existing agent instructions: `AGENTS.md`, a regular `CLAUDE.md`, `AGENT.md`, and any other file the repo already uses as agent guidance. Carry each current rule into `## Principles` once. Do not invent a rule that is not already written, except the two principles below when they are missing. Do not rewrite bodies under `docs/`. Do not migrate product data.
 
-1. If `CONTEXT.md` already has `## Project status`, stop and say so. Use `/project startup` (or another status) to change it.
-2. If `CONTEXT.md` is missing, create it. Title from the directory name. One-line description if the repo already states one (README first paragraph); otherwise leave a short placeholder.
-3. Write or insert this section (status `startup`):
+**Create `AGENTS.md`** when it is missing:
 
 ```markdown
-## Project status
+# Agent notes
+
+## Principles
+
+### Project status
 
 - **Status:** `startup`
-- **Breaking changes:** Allowed whenever they make the long-term design better. Do not optimize for compatibility or the smallest diff.
-- **Persist data:** May reset. No migration.
+- **Breaking changes:** <from the startup row>
+- **Persist data:** <from the startup row>
+
+<the table in references/statuses.md>
+
+### Docs
+
+<the procedure in references/docs.md>
 ```
 
-4. Create these directories if missing: `docs/feature/`, `docs/fix/`, `docs/refactor/`, `docs/note/`, `docs/general/`.
-5. Tell the user the status is `startup` and where the files are.
+Also create `docs/idea/`, `docs/feature/`, and `docs/design/` when missing.
 
-## `startup` | `release-solo` | `release`
+**Update a principle** in place. The file states the rule as it stands now. Replace the text that is no longer the rule. Do not append how the rule changed, and do not add a second file for the same principle.
 
-1. If `CONTEXT.md` is missing, stop. Tell the user to run `/project init`.
-2. Replace only the `## Project status` section. Keep the rest of the file. Use the matching row in [references/statuses.md](references/statuses.md) for the two bullet lines.
-3. Confirm the new status in one sentence.
+Leave every section outside `## Principles` as it is. `## Project status`, `## Status rules`, and `## Work` are the old shape of these two principles. When one of them is present, fold it into `## Principles` and remove the old heading.
 
-Do not commit, push, or migrate data. This skill only updates `CONTEXT.md` (and scaffolds on `init`).
+**Link.** After `AGENTS.md` is in place, make `CLAUDE.md` a relative symlink to `AGENTS.md`. If `CLAUDE.md` is already that symlink, leave it. If it is a symlink elsewhere, replace the link. If it is a regular file, its rules belong in `AGENTS.md` first; then replace the file with the symlink. Tell the user what moved.
+
+Confirm which principle changed, and that `CLAUDE.md` points at `AGENTS.md`.
+
+Do not commit, push, or migrate data.

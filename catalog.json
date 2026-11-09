@@ -8,17 +8,10 @@
       "title": "General",
       "description": "Reading, writing, research, and other non-code workflows.",
       "skills": [
-        "convince-me",
-        "design-style",
-        "grill-me",
+        "design-idea",
         "kami",
-        "kill-ai-slop",
         "learn",
-        "pre-mortem",
         "read",
-        "steelman",
-        "weak-spots",
-        "weread-skills",
         "write"
       ]
     },
@@ -27,67 +20,24 @@
       "title": "Engineering",
       "description": "Planning, debugging, review, and implementation workflows.",
       "skills": [
-        "check",
-        "code-review",
-        "codebase-design",
-        "diagnosing-bugs",
-        "domain-modeling",
-        "gpui",
-        "gpui-component",
+        "codebase-review",
+        "code-fix",
+        "diff-review",
+        "design-code",
+        "design-ui",
         "health",
-        "hunt",
-        "iterate",
-        "project",
-        "improve-codebase-architecture",
-        "prototype",
-        "research",
-        "tdd",
-        "think",
-        "ui",
-        "wayfinder"
+        "project"
       ]
     }
   ],
   "sources": [
     {
       "source": "tw93/Waza",
-      "skills": ["think", "hunt", "check", "write", "ui", "health", "learn", "read"]
+      "skills": ["write", "health", "learn", "read"]
     },
     {
       "source": "tw93/kami",
       "skills": ["kami"]
-    },
-    {
-      "source": "yetone/kill-ai-slop",
-      "skills": ["kill-ai-slop"]
-    },
-    {
-      "source": "Tencent/WeChatReading",
-      "skills": ["weread-skills"]
-    },
-    {
-      "source": "mattpocock/skills",
-      "skills": [
-        "code-review",
-        "codebase-design",
-        "diagnosing-bugs",
-        "improve-codebase-architecture",
-        "prototype",
-        "tdd",
-        "wayfinder",
-        "research",
-        "domain-modeling"
-      ]
-    },
-    {
-      "source": "rahul-kulkarni105/skills",
-      "skills": [
-        "convince-me",
-        "grill-me",
-        "pre-mortem",
-        "steelman",
-        "weak-spots"
-      ]
     },
     {
       "source": ".",
