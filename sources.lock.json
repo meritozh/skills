@@ -4,27 +4,27 @@
     "health": {
       "source": "tw93/Waza",
       "skillPath": "skills/health/SKILL.md",
-      "commit": "09840da1610357704c9db7231410cc5f3f2617f9"
+      "commit": "355b9dc7e16a6cec2df519d26702a9400de988da"
     },
     "kami": {
       "source": "tw93/kami",
       "skillPath": "skills/kami/SKILL.md",
-      "commit": "e82bb390c9d6f63d3b0a54b7deb11b85ff4979c9"
+      "commit": "381db257079980c138700d89b7565afaa792fa6b"
     },
     "learn": {
       "source": "tw93/Waza",
       "skillPath": "skills/learn/SKILL.md",
-      "commit": "09840da1610357704c9db7231410cc5f3f2617f9"
+      "commit": "355b9dc7e16a6cec2df519d26702a9400de988da"
     },
     "read": {
       "source": "tw93/Waza",
       "skillPath": "skills/read/SKILL.md",
-      "commit": "09840da1610357704c9db7231410cc5f3f2617f9"
+      "commit": "355b9dc7e16a6cec2df519d26702a9400de988da"
     },
     "write": {
       "source": "tw93/Waza",
       "skillPath": "skills/write/SKILL.md",
-      "commit": "09840da1610357704c9db7231410cc5f3f2617f9"
+      "commit": "355b9dc7e16a6cec2df519d26702a9400de988da"
     }
   }
 }

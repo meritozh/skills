@@ -475,6 +475,7 @@ def summarize_rule_context(
     always_files = 0
     always_words = 0
     always_units = 0
+    always_by_scope: Counter[str] = Counter()
     rule_files: list[tuple[str, Path]] = []
     seen_rules: set[Path] = set()
     for scope, rule_root in rule_roots:
@@ -513,6 +514,7 @@ def summarize_rule_context(
             always_files += 1
             always_words += words
             always_units += units
+            always_by_scope[scope] += 1
     ranked = sorted(
         path_counts,
         key=lambda selector: (path_units[selector], path_counts[selector], selector),
@@ -522,6 +524,7 @@ def summarize_rule_context(
     project_files, project_files_truncated = project_relative_files(root)
     match_evaluations = 0
     match_budget_exhausted = False
+    matched_rules: set[str] = set()
     for relative in project_files:
         matching: list[tuple[str, int, int]] = []
         for name, words, units, patterns in rule_entries:
@@ -538,6 +541,7 @@ def summarize_rule_context(
                 break
             if matched:
                 matching.append((name, words, units))
+                matched_rules.add(name)
         if match_budget_exhausted:
             break
         if matching:
@@ -550,7 +554,21 @@ def summarize_rule_context(
                 )
             )
     effective_loads.sort(key=lambda item: (item[0], item[2]), reverse=True)
+    # A project rule whose selectors match no project file never loads. Global rules are
+    # exempt (they target other projects too), and a truncated walk proves nothing.
+    dead_rules: list[str] = []
+    if not project_files_truncated and not match_budget_exhausted:
+        dead_rules = sorted(
+            name
+            for name, _, _, _ in rule_entries
+            if name.startswith("project:") and name not in matched_rules
+        )
     findings: list[str] = []
+    if dead_rules:
+        findings.append(
+            "path rules match no project file and never load: "
+            + ", ".join(safe_label(name) for name in dead_rules[:10])
+        )
     oversized_files: list[str] = []
     for scope, path in rule_files:
         text = read(path)
@@ -602,9 +620,12 @@ def summarize_rule_context(
         f"path_scoped_rule_files: {scoped_files}",
         f"path_scoped_rule_words: {scoped_words}",
         f"path_scoped_rule_context_units: {scoped_units}",
+        f"path_rules_matching_nothing: {len(dead_rules)}",
         f"always_loaded_rule_files: {always_files}",
         f"always_loaded_rule_words: {always_words}",
         f"always_loaded_rule_context_units: {always_units}",
+        "always_loaded_rule_scope: "
+        + " ".join(f"{scope}={always_by_scope[scope]}" for scope, _ in rule_roots),
         "largest_path_triggers:",
     ]
     if not ranked:
