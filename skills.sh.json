@@ -6,7 +6,6 @@
       "title": "General",
       "description": "Reading, writing, research, and other non-code workflows.",
       "skills": [
-        "design-idea",
         "kami",
         "learn",
         "read",
@@ -20,6 +19,8 @@
         "codebase-review",
         "code-fix",
         "diff-review",
+        "feature-new",
+        "feature-iterate",
         "design-code",
         "design-ui",
         "health",

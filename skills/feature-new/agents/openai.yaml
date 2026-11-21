@@ -1,0 +1,5 @@
+interface:
+  display_name: "Feature New"
+  short_description: "Decide a new feature that fits the project"
+policy:
+  allow_implicit_invocation: false

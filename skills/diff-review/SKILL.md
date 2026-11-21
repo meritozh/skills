@@ -14,7 +14,7 @@ Do not re-trigger a host built-in `/review` from inside this skill.
 
 Find what would hurt after this diff merges. The review surface is the diff: changed hunks, untracked files that belong to the change, and a sibling only when the diff fixes one instance of a shape. A file the diff does not touch is context, not a finding.
 
-This skill is report-only. It does not edit files, apply fixes, commit, push, comment, merge, or close anything. A bug is `code-fix`. A whole-codebase review is `codebase-review`. An unconfirmed idea is `design-idea`. A confirmed module design is `design-code`. Repo principles are `project`. Prose review goes to `/write`.
+This skill is report-only. It does not edit files, apply fixes, commit, push, comment, merge, or close anything. A bug is `code-fix`. A whole-codebase review is `codebase-review`. An unconfirmed feature or change is `feature-new` or `feature-iterate`. A confirmed module design is `design-code`. Repo principles are `project`. Prose review goes to `/write`.
 
 Done means every file in the frozen diff was read, every finding passes the quality gate, and every verification claim comes from a command run in this session.
 

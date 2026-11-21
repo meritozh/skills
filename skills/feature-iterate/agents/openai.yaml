@@ -1,0 +1,5 @@
+interface:
+  display_name: "Feature Iterate"
+  short_description: "Decide a change to an existing feature"
+policy:
+  allow_implicit_invocation: false

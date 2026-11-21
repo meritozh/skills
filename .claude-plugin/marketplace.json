@@ -5,7 +5,6 @@
       "name": "general",
       "source": "./",
       "skills": [
-        "./skills/design-idea",
         "./skills/kami",
         "./skills/learn",
         "./skills/read",
@@ -19,6 +18,8 @@
         "./skills/codebase-review",
         "./skills/code-fix",
         "./skills/diff-review",
+        "./skills/feature-new",
+        "./skills/feature-iterate",
         "./skills/design-code",
         "./skills/design-ui",
         "./skills/health",

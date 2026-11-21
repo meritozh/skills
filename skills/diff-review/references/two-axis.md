@@ -25,7 +25,7 @@ Look in this order:
 
 1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`), fetched the way the tracker documents.
 2. A path the user passed.
-3. A spec under `docs/`, `specs/`, or `.scratch/` matching the branch or feature.
+3. A feature doc under `docs/feature/`, or a spec under `docs/`, `specs/`, or `.scratch/`, matching the branch or feature.
 4. If nothing is found, ask. If the user says there is no spec, skip the Spec sub-agent and report "no spec available".
 
 ## 3. Standards sources

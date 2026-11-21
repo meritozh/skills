@@ -1,5 +1,0 @@
-interface:
-  display_name: "Design Idea"
-  short_description: "Pressure-test a design idea before planning"
-policy:
-  allow_implicit_invocation: false

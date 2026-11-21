@@ -15,7 +15,7 @@ Review the repositories the user names. The subject is any codebase. Judge it wi
 
 A finding needs a file and line, a trigger, a direction, and a check that would show the fix worked.
 
-This is the whole-codebase review. A diff or PR review is `diff-review`. A bug is `code-fix`. Discussing an idea is `design-idea`. Designing one confirmed module is `design-code`. Repo principles are `project`.
+This is the whole-codebase review. A diff or PR review is `diff-review`. A bug is `code-fix`. Deciding a new feature is `feature-new`, and changing one is `feature-iterate`. Designing one confirmed module is `design-code`. Repo principles are `project`.
 
 This review is read-only. It does not edit the repositories, and its probes never touch user data or production services.
 

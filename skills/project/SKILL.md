@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 User-invoked only. Do not start this skill unless the user ran `/project`. `/project` has no subcommand. When the work belongs to another skill, name it, say why, and stop. Do not invoke it yourself.
 
-Work at the git repo root. This skill writes `AGENTS.md`: what an agent cannot quickly learn from the code, and the standing rules every agent follows while working here. It does not discuss an idea (`design-idea`), design a module (`design-code`), review a diff (`diff-review`), diagnose a bug (`code-fix`), or review the whole codebase (`codebase-review`).
+Work at the git repo root. This skill writes `AGENTS.md`: what an agent cannot quickly learn from the code, and the standing rules every agent follows while working here. It does not decide a new feature (`feature-new`), change an existing one (`feature-iterate`), design a module (`design-code`), review a diff (`diff-review`), diagnose a bug (`code-fix`), or review the whole codebase (`codebase-review`).
 
 `AGENTS.md` has two sections this skill owns: `## Repo` holds the facts of this repo, and `## Principles` holds the rules. `CLAUDE.md` is a relative symlink to `AGENTS.md`.
 
@@ -32,7 +32,7 @@ Every agent reads the whole file at the start of every task, so every line is pa
 | Built-in principles | Fixed text | `references/` |
 | `### Project rules` | Do, do-not, and ask-before rules for this repo | The user, and migration |
 
-Not in `AGENTS.md`: module design (`docs/design/`), feature behavior (`docs/feature/`), change history, plans, secrets, and anything a tool already reports.
+Not in `AGENTS.md`: features and their decisions (`docs/feature/`), module design (`docs/design/`), project terms (`docs/GLOSSARY.md`), change history, plans, secrets, and anything a tool already reports.
 
 ## Built-in principles
 
@@ -162,7 +162,7 @@ Use the names `AGENTS.md` and `CLAUDE.md`. If the same name exists in another ca
 
 Leave out the opening line, a row, a subsection, or the whole `## Repo` when it has nothing that passes the filter. Every built-in principle is always present.
 
-Also create `docs/idea/`, `docs/feature/`, and `docs/design/` when missing, and add `.scratch/` to `.gitignore` when it is not ignored yet (`git check-ignore -q .scratch/x || echo '.scratch/' >> .gitignore`).
+Also create `docs/feature/` and `docs/design/` when missing, and add `.scratch/` to `.gitignore` when it is not ignored yet (`git check-ignore -q .scratch/x || echo '.scratch/' >> .gitignore`).
 
 **Update in place.** `AGENTS.md` states each fact and rule as it stands now. Replace text that is no longer true. Do not append how a rule changed, and do not add a second file for the same principle.
 

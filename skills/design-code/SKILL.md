@@ -1,6 +1,6 @@
 ---
 name: design-code
-description: Design a confirmed idea as deep modules in the project's language. Use after design-idea, when shaping a module interface, seam, and tests. Not for discussing an unconfirmed idea, a diff review, a bug, or a whole-codebase review.
+description: Design a confirmed feature or change as deep modules in the project's language. Use after feature-new or feature-iterate, when shaping a module interface, seam, and tests. Not for deciding a feature, a diff review, a bug, or a whole-codebase review.
 disable-model-invocation: true
 ---
 
@@ -12,7 +12,7 @@ Design **deep modules** in the project's own language, after the user has confir
 
 The output is `docs/design/<slug>.md`, stating the design as it stands, plus the interface as real code in the project's language. Update that file. Do not add a dated sibling. Do not re-litigate a decision already recorded there unless the friction is strong enough to reopen it, and name it when you do.
 
-Discussing an unconfirmed idea is `design-idea`. A whole-codebase review is `codebase-review`. A diff is `diff-review`. A bug is `code-fix`. Repo principles are `project`.
+Deciding a new feature is `feature-new`, and changing an existing one is `feature-iterate`. A whole-codebase review is `codebase-review`. A diff is `diff-review`. A bug is `code-fix`. Repo principles are `project`.
 
 ## Vocabulary
 
@@ -47,7 +47,7 @@ A testable interface accepts its dependencies instead of constructing them, retu
 
 ## Procedure
 
-1. **Load the decision.** Read `docs/idea/<slug>.md` and `docs/design/<slug>.md` when they exist. If there is no idea doc and the idea has not been confirmed in the conversation, stop: that is `design-idea`.
+1. **Load the decision.** Read `docs/feature/<slug>.md`, `docs/design/<slug>.md`, and `docs/GLOSSARY.md` when they exist. If there is no feature doc and the change has not been confirmed in the conversation, stop: a new feature is `feature-new`, and a change to an existing one is `feature-iterate`.
 2. **Read the code it touches.** Find the entry points, the current callers, and the tests for the area:
 
    ```bash
@@ -106,13 +106,13 @@ Apply the deletion test to each suspect. Deepen only where deleting the module w
 
 ## Domain model
 
-Change the model as you go, inside `docs/design/<slug>.md`.
+Change the model as you go. Project terms live in `docs/GLOSSARY.md`. A term used inside this module only lives under `## Terms` in `docs/design/<slug>.md`.
 
-- A term that conflicts with the terms already in the design doc: say so and ask which meaning stands.
+- A term that conflicts with `docs/GLOSSARY.md` or another design doc: say so and ask which meaning stands.
 - A vague or overloaded term: propose one canonical term. "Account" is not an answer when Customer and User differ.
 - A relationship under discussion: invent a concrete edge case that forces the boundary.
 - A claim about how the system works: check the code. If they disagree, ask which is right.
-- A resolved term: add it under `## Terms` using [references/glossary-format.md](references/glossary-format.md). A term says what it is. It holds no implementation detail, spec, or decision.
+- A resolved term: add it at the level where it is used, following [references/glossary.md](references/glossary.md). A term says what it is. It holds no implementation detail, spec, or decision.
 - A decision: add it under `## Decisions` only when all three tests in [references/adr-format.md](references/adr-format.md) hold.
 
 ## The design doc
@@ -123,9 +123,11 @@ Change the model as you go, inside `docs/design/<slug>.md`.
 # <Subject>
 
 <One or two sentences: what this module does for its callers, and why it exists.
-Link docs/idea/<slug>.md when it exists.>
+Link docs/feature/<slug>.md when it exists.>
 
 ## Terms
+
+<Terms used inside this module only. Project terms live in docs/GLOSSARY.md.>
 
 **Order**:
 A customer's request for goods, from checkout until delivery or cancellation.
