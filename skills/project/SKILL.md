@@ -1,16 +1,33 @@
 ---
 name: project
-description: Initialize or update this repo's AGENTS.md by reading the repo, then asking the user what it cannot tell — status, the check before commit, boundaries, gotchas, and project rules. Writes the repo's commands and layout plus built-in principles for project status, docs, small local commits, cleanup, and architecture, and makes CLAUDE.md a symlink to it. Use when the user runs /project.
-disable-model-invocation: true
+description: "Keep this repo's AGENTS.md: the commands, layout, and gotchas an agent cannot learn quickly from the code, built-in principles for project status, docs, commits, cleanup, and architecture, and the project's own rules, with CLAUDE.md as a symlink to it. Run the full setup when the user asks to set up or refresh the repo's agent rules (初始化项目规范, 更新 AGENTS.md). Also use it, briefly, when the user states a standing rule or preference for the whole repo in the middle of other work (以后都…, 这个项目一律…, 我们不用…): record it in one line, unless AGENTS.md already says it. Not for a choice that holds only for the current task, how a feature behaves, a personal preference, or a long-range goal."
 ---
 
 # Project
 
-User-invoked only. Do not start this skill unless the user ran `/project`. `/project` has no subcommand. When the work belongs to another skill, name it, say why, and stop. Do not invoke it yourself.
+Run this skill when the user ran `/project`, or when the request matches [When to use](#when-to-use). It has two modes:
+
+- **Full run:** read the repo, ask the user what it cannot tell, and write the whole file. `/project` alone runs it, and so does a request to set up or refresh the repo's agent rules.
+- **Capture:** record one standing rule the user states in the middle of other work, then go back to that work. `/project` with a rule in its message runs a capture.
+
+When you start it without `/project`, say so in one line, with the reason. When the work belongs to another skill, say which and why: switch to it when you can invoke it, otherwise name it for the user and stop.
 
 Work at the git repo root. This skill writes `AGENTS.md`: what an agent cannot quickly learn from the code, and the standing rules every agent follows while working here. It does not set a long-range goal (`polaris`), cut one into features (`to-features`), decide a new feature (`feature-new`), change an existing one (`feature-iterate`), write an implement spec (`to-implement-spec`), carry one out (`go-work`), review a diff (`diff-review`), diagnose a bug (`code-bugfix`), or review the whole codebase (`architecture-review`).
 
 `AGENTS.md` has two sections this skill owns: `## Repo` holds the facts of this repo, and `## Principles` holds the rules. `CLAUDE.md` is a relative symlink to `AGENTS.md`.
+
+## When to use
+
+- The user asks to set up or refresh the repo's agent rules: `/project`, "初始化项目规范", "更新 AGENTS.md". That is a full run.
+- In the middle of other work, the user states something that holds for every future task in this repo: a rule, a boundary, a design preference, a command, a gotcha, or a change of project status. That is a capture.
+
+## When not to use
+
+- A choice for the task at hand only. Follow it, and write nothing.
+- How one feature behaves: `feature-new` or `feature-iterate`. A project term goes in `docs/GLOSSARY.md` through those skills.
+- A long-range direction: `polaris`.
+- A visual style: `DESIGN.md`, which `design-ui` writes.
+- A personal preference, such as reply language or tone: the user's global agent file, not this repo.
 
 ## What belongs in AGENTS.md
 
@@ -46,7 +63,7 @@ Not in `AGENTS.md`: goals (`docs/polaris/`), features and their decisions (`docs
 
 Each reference file is the text of its principle: copy everything below its `#` heading, unchanged, under the heading in `AGENTS.md`. Project status is the one with a value: write the status, its two fields from that row, then the table.
 
-Every run brings each built-in principle to the current text of its reference:
+Every full run brings each built-in principle to the current text of its reference:
 
 - A missing built-in principle is added.
 - A built-in principle whose text differs is replaced with the reference text. The project status value stays as it is unless the user changes it.
@@ -54,7 +71,25 @@ Every run brings each built-in principle to the current text of its reference:
 
 `### Project rules` holds the rules the user states and the rules migration carries over. This skill never invents a rule and never rewrites one unless the user asks.
 
-## Procedure
+## Capture
+
+Most of what a user says holds only for the task at hand. A capture is for the rare statement that holds for every future task in this repo. As `AGENTS.md` fills in, more of those are already there, so a capture writes less and less.
+
+1. **Test it.** It holds for every future task here, not just this one, and it passes every test in [What belongs in AGENTS.md](#what-belongs-in-agentsmd). "以后都", "这个项目一律", "we never", and "always" are signals. When it is unclear whether the user means it for good or for now, ask once, with the line you would write: "Make this a project rule: <line>?"
+2. **Find its place** in `AGENTS.md`, which most harnesses have already loaded. A command goes under `### Commands`, a path under `### Layout`, a surprise under `### Gotchas`, a do, do-not, or ask-before rule under `### Project rules`, and a change of status under `### Project status`.
+3. **Check what is there.**
+   - Already said, in substance: write nothing. Say in one line which line covers it.
+   - It contradicts a line of `### Project rules`: show both, and ask which stands.
+   - It contradicts a built-in principle: ask whether this repo overrides it. A yes goes under `### Project rules`, naming the principle it overrides.
+   - It changes the project status: confirm it, because the status decides whether breaking changes and data migrations are allowed. Then write the status and its two fields from [references/statuses.md](references/statuses.md).
+4. **Write one line**, concrete and short, with the user's meaning in the file's voice. An explanation longer than three lines goes into `docs/`, and the line links to it.
+5. **Show it** with `git diff -- AGENTS.md`, and go back to the work the capture interrupted. Do not commit: the user reviews a rule before it is committed.
+
+Without `AGENTS.md`, a capture has no place to go. Ask whether to run the full setup now, with this rule as its first project rule.
+
+A capture does not touch the built-in principles, the repo facts, or `CLAUDE.md`. Bringing those up to date is the full run's job.
+
+## Full run
 
 ### 1. Read
 

@@ -2,4 +2,4 @@ interface:
   display_name: "Project"
   short_description: "Interview the user and write the repo's AGENTS.md"
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true
