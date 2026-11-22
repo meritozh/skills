@@ -12,7 +12,7 @@ A new feature is ready to build when it fits the project, nothing already covers
 
 Run it at the start, with one sentence, or after talking the feature through. Either way it takes the feature from where the conversation stands to a decided doc. What the conversation already settled is an answer, so the skill asks only what is still open.
 
-Stop at the decision. Do not write an implement spec, an implementation plan, or code. Changing a feature that already exists is `feature-iterate`. An implement spec is `to-implement-spec`. A diff review is `diff-review`. A bug is `code-fix`. A whole-codebase review is `codebase-review`. Repo principles are `project`.
+Stop at the decision. Do not write an implement spec, an implementation plan, or code. Changing a feature that already exists is `feature-iterate`. An implement spec is `to-implement-spec`. A diff review is `diff-review`. A bug is `code-bugfix`. A whole-codebase review is `architecture-review`. Repo principles are `project`.
 
 ## When to use
 

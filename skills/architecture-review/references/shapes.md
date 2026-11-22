@@ -1,6 +1,6 @@
 # Shape checks
 
-Loaded from `codebase-review` step 5 for each shape found in step 3. Every section has the checks for that shape and the false findings to avoid. A false finding is a structure that would be a defect in another shape but is correct here.
+Loaded from `architecture-review` step 5 for each shape found in step 3. Every section has the checks for that shape and the false findings to avoid. A false finding is a structure that would be a defect in another shape but is correct here.
 
 The four lenses still run on every shape. These checks add to them.
 

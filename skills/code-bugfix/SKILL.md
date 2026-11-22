@@ -1,18 +1,18 @@
 ---
-name: code-fix
+name: code-bugfix
 description: "Finds the root cause with a tight red loop before any fix. Use when something errors, crashes, regresses, is slow, or used to work. Not for a diff review, a whole-codebase architecture review, or new features."
 disable-model-invocation: true
 ---
 
-# Code fix
+# Code bugfix
 
-User-invoked only: follow this skill only when the user ran `/code-fix`. When the work belongs to another skill, name it (for example `/code-fix`), say why, and stop. Do not invoke it yourself.
+User-invoked only: follow this skill only when the user ran `/code-bugfix`. When the work belongs to another skill, name it (for example `/code-bugfix`), say why, and stop. Do not invoke it yourself.
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
 A patch applied to a symptom creates a new bug somewhere else. This skill finds the cause first, then fixes it, then proves the fix.
 
-A diff review is `diff-review`. A whole-codebase review is `codebase-review`. Subjective visual taste is `design-ui`. When exploring an area, read its `docs/feature/` file, its open spec in `docs/spec/` (not `docs/spec/archived/`), and `docs/GLOSSARY.md` first.
+A diff review is `diff-review`. A whole-codebase review is `architecture-review`. Subjective visual taste is `design-ui`. When exploring an area, read its `docs/feature/` file, its open spec in `docs/spec/` (not `docs/spec/archived/`), and `docs/GLOSSARY.md` first.
 
 ## Ground rules
 

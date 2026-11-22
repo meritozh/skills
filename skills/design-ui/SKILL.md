@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Design UI
 
-User-invoked only: follow this skill only when the user ran `/design-ui`. When the work belongs to another skill, name it (for example `/code-fix`), say why, and stop. Do not invoke it yourself.
+User-invoked only: follow this skill only when the user ran `/design-ui`. When the work belongs to another skill, name it (for example `/code-bugfix`), say why, and stop. Do not invoke it yourself.
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
@@ -17,7 +17,7 @@ Done means the real rendered surface was checked against the user's visual goal 
 ## Ground rules
 
 - **No em dash.** Never use U+2014 in any output from this skill. Use commas, colons, or periods.
-- **Gut-feel complaints are aesthetic.** "很傻", "很怪", "突兀", "不协调", "不和谐" reject the look. They are not a bug report. A deterministic broken render, state, or timing path is `/code-fix`.
+- **Gut-feel complaints are aesthetic.** "很傻", "很怪", "突兀", "不协调", "不和谐" reject the look. They are not a bug report. A deterministic broken render, state, or timing path is `/code-bugfix`.
 - **Current evidence wins.** The screenshot, the rendered output, and the repo's `DESIGN.md` override memory and earlier preferences.
 - **UI copy cuts** follow the UI copy rules in [references/design-reference.md](references/design-reference.md), in every mode.
 - **Print documents are out of scope.** For a report, deck, resume, or paged PDF, tell the user to run a document typesetting skill (such as `/kami`) when one is installed, and stop. Screen layout (app surfaces, components, web pages) stays here.

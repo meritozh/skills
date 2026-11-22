@@ -12,7 +12,7 @@ An existing feature already has users, callers, and stored data shaped by what i
 
 Run it at the start, with one sentence, or after talking the change through. Either way it takes the change from where the conversation stands to an updated doc. What the conversation already settled is an answer, so the skill asks only what is still open.
 
-Stop at the decision. Do not write an implement spec, an implementation plan, or code. A feature that does not exist yet is `feature-new`. An implement spec is `to-implement-spec`. A diff review is `diff-review`. A bug is `code-fix`. A whole-codebase review is `codebase-review`. Repo principles are `project`.
+Stop at the decision. Do not write an implement spec, an implementation plan, or code. A feature that does not exist yet is `feature-new`. An implement spec is `to-implement-spec`. A diff review is `diff-review`. A bug is `code-bugfix`. A whole-codebase review is `architecture-review`. Repo principles are `project`.
 
 ## When to use
 
@@ -23,7 +23,7 @@ Stop at the decision. Do not write an implement spec, an implementation plan, or
 ## When not to use
 
 - Nothing like it exists yet, in a doc or in the code. That is `feature-new`.
-- The code does not do what a `shipped` feature doc says, and the doc is right. That is a bug: `code-fix`.
+- The code does not do what a `shipped` feature doc says, and the doc is right. That is a bug: `code-bugfix`.
 - The change is trivial, reversible, and changes nothing a user, caller, or stored record can see.
 
 ## Stance

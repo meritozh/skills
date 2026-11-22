@@ -1,12 +1,12 @@
 ---
-name: codebase-review
+name: architecture-review
 description: "Review any codebase by what its real changes cost and what its failures leave behind, measured against its own shape, history, and claims. Write a self-contained HTML report outside docs/. Use for a whole-codebase review. Not for a diff or PR review, and not for root-cause debugging."
 disable-model-invocation: true
 ---
 
-# Codebase review
+# Architecture review
 
-User-invoked only: follow this skill only when the user ran `/codebase-review`. When the work belongs to another skill, name it (for example `/code-fix`), say why, and stop. Do not invoke it yourself.
+User-invoked only: follow this skill only when the user ran `/architecture-review`. When the work belongs to another skill, name it (for example `/code-bugfix`), say why, and stop. Do not invoke it yourself.
 
 Review the repositories the user names. The subject is any codebase. Judge it with its own evidence, not against an imported ideal (clean architecture, microservices, DDD, plugins). Two questions decide every judgment:
 
@@ -15,7 +15,7 @@ Review the repositories the user names. The subject is any codebase. Judge it wi
 
 A finding needs a file and line, a trigger, a direction, and a check that would show the fix worked.
 
-This is the whole-codebase review. A diff or PR review is `diff-review`. A bug is `code-fix`. Deciding a new feature is `feature-new`, and changing one is `feature-iterate`. Turning a confirmed feature or change into an implement spec is `to-implement-spec`. Repo principles are `project`.
+This is the whole-codebase review. A diff or PR review is `diff-review`. A bug is `code-bugfix`. Deciding a new feature is `feature-new`, and changing one is `feature-iterate`. Turning a confirmed feature or change into an implement spec is `to-implement-spec`. Repo principles are `project`.
 
 This review is read-only. It does not edit the repositories, and its probes never touch user data or production services.
 
@@ -239,7 +239,7 @@ Match the section structure below. Do not copy a sample report's visual style, a
 
 Skip a subsection only when it does not apply, and say why.
 
-Save it outside the repository's `docs/`. Default path: `$TMPDIR`, else `/tmp`, else `%TEMP%` on Windows, file `<date>-<repo>-codebase-review.html`. If the user names a path, that path is not under `docs/`. Do not add the file to the repo. Open it (`open` on macOS, `xdg-open` on Linux, `start` on Windows) and give the absolute path.
+Save it outside the repository's `docs/`. Default path: `$TMPDIR`, else `/tmp`, else `%TEMP%` on Windows, file `<date>-<repo>-architecture-review.html`. If the user names a path, that path is not under `docs/`. Do not add the file to the repo. Open it (`open` on macOS, `xdg-open` on Linux, `start` on Windows) and give the absolute path.
 
 ## Source
 

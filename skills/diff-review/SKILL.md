@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Diff review
 
-User-invoked only: follow this skill only when the user ran `/diff-review`. When the work belongs to another skill, name it (for example `/code-fix`), say why, and stop. Do not invoke it yourself.
+User-invoked only: follow this skill only when the user ran `/diff-review`. When the work belongs to another skill, name it (for example `/code-bugfix`), say why, and stop. Do not invoke it yourself.
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
@@ -14,7 +14,7 @@ Do not re-trigger a host built-in `/review` from inside this skill.
 
 Find what would hurt after this diff merges. The review surface is the diff: changed hunks, untracked files that belong to the change, and a sibling only when the diff fixes one instance of a shape. A file the diff does not touch is context, not a finding.
 
-This skill is report-only. It does not edit files, apply fixes, commit, push, comment, merge, or close anything. A bug is `code-fix`. A whole-codebase review is `codebase-review`. An unconfirmed feature or change is `feature-new` or `feature-iterate`. An implement spec is `to-implement-spec`. Repo principles are `project`. Prose review goes to `/write`.
+This skill is report-only. It does not edit files, apply fixes, commit, push, comment, merge, or close anything. A bug is `code-bugfix`. A whole-codebase review is `architecture-review`. An unconfirmed feature or change is `feature-new` or `feature-iterate`. An implement spec is `to-implement-spec`. Repo principles are `project`. Prose review goes to `/write`.
 
 Done means every file in the frozen diff was read, every finding passes the quality gate, and every verification claim comes from a command run in this session.
 
@@ -53,8 +53,8 @@ Infer the base from the request. Ask one narrow question only when two plausible
 | A PR | `gh pr view <n> --json baseRefName,headRefOid,files,body` and `gh pr diff <n>`. To read files at the PR head without a checkout: `git fetch origin pull/<n>/head:refs/tmp/pr-<n>`, then `git show refs/tmp/pr-<n>:<path>` |
 | Since the last release | Find the latest stable from the channel that actually ships (registry, store, or release host), map it to a tag, then `git diff <tag>...HEAD` |
 | Last N days | `base=$(git rev-list -1 --before="N days ago" HEAD)`, then `git diff "$base"...HEAD` |
-| A known-good version | `git diff <good>...HEAD`. If the regression point itself is unknown, that is `code-fix` Bisect Mode |
-| The whole project | Stop. That is `codebase-review` |
+| A known-good version | `git diff <good>...HEAD`. If the regression point itself is unknown, that is `code-bugfix` Bisect Mode |
+| The whole project | Stop. That is `architecture-review` |
 
 Untracked files never appear in `git diff`. Read each one.
 

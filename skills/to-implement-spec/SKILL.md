@@ -1,6 +1,6 @@
 ---
 name: to-implement-spec
-description: Turn a confirmed feature or change into an implement spec that guides the agent who builds it. Map every behavior in docs/feature/<slug>.md to the module that owns it, design those modules as deep modules with real interface code, place the seams, state the stored data and its migration, and order the work into one-commit steps. Writes docs/spec/<slug>.md, which stays open until the feature ships and then moves to docs/spec/archived/; durable decisions go to the feature doc and terms to docs/GLOSSARY.md. Use after feature-new or feature-iterate, or for a refactor picked from codebase-review. Not for deciding a feature, a diff review, a bug, or a whole-codebase review.
+description: Turn a confirmed feature or change into an implement spec that guides the agent who builds it. Map every behavior in docs/feature/<slug>.md to the module that owns it, design those modules as deep modules with real interface code, place the seams, state the stored data and its migration, and order the work into one-commit steps. Writes docs/spec/<slug>.md, which stays open until the feature ships and then moves to docs/spec/archived/; durable decisions go to the feature doc and terms to docs/GLOSSARY.md. Use after feature-new or feature-iterate, or for a refactor picked from architecture-review. Not for deciding a feature, a diff review, a bug, or a whole-codebase review.
 disable-model-invocation: true
 ---
 
@@ -14,7 +14,7 @@ Design those modules as **deep modules**. A deep module puts a lot of behaviour 
 
 The output is `docs/spec/<slug>.md`, with the same slug as `docs/feature/<slug>.md`. It is the one doc that describes what is not true yet, so it is open only while the work is: each step lands as one commit with a `Spec-Step` trailer, and the commit that finishes the work moves the file to `docs/spec/archived/`. Nobody edits it while it is worked, so progress lives in git, not in the file. An open spec means its feature is not done. An archived spec is a record that nothing reads again, so the spec holds nothing that must outlive the work. A decision worth keeping goes into the feature doc's `## Decisions`, and a term goes into `docs/GLOSSARY.md`, when the spec is written. What remains ends up in the code and its tests.
 
-Do not re-litigate a decision already recorded in the feature doc unless the friction is strong enough to reopen it, and name it when you do. Reopening a feature decision is `feature-iterate`. Deciding a new feature is `feature-new`. A whole-codebase review is `codebase-review`. A diff is `diff-review`. A bug is `code-fix`. Repo principles are `project`.
+Do not re-litigate a decision already recorded in the feature doc unless the friction is strong enough to reopen it, and name it when you do. Reopening a feature decision is `feature-iterate`. Deciding a new feature is `feature-new`. A whole-codebase review is `architecture-review`. A diff is `diff-review`. A bug is `code-bugfix`. Repo principles are `project`.
 
 ## Vocabulary
 
@@ -54,7 +54,7 @@ A testable interface accepts its dependencies instead of constructing them, retu
    - No feature doc, and the feature or change has not been confirmed in the conversation: stop. A new feature is `feature-new`, and a change to an existing one is `feature-iterate`.
    - A spec for this feature already exists: the work is in progress and the feature changed. Update the spec in place so it matches the feature doc as it stands. Find the steps that landed: `git log --format='%(trailers:key=Spec-Step,valueonly)' <commit that added the spec>..HEAD`. Leave those as written, and rewrite the rest. A new step takes a new number: a step's number never changes and is never reused.
    - Another spec changes a module this feature also changes: name it. The two must agree on that module's interface. Ask which lands first, and write this spec against the state the other one leaves.
-   - A refactor picked from `codebase-review` has no feature doc. Write `docs/spec/<slug>.md` named for the area, with `Feature: none`.
+   - A refactor picked from `architecture-review` has no feature doc. Write `docs/spec/<slug>.md` named for the area, with `Feature: none`.
    - An older `docs/design/<slug>.md` for a module this work touches: move each decision that still holds into the `## Decisions` of the feature doc it serves, and each term into `docs/GLOSSARY.md`, then delete the file in the same change.
 2. **Read the code it touches.** Find the entry points, the current callers, and the tests for the area:
 

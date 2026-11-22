@@ -1,6 +1,6 @@
 # Tools for a codebase review
 
-Loaded from `codebase-review` when a step needs a measurement. Prefer tools already installed. `npx`, `pipx run`, and similar download and run third-party code: ask before using them when the environment restricts that. When no tool is available, fall back to the `rg` commands below and say the measurement is approximate.
+Loaded from `architecture-review` when a step needs a measurement. Prefer tools already installed. `npx`, `pipx run`, and similar download and run third-party code: ask before using them when the environment restricts that. When no tool is available, fall back to the `rg` commands below and say the measurement is approximate.
 
 Always pass `rg` a path. With no path and a stdin that is not a terminal, as in most agent shells, it reads stdin and hangs.
 

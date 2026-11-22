@@ -15,8 +15,8 @@
       "name": "engineering",
       "source": "./",
       "skills": [
-        "./skills/codebase-review",
-        "./skills/code-fix",
+        "./skills/architecture-review",
+        "./skills/code-bugfix",
         "./skills/diff-review",
         "./skills/feature-new",
         "./skills/feature-iterate",

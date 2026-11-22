@@ -10,7 +10,7 @@ User-invoked only: follow this skill only when the user ran `/go-work`. When the
 
 The input is one implement spec: a path, a slug, or nothing. With nothing, list the open specs (`ls docs/spec/*.md`). Take the only one, or ask which. With no open spec, name `/to-implement-spec` and stop.
 
-This skill carries the spec out. It never changes what the spec says. A step that cannot be done as written stops the run. A wrong spec is `to-implement-spec`, and a wrong feature is `feature-iterate`. Reviewing the result is `diff-review`. A bug outside the spec is `code-fix`.
+This skill carries the spec out. It never changes what the spec says. A step that cannot be done as written stops the run. A wrong spec is `to-implement-spec`, and a wrong feature is `feature-iterate`. Reviewing the result is `diff-review`. A bug outside the spec is `code-bugfix`.
 
 The session that runs this skill is the coordinator. It starts best in a new session, so that its context holds the spec and little else.
 

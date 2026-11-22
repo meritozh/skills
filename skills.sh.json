@@ -16,8 +16,8 @@
       "title": "Engineering",
       "description": "Planning, debugging, review, and implementation workflows.",
       "skills": [
-        "codebase-review",
-        "code-fix",
+        "architecture-review",
+        "code-bugfix",
         "diff-review",
         "feature-new",
         "feature-iterate",
