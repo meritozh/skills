@@ -45,5 +45,11 @@
       "source": ".",
       "skills": ["*"]
     }
+  ],
+  "shared": [
+    {
+      "path": "references/glossary.md",
+      "skills": ["feature-new", "feature-iterate", "to-implement-spec"]
+    }
   ]
 }

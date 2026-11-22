@@ -60,6 +60,16 @@ node scripts/cli.mjs status
 
 `sync` clones each remote, copies the named skill folders into `skills/<name>/`, records commits in `sources.lock.json`, and deletes vendored skills that left the catalog. First-party skills are left alone.
 
+## Share a file between skills
+
+Each skill installs on its own, so a file several skills need is copied into each of them. Keep the one source in `shared/<path>`, list the skills in `catalog.json` `shared`, and run:
+
+```bash
+node scripts/cli.mjs sync --local
+```
+
+`--local` skips the remotes: it copies the shared files to `skills/<skill>/<path>` and regenerates the README and group configs. `status` marks a copy that drifted from its source, and `install` refuses until it matches.
+
 ## Add your own skill
 
 Create `skills/<name>/SKILL.md` with `name` and `description` frontmatter. The local source in `catalog.json` is `"."` / `"*"`, so new folders are included automatically. Use `/catalog` in an agent session for the full workflow.
@@ -67,9 +77,10 @@ Create `skills/<name>/SKILL.md` with `name` and `description` frontmatter. The l
 ## Layout
 
 ```
-catalog.json                 # remotes, names, and groupings
+catalog.json                 # remotes, names, groupings, and shared files
 sources.lock.json            # vendored provenance (written by sync)
 skills/<name>/               # the published collection
+shared/<path>                # one source for a file several skills carry
 .claude-plugin/marketplace.json  # CLI groups (generated)
 skills.sh.json               # skills.sh groups (generated)
 .agents/skills/catalog/      # repo-local meta skill
@@ -77,6 +88,6 @@ scripts/cli.mjs              # sync | status | install
 third_party/                 # upstream license files
 ```
 
-`catalog.json` fields: `global` (must be true), `agents` (passed to `npx skills add`), `sources[]` with `source` (`owner/repo`, git URL, or `.`) and `skills` (names, or `*` for local).
+`catalog.json` fields: `global` (must be true), `agents` (passed to `npx skills add`), `sources[]` with `source` (`owner/repo`, git URL, or `.`) and `skills` (names, or `*` for local), and `shared[]` with `path` (relative to a skill, and to `shared/`) and `skills` (first-party names that get a copy).
 
 Vendored work stays under its upstream license. See `NOTICE.md`.

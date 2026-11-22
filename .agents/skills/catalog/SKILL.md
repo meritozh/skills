@@ -28,6 +28,7 @@ Run from the repo root.
 node scripts/cli.mjs status
 node scripts/cli.mjs sync --dry-run
 node scripts/cli.mjs sync
+node scripts/cli.mjs sync --local      # shared files, README, configs; no remotes
 node scripts/cli.mjs install --dry-run
 node scripts/cli.mjs install
 ```
@@ -56,6 +57,16 @@ node scripts/cli.mjs install
 4. Do not pick a name listed under a remote source in `catalog.json`.
 5. `source: "."` with `skills: ["*"]` already includes every first-party skill. No catalog edit.
 6. `node scripts/cli.mjs status` should list it under First-party.
+
+## Share a file between first-party skills
+
+Each skill installs on its own, so a skill never points into another skill's directory. A file several skills need is copied into each.
+
+1. Put the one source at `shared/<path>`, where `<path>` is where it sits inside each skill (`references/glossary.md`).
+2. Add `{ "path": "<path>", "skills": [...] }` to `shared` in `catalog.json`. Only first-party skills; a vendored skill belongs to its upstream.
+3. `node scripts/cli.mjs sync --local`, then `status`: every copy must be `ok`.
+
+To change the file, edit `shared/<path>` and run `sync --local`. A copy edited in place shows as `differs`, `install` refuses, and the next sync overwrites it.
 
 ## Install onto agents
 

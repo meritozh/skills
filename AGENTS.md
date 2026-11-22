@@ -9,4 +9,5 @@
 - A skill is vendored when `sources.lock.json` records its source. Edit the upstream list in `catalog.json` and re-run sync; do not patch vendored files in place unless the user is promoting them to first-party (see `.agents/skills/catalog/SKILL.md`).
 - Skill names must be unique across all sources. On a clash, rename the first-party skill or drop one catalog claim.
 - `catalog.json` `groupings` is the source of truth for install/display groups. `sync` writes `.claude-plugin/marketplace.json` and `skills.sh.json` from it.
+- A file several first-party skills carry lives once in `shared/<path>`; `catalog.json` `shared` lists the skills that get a copy at `skills/<skill>/<path>`. Edit the file in `shared/`, then run `node scripts/cli.mjs sync --local`. Never edit a copy: `status` shows it as `differs`, `install` refuses, and the next sync overwrites it.
 - `install` publishes this repo to the global `npx skills` store. It does not delete unrelated skills already on the machine.

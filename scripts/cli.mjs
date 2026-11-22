@@ -2,6 +2,7 @@
 
 import { spawnSync } from 'node:child_process';
 import {
+  copyFileSync,
   cpSync,
   existsSync,
   mkdirSync,
@@ -18,6 +19,7 @@ export const SKILLS_PACKAGE = 'skills@latest';
 export const LOCK_FILE = 'sources.lock.json';
 export const CATALOG_FILE = 'catalog.json';
 export const README_FILE = 'README.md';
+export const SHARED_DIR = 'shared';
 export const LOCK_VERSION = 1;
 export const README_INDEX_START = '<!-- skills-index:start -->';
 export const README_INDEX_END = '<!-- skills-index:end -->';
@@ -292,7 +294,97 @@ export function validateCatalog(catalog) {
     errors.push('notGrouped must be "top" or "bottom"');
   }
   errors.push(...validateGroupings(catalog, claimed));
+  errors.push(...validateShared(catalog));
   return errors;
+}
+
+function isSharedPath(path) {
+  if (typeof path !== 'string' || !path || path.includes('\\') || path.startsWith('/')) return false;
+  const parts = path.split('/');
+  if (parts.some((part) => !part || part === '.' || part === '..')) return false;
+  return !(parts.length === 1 && parts[0].toLowerCase() === 'skill.md');
+}
+
+export function validateShared(catalog) {
+  if (catalog.shared === undefined) return [];
+  if (!Array.isArray(catalog.shared)) return ['shared must be an array'];
+  const errors = [];
+  const seen = new Set();
+  for (const [index, entry] of catalog.shared.entries()) {
+    const prefix = `shared[${index}]`;
+    if (!entry || typeof entry !== 'object') {
+      errors.push(`${prefix} must be an object`);
+      continue;
+    }
+    if (!isSharedPath(entry.path)) {
+      errors.push(`${prefix}.path must be a relative path inside a skill, other than SKILL.md`);
+      continue;
+    }
+    if (
+      !Array.isArray(entry.skills) ||
+      entry.skills.length === 0 ||
+      entry.skills.some((name) => typeof name !== 'string' || !name.trim() || name.trim() === '*')
+    ) {
+      errors.push(`${prefix}.skills must be a non-empty array of skill names`);
+      continue;
+    }
+    for (const raw of entry.skills) {
+      const key = `${normalizeSkillName(raw)}/${entry.path}`;
+      if (seen.has(key)) errors.push(`shared file ${key} is listed twice`);
+      seen.add(key);
+    }
+  }
+  return errors;
+}
+
+// Each catalog.shared entry copies shared/<path> to skills/<skill>/<path>.
+// Installed skills stay self-contained; the repo keeps one source.
+export function planShared({ catalog, vendored, skillsDir, sharedDir }) {
+  const items = [];
+  const errors = [];
+  for (const entry of catalog.shared ?? []) {
+    const parts = entry.path.split('/');
+    const from = join(sharedDir, ...parts);
+    if (!existsSync(from) || !statSync(from).isFile()) {
+      errors.push(`${SHARED_DIR}/${entry.path} is not a file`);
+      continue;
+    }
+    const content = readFileSync(from);
+    for (const raw of entry.skills) {
+      const skill = normalizeSkillName(raw);
+      if (vendored.has(skill)) {
+        errors.push(`${SHARED_DIR}/${entry.path} cannot go into vendored skill "${skill}"`);
+        continue;
+      }
+      if (!existsSync(join(skillsDir, skill, 'SKILL.md'))) {
+        errors.push(`${SHARED_DIR}/${entry.path} names "${skill}", which is not a skill in skills/`);
+        continue;
+      }
+      const to = join(skillsDir, skill, ...parts);
+      let state = 'ok';
+      if (!existsSync(to)) state = 'missing';
+      else if (!readFileSync(to).equals(content)) state = 'differs';
+      items.push({ path: entry.path, skill, from, to, state });
+    }
+  }
+  return { items, errors };
+}
+
+export function applyShared(items) {
+  for (const item of items) {
+    if (item.state === 'ok') continue;
+    mkdirSync(dirname(item.to), { recursive: true });
+    copyFileSync(item.from, item.to);
+  }
+}
+
+export function sharedProblems(report) {
+  return [
+    ...(report.sharedErrors ?? []),
+    ...(report.shared ?? [])
+      .filter((item) => item.state !== 'ok')
+      .map((item) => `skills/${item.skill}/${item.path} ${item.state} from ${SHARED_DIR}/${item.path}`),
+  ];
 }
 
 const GROUP_NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -792,7 +884,7 @@ export function applySync(plan, { skillsDir, thirdPartyDir, lockPath, lock }) {
   return lock;
 }
 
-export function statusReport({ catalog, lock, skillsDir }) {
+export function statusReport({ catalog, lock, skillsDir, sharedDir = join(dirname(skillsDir), SHARED_DIR) }) {
   const remote = [];
   const seen = new Set();
 
@@ -834,7 +926,14 @@ export function statusReport({ catalog, lock, skillsDir }) {
       state: 'stale',
     }));
 
-  return { remote, firstParty, stale };
+  const shared = planShared({
+    catalog,
+    vendored: new Set(Object.keys(lock.skills)),
+    skillsDir,
+    sharedDir,
+  });
+
+  return { remote, firstParty, stale, shared: shared.items, sharedErrors: shared.errors };
 }
 
 export function buildInstallCommand(catalog, repoRoot) {
@@ -866,6 +965,17 @@ export function formatStatus(report) {
       lines.push(`  ${item.state.padEnd(16)} ${item.name}  ${item.source}`);
     }
   }
+  const shared = report.shared ?? [];
+  const sharedErrors = report.sharedErrors ?? [];
+  if (shared.length || sharedErrors.length) {
+    lines.push(`Shared files (edit ${SHARED_DIR}/, then run sync --local)`);
+    for (const item of shared) {
+      lines.push(`  ${item.state.padEnd(16)} ${item.skill}/${item.path}`);
+    }
+    for (const message of sharedErrors) {
+      lines.push(`  ${'error'.padEnd(16)} ${message}`);
+    }
+  }
   return lines.join('\n');
 }
 
@@ -877,50 +987,71 @@ export function formatPlan(plan) {
   for (const item of plan.remove) {
     lines.push(`rm    ${item.name}  (was ${item.source})`);
   }
-  if (plan.copy.length === 0 && plan.remove.length === 0) {
+  for (const item of plan.shared ?? []) {
+    if (item.state === 'ok') continue;
+    lines.push(`share ${item.skill}/${item.path}  <-  ${SHARED_DIR}/${item.path}  (${item.state})`);
+  }
+  if (lines.length === 0) {
     lines.push('nothing to do');
   }
   return lines.join('\n');
 }
 
-export async function runSync(root, { dryRun = false, fetchSource = fetchGitSource, log = console.log } = {}) {
+// local: skip the remotes; only copy shared files and regenerate README and configs.
+export async function runSync(
+  root,
+  { dryRun = false, local = false, fetchSource = fetchGitSource, log = console.log } = {}
+) {
   const catalog = loadCatalog(join(root, CATALOG_FILE));
   const lock = loadLock(join(root, LOCK_FILE));
   const errors = validateCatalog(catalog);
   if (errors.length) {
     throw new Error(errors.join('\n'));
   }
+  const skillsDir = join(root, 'skills');
 
-  const cacheDir = join(root, '.cache', 'sources');
-  const fetched = {};
-  for (const entry of remoteSources(catalog)) {
-    log(`fetch ${entry.source}`);
-    const result = fetchSource(entry.source, cacheDir);
-    fetched[entry.source] = {
-      ...result,
-      skills: discoverSkills(result.path),
-    };
+  let plan = { copy: [], remove: [], licenses: [], errors: [] };
+  if (!local) {
+    const cacheDir = join(root, '.cache', 'sources');
+    const fetched = {};
+    for (const entry of remoteSources(catalog)) {
+      log(`fetch ${entry.source}`);
+      const result = fetchSource(entry.source, cacheDir);
+      fetched[entry.source] = {
+        ...result,
+        skills: discoverSkills(result.path),
+      };
+    }
+
+    plan = planSync({ catalog, lock, skillsDir, fetched });
+    if (plan.errors.length) {
+      throw new Error(plan.errors.join('\n'));
+    }
   }
 
-  const plan = planSync({
+  const shared = planShared({
     catalog,
-    lock,
-    skillsDir: join(root, 'skills'),
-    fetched,
+    vendored: new Set([...Object.keys(lock.skills), ...plan.copy.map((item) => item.name)]),
+    skillsDir,
+    sharedDir: join(root, SHARED_DIR),
   });
-  if (plan.errors.length) {
-    throw new Error(plan.errors.join('\n'));
+  if (shared.errors.length) {
+    throw new Error(shared.errors.join('\n'));
   }
+  plan.shared = shared.items;
 
   log(formatPlan(plan));
   if (dryRun) return plan;
 
-  applySync(plan, {
-    skillsDir: join(root, 'skills'),
-    thirdPartyDir: join(root, 'third_party'),
-    lockPath: join(root, LOCK_FILE),
-    lock,
-  });
+  if (!local) {
+    applySync(plan, {
+      skillsDir,
+      thirdPartyDir: join(root, 'third_party'),
+      lockPath: join(root, LOCK_FILE),
+      lock,
+    });
+  }
+  applyShared(plan.shared);
   const listed = listSkills(join(root, 'skills'), lock);
   updateReadme(join(root, README_FILE), listed);
   writeGeneratedConfigs(
@@ -948,6 +1079,12 @@ export function runInstall(root, { dryRun = false, run = defaultRun, log = conso
   const catalog = loadCatalog(join(root, CATALOG_FILE));
   const errors = validateCatalog(catalog);
   if (errors.length) throw new Error(errors.join('\n'));
+  const problems = sharedProblems(
+    statusReport({ catalog, lock: loadLock(join(root, LOCK_FILE)), skillsDir: join(root, 'skills') })
+  );
+  if (problems.length) {
+    throw new Error(`${problems.join('\n')}\nRun node scripts/cli.mjs sync --local before install.`);
+  }
   const { cmd, args } = buildInstallCommand(catalog, root);
   const printable = [cmd, ...args].join(' ');
   log(printable);
@@ -957,12 +1094,14 @@ export function runInstall(root, { dryRun = false, run = defaultRun, log = conso
 }
 
 function printHelp(log = console.log) {
-  log(`Usage: node scripts/cli.mjs <command> [--dry-run]
+  log(`Usage: node scripts/cli.mjs <command> [--dry-run] [--local]
 
 Commands:
-  sync      Fetch remotes listed in catalog.json into skills/
+  sync      Fetch remotes listed in catalog.json into skills/, copy shared/
+            files into the skills that list them, regenerate README and configs.
+            --local skips the remotes.
   update    Same as sync
-  status    Compare catalog.json, sources.lock.json, and skills/
+  status    Compare catalog.json, sources.lock.json, shared/, and skills/
   install   Install this repo's skills globally via npx skills
 `);
 }
@@ -971,12 +1110,13 @@ export async function main(argv = process.argv.slice(2), opts = {}) {
   const root = opts.root ?? repoRootFromHere();
   const command = argv.find((arg) => !arg.startsWith('-')) ?? 'help';
   const dryRun = argv.includes('--dry-run');
+  const local = argv.includes('--local');
   const log = opts.log ?? console.log;
 
   switch (command) {
     case 'sync':
     case 'update':
-      await runSync(root, { dryRun, fetchSource: opts.fetchSource, log });
+      await runSync(root, { dryRun, local, fetchSource: opts.fetchSource, log });
       return;
     case 'status':
       runStatus(root, { log });

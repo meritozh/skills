@@ -13,12 +13,15 @@ import {
   emptyLock,
   formatPlan,
   loadCatalog,
+  loadLock,
   matchRequestedSkills,
   normalizeSkillName,
   parseFrontmatter,
   parseSkillName,
+  planShared,
   planSync,
   listSkills,
+  repoRootFromHere,
   renderMarketplaceJson,
   renderSkillsIndex,
   renderSkillsShJson,
@@ -29,9 +32,11 @@ import {
   runStatus,
   runSync,
   sanitizeSource,
+  sharedProblems,
   skillSparsePaths,
   statusReport,
   validateCatalog,
+  validateShared,
 } from './cli.mjs';
 
 const temps = [];
@@ -472,4 +477,99 @@ test('skillSparsePaths keeps skill dirs and skips plugin copies', () => {
       'skills/think',
     ].sort()
   );
+});
+
+test('validateShared rejects bad paths, bad skill lists, and duplicates', () => {
+  const shared = (entries) => validateShared({ shared: entries }).join('\n');
+  assert.deepEqual(validateShared({}), []);
+  assert.deepEqual(validateShared({ shared: [{ path: 'references/a.md', skills: ['x', 'y'] }] }), []);
+  assert.match(validateShared({ shared: {} })[0], /must be an array/);
+  for (const path of ['', '/abs.md', '../up.md', 'a/../b.md', 'a//b.md', './a.md', 'a\\b.md', 'SKILL.md', 7]) {
+    assert.match(shared([{ path, skills: ['x'] }]), /path must be/, String(path));
+  }
+  assert.match(shared([{ path: 'a.md', skills: [] }]), /skills must be/);
+  assert.match(shared([{ path: 'a.md', skills: ['*'] }]), /skills must be/);
+  assert.match(
+    shared([
+      { path: 'a.md', skills: ['x'] },
+      { path: 'a.md', skills: ['X'] },
+    ]),
+    /x\/a.md is listed twice/
+  );
+  assert.match(validateCatalog(validCatalog({ shared: [{ path: '../a.md', skills: ['x'] }] })).join('\n'), /path must be/);
+});
+
+function sharedRepo() {
+  const root = tempDir();
+  writeSkill(join(root, 'skills', 'same'), 'same', { 'references/g.md': 'G1\n' });
+  writeSkill(join(root, 'skills', 'stale'), 'stale', { 'references/g.md': 'old\n' });
+  writeSkill(join(root, 'skills', 'bare'), 'bare');
+  mkdirSync(join(root, 'shared', 'references'), { recursive: true });
+  writeFileSync(join(root, 'shared', 'references', 'g.md'), 'G1\n');
+  const catalog = validCatalog({
+    sources: [{ source: '.', skills: ['*'] }],
+    shared: [{ path: 'references/g.md', skills: ['same', 'stale', 'bare'] }],
+  });
+  writeCatalog(root, catalog);
+  return { root, catalog };
+}
+
+test('planShared reports ok, differs, and missing, and refuses vendored or absent skills', () => {
+  const { root, catalog } = sharedRepo();
+  const args = { catalog, skillsDir: join(root, 'skills'), sharedDir: join(root, 'shared') };
+  const { items, errors } = planShared({ ...args, vendored: new Set() });
+  assert.deepEqual(errors, []);
+  assert.deepEqual(
+    items.map((item) => [item.skill, item.state]),
+    [
+      ['same', 'ok'],
+      ['stale', 'differs'],
+      ['bare', 'missing'],
+    ]
+  );
+
+  assert.match(planShared({ ...args, vendored: new Set(['same']) }).errors.join('\n'), /vendored skill "same"/);
+  const ghost = { ...catalog, shared: [{ path: 'references/g.md', skills: ['ghost'] }] };
+  assert.match(planShared({ ...args, catalog: ghost, vendored: new Set() }).errors.join('\n'), /"ghost", which is not a skill/);
+  const noSource = { ...catalog, shared: [{ path: 'references/none.md', skills: ['same'] }] };
+  assert.match(planShared({ ...args, catalog: noSource, vendored: new Set() }).errors.join('\n'), /shared\/references\/none.md is not a file/);
+});
+
+test('runSync --local copies shared files without fetching remotes, and status and install see drift', async () => {
+  const { root } = sharedRepo();
+  writeFileSync(join(root, 'README.md'), '# t\n\n<!-- skills-index:start -->\n<!-- skills-index:end -->\n');
+  const noFetch = () => {
+    throw new Error('fetched a remote');
+  };
+  const install = () => runInstall(root, { dryRun: true, run: () => {}, log: () => {} });
+
+  const status = [];
+  runStatus(root, { log: (line) => status.push(String(line)) });
+  assert.match(status.join('\n'), /differs +stale\/references\/g.md/);
+  assert.throws(install, /stale\/references\/g.md differs[\s\S]*sync --local/);
+
+  const dry = [];
+  await runSync(root, { dryRun: true, local: true, fetchSource: noFetch, log: (line) => dry.push(String(line)) });
+  assert.match(dry.join('\n'), /share stale\/references\/g.md/);
+  assert.doesNotMatch(dry.join('\n'), /share same\//);
+  assert.equal(readFileSync(join(root, 'skills', 'stale', 'references', 'g.md'), 'utf8'), 'old\n');
+
+  await runSync(root, { local: true, fetchSource: noFetch, log: () => {} });
+  for (const skill of ['same', 'stale', 'bare']) {
+    assert.equal(readFileSync(join(root, 'skills', skill, 'references', 'g.md'), 'utf8'), 'G1\n');
+  }
+  assert.equal(existsSync(join(root, 'sources.lock.json')), false);
+  assert.match(readFileSync(join(root, 'README.md'), 'utf8'), /stale/);
+  install();
+});
+
+test('shared copies in this repo match shared/', () => {
+  const root = repoRootFromHere();
+  const report = statusReport({
+    catalog: loadCatalog(join(root, 'catalog.json')),
+    lock: loadLock(join(root, 'sources.lock.json')),
+    skillsDir: join(root, 'skills'),
+  });
+  assert.ok(report.shared.length > 0);
+  assert.deepEqual(sharedProblems(report), []);
 });
