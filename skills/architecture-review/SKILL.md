@@ -1,6 +1,6 @@
 ---
 name: architecture-review
-description: "Review any codebase by what its real changes cost and what its failures leave behind, measured against its own shape, history, and claims. Write a self-contained HTML report outside docs/. Use for a whole-codebase review. Not for a diff or PR review, and not for root-cause debugging."
+description: "Review a codebase's architecture across the whole project, typically after a stretch of iterations, by what its real changes cost and what its failures leave behind, measured against its own shape, history, and claims. Write a self-contained HTML report outside docs/ with a roadmap of improvements: one refactor goes to to-implement-spec, a direction that needs features of its own goes to polaris. Use for a periodic whole-codebase review. Not for a diff or PR review, and not for root-cause debugging."
 disable-model-invocation: true
 ---
 
@@ -15,7 +15,7 @@ Review the repositories the user names. The subject is any codebase. Judge it wi
 
 A finding needs a file and line, a trigger, a direction, and a check that would show the fix worked.
 
-This is the whole-codebase review. A diff or PR review is `diff-review`. A bug is `code-bugfix`. Deciding a new feature is `feature-new`, and changing one is `feature-iterate`. Turning a confirmed feature or change into an implement spec is `to-implement-spec`. Repo principles are `project`.
+This is the whole-codebase review. A diff or PR review is `diff-review`. A bug is `code-bugfix`. Deciding a new feature is `feature-new`, and changing one is `feature-iterate`. Turning a confirmed feature or change into an implement spec is `to-implement-spec`. A long-range goal is `polaris`. Repo principles are `project`.
 
 This review is read-only. It does not edit the repositories, and its probes never touch user data or production services.
 
@@ -201,7 +201,7 @@ Check:      replaying those 6 commits touches zero files under src/sync/; S3 and
 
 Not a finding: "the sync engine is complex". No trigger, no line, no direction, no check.
 
-The roadmap orders findings by failure cost times hotspot weight, then by what must land first. The review names the direction, not the interface. The item the user picks goes to `to-implement-spec`.
+The roadmap orders findings by failure cost times hotspot weight, then by what must land first. The review names the direction, not the interface. The item the user picks goes to `to-implement-spec` as a refactor. A direction too big for one spec, one that spans many modules and needs features of its own, goes to `polaris` as an architecture goal.
 
 ## Report
 

@@ -14,18 +14,20 @@
     },
     {
       "title": "Engineering",
-      "description": "Planning, debugging, review, and implementation workflows.",
+      "description": "The development lifecycle: rules, goals, features, specs, building, review, and fixes.",
       "skills": [
-        "architecture-review",
-        "code-bugfix",
-        "diff-review",
+        "project",
+        "polaris",
+        "to-features",
         "feature-new",
         "feature-iterate",
         "to-implement-spec",
         "go-work",
+        "diff-review",
+        "code-bugfix",
+        "architecture-review",
         "design-ui",
-        "health",
-        "project"
+        "health"
       ]
     }
   ]

@@ -1,0 +1,5 @@
+interface:
+  display_name: "To Features"
+  short_description: "Cut a goal into an ordered list of features"
+policy:
+  allow_implicit_invocation: false

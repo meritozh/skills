@@ -19,6 +19,7 @@ Stop at the decision. Do not write an implement spec, an implementation plan, or
 - The user wants the project to do something it cannot do yet, even as one sentence with nothing worked out.
 - The user has talked a new feature through and wants it tested and written down.
 - A strong preference for a new feature shows up without a reason ("let's just add X").
+- A line marked `New` in a goal's `## Features`, written by `to-features`.
 
 ## When not to use
 
@@ -45,13 +46,14 @@ Stop at the decision. Do not write an implement spec, an implementation plan, or
 
    ```bash
    head -20 AGENTS.md README.md                 # what the project says it is
-   ls docs/feature/ docs/idea/                  # features already decided
+   ls docs/feature/ docs/idea/ docs/polaris/    # features already decided, and goals
    rg -il '<subject>|<key term>' docs
    rg -n '<key term>' . --glob '!{node_modules,dist,build,vendor,target,docs}/**'
    ```
 
    - **Covered.** A feature doc, an older `docs/idea/` doc, or the code already does it. That is `feature-iterate`. Name the file or the code, and stop.
-   - **Outside.** The feature contradicts what the project says it is, or a `## Not this` line of an existing feature. Quote the line and its file, ask whether the feature changes or the project does, and stop until the user answers. What the project says it is changes in `AGENTS.md` (`/project`) or the README, by the user.
+   - **From a goal.** The feature is a line in an active goal's `## Features`. Read the goal: the feature serves its part, and the line's sentence is where the restatement starts.
+   - **Outside.** The feature contradicts what the project says it is, a `## Not this` line of an existing feature, or a `## Not this` line of an active goal. Quote the line and its file, ask whether the feature changes or the project does, and stop until the user answers. What the project says it is changes in `AGENTS.md` (`/project`) or the README, by the user.
    - **No description.** When neither `AGENTS.md` nor the README says what the project is, ask for one sentence and use it for this run.
 3. **Align the terms.** Read `docs/GLOSSARY.md` when it exists. For each noun the feature introduces or leans on, follow "Before adding a term" in [references/glossary.md](references/glossary.md). Use the glossary's term in everything after this step. Draft an entry for each new term. A conflict becomes a question.
 4. **Earn the choice** from what the user has already said. The four fields are: the decision, the alternative they rejected, the constraint that makes the chosen option win, and the cost of being wrong plus the first signal they would see. Ask the missing fields in one turn, with any term conflict, and wait. When the user asked for the full test without them, mark them `missing` and go on. A thin answer goes on as thin: the steelman and the grill test it.
@@ -165,6 +167,7 @@ When the user accepts the feature:
 1. Write `docs/feature/<slug>.md` with the template in [references/feature-doc.md](references/feature-doc.md). Each shape item becomes its `## Behavior` line, each decision a `## Decisions` entry, and each excluded item a `## Not this` line.
 2. Update `docs/GLOSSARY.md` with each new term and each resolved conflict, following [references/glossary.md](references/glossary.md). Create the file when it is missing.
 3. For each `Meets` line, update the line of that other feature doc that this feature makes untrue.
+4. When the feature is a line in a goal's `## Features`, replace the line's sentence with a link to the feature doc. Keep its number, Part, and After.
 
 Do not write `docs/spec/`. The next step is `to-implement-spec`. The spec it writes carries the work to `shipped`.
 

@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 User-invoked only. Do not start this skill unless the user ran `/project`. `/project` has no subcommand. When the work belongs to another skill, name it, say why, and stop. Do not invoke it yourself.
 
-Work at the git repo root. This skill writes `AGENTS.md`: what an agent cannot quickly learn from the code, and the standing rules every agent follows while working here. It does not decide a new feature (`feature-new`), change an existing one (`feature-iterate`), write an implement spec (`to-implement-spec`), carry one out (`go-work`), review a diff (`diff-review`), diagnose a bug (`code-bugfix`), or review the whole codebase (`architecture-review`).
+Work at the git repo root. This skill writes `AGENTS.md`: what an agent cannot quickly learn from the code, and the standing rules every agent follows while working here. It does not set a long-range goal (`polaris`), cut one into features (`to-features`), decide a new feature (`feature-new`), change an existing one (`feature-iterate`), write an implement spec (`to-implement-spec`), carry one out (`go-work`), review a diff (`diff-review`), diagnose a bug (`code-bugfix`), or review the whole codebase (`architecture-review`).
 
 `AGENTS.md` has two sections this skill owns: `## Repo` holds the facts of this repo, and `## Principles` holds the rules. `CLAUDE.md` is a relative symlink to `AGENTS.md`.
 
@@ -32,7 +32,7 @@ Every agent reads the whole file at the start of every task, so every line is pa
 | Built-in principles | Fixed text | `references/` |
 | `### Project rules` | Do, do-not, and ask-before rules for this repo | The user, and migration |
 
-Not in `AGENTS.md`: features and their decisions (`docs/feature/`), implement specs (`docs/spec/`), project terms (`docs/GLOSSARY.md`), change history, plans, secrets, and anything a tool already reports.
+Not in `AGENTS.md`: goals (`docs/polaris/`), features and their decisions (`docs/feature/`), implement specs (`docs/spec/`), project terms (`docs/GLOSSARY.md`), change history, plans, secrets, and anything a tool already reports.
 
 ## Built-in principles
 

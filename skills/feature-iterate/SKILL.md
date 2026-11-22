@@ -19,6 +19,7 @@ Stop at the decision. Do not write an implement spec, an implementation plan, or
 - The user wants an existing feature to do more, less, or something different, even as one sentence with nothing worked out.
 - The user has talked a change through and wants it tested and written down.
 - A strong preference for a change shows up without a reason ("let's just make X do Y").
+- A line marked `Iterate` in a goal's `## Features`, written by `to-features`.
 
 ## When not to use
 
@@ -54,12 +55,13 @@ Stop at the decision. Do not write an implement spec, an implementation plan, or
    - **Status `decided`.** The doc is ahead of the code: an earlier change is not built yet. Say so. The new change builds on the doc, not on the code.
    - **`docs/spec/<slug>.md` exists.** That earlier change is being built now. Say so, and find the steps that already landed, the commits with the trailer `Spec-Step: <slug>#<n>`: the spec must catch up with this change before the work goes on.
    - **Status `shipped`, and doc and code disagree.** Say where, and ask which is right.
+   - **From a goal.** The change is a line in an active goal's `## Features` (`docs/polaris/`). Read the goal: the change serves its part, and the line's sentence is where the delta starts.
 2. **Pin the delta.** Restate the change in one sentence: from <today> to <after>. Then list:
    - What changes: behavior, entry, limits, and `## Not this` lines.
    - What must not change: the behavior the user wants kept.
    - What depends on today's behavior: callers (`rg` the entry points), other feature docs that mention it, stored data and its shape, and outside users such as API clients, saved files, and links.
    - What `### Project status` in `AGENTS.md` allows for this change: whether it may break callers, and whether stored data must migrate.
-3. **Check the fit.** The feature after the change still fits what the project says it is (`head -20 AGENTS.md README.md`). Removing a `## Not this` line widens the feature's scope; name it as a decision of its own. A change that reaches into another feature's scope: name that doc, and ask whether the two merge or the boundary moves.
+3. **Check the fit.** The feature after the change still fits what the project says it is (`head -20 AGENTS.md README.md`), and contradicts no `## Not this` line of an active goal in `docs/polaris/`. Removing a `## Not this` line widens the feature's scope; name it as a decision of its own. A change that reaches into another feature's scope: name that doc, and ask whether the two merge or the boundary moves.
 4. **Align the terms.** Read `docs/GLOSSARY.md` when it exists. For each noun the change introduces, renames, or leans on, follow [references/glossary.md](references/glossary.md). Use the glossary's term in everything after this step. A conflict becomes a question.
 5. **Earn the change** from what the user has already said. The five fields are: the change, the alternative they rejected (today's behavior when they named none), the constraint that makes the change win, the migration cost (what today's users, callers, and stored data go through), and the cost of being wrong plus the first signal they would see. Ask the missing fields in one turn, with any term conflict, and wait. When the user asked for the full test without them, mark them `missing` and go on. A thin answer goes on as thin: the steelman and the grill test it.
 6. **Shape the change.** Walk the shape in [references/feature-doc.md](references/feature-doc.md) over the feature as it will stand after the change.
@@ -195,6 +197,7 @@ When the user accepts the change:
    - When the slug no longer names the feature, rename it and its open `docs/spec/<slug>.md` with `git mv`, and update every link to them. Leave archived specs as they are. When the spec has landed steps, rename after the feature ships instead: those commits name the old slug.
 2. Update `docs/GLOSSARY.md` with each new term, rename, and resolved conflict, following [references/glossary.md](references/glossary.md). Create the file when it is missing.
 3. For each `Meets` line, update the line of that other feature doc that the change makes untrue.
+4. When the change is a line in a goal's `## Features`, link the line to the feature doc and keep its sentence after the link. Keep its number, Part, and After.
 
 Do not write `docs/spec/`. The next step is `to-implement-spec`, which brings the feature's spec in line with the changed doc, then implementation.
 
