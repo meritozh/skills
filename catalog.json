@@ -50,6 +50,10 @@
     {
       "path": "references/glossary.md",
       "skills": ["feature-new", "feature-iterate", "to-implement-spec"]
+    },
+    {
+      "path": "references/feature-doc.md",
+      "skills": ["feature-new", "feature-iterate"]
     }
   ]
 }

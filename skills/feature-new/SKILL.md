@@ -1,6 +1,6 @@
 ---
 name: feature-new
-description: Decide a new feature before it is built. Check that it fits what the project says it is and that nothing already covers it, align its words with docs/GLOSSARY.md, then make the author earn the choice, steelman the option they rejected, and grill the strongest version. After the user confirms, write docs/feature/<slug>.md and update the glossary. Use when the user wants the project to do something it cannot do yet. Changing an existing feature is feature-iterate.
+description: Decide a new feature before it is built, from a one-line goal or from a proposal already talked through. Check that it fits what the project says it is and that nothing already covers it, align its words with docs/GLOSSARY.md, make the author earn it, then shape every behavior a user will meet, asking with a recommended answer and reading the code instead of asking where it can. Steelman the option the author rejected and grill the shaped feature. After the user confirms, write docs/feature/<slug>.md and update the glossary. Use when the user wants the project to do something it cannot do yet. Changing an existing feature is feature-iterate.
 disable-model-invocation: true
 ---
 
@@ -8,14 +8,16 @@ disable-model-invocation: true
 
 User-invoked only: follow this skill only when the user ran `/feature-new`. When the work belongs to another skill, name it (for example `/feature-iterate`), say why, and stop. Do not invoke it yourself.
 
-A new feature is ready to build when it fits the project, nothing already covers it, its words match the project's terms, the author has earned it, the option they dismissed has had its best case heard, and the strongest version of the feature has been attacked. Run those moves in that order. A feature that does not fit is not pressure-tested. A feature that already exists is an iteration.
+A new feature is ready to build when it fits the project, nothing already covers it, its words match the project's terms, the author has earned it, every behavior a user will meet is decided, the option they dismissed has had its best case heard, and the shaped feature has been attacked. Run those moves in that order. A feature that does not fit is not shaped. A feature that already exists is an iteration.
+
+Run it at the start, with one sentence, or after talking the feature through. Either way it takes the feature from where the conversation stands to a decided doc. What the conversation already settled is an answer, so the skill asks only what is still open.
 
 Stop at the decision. Do not write an implement spec, an implementation plan, or code. Changing a feature that already exists is `feature-iterate`. An implement spec is `to-implement-spec`. A diff review is `diff-review`. A bug is `code-fix`. A whole-codebase review is `codebase-review`. Repo principles are `project`.
 
 ## When to use
 
-- The user wants the project to do something it cannot do yet.
-- The user asks to pressure-test a new feature before building it.
+- The user wants the project to do something it cannot do yet, even as one sentence with nothing worked out.
+- The user has talked a new feature through and wants it tested and written down.
 - A strong preference for a new feature shows up without a reason ("let's just add X").
 
 ## When not to use
@@ -26,13 +28,14 @@ Stop at the decision. Do not write an implement spec, an implementation plan, or
 
 ## Stance
 
-- Cross-examiner, then advocate for the rejected option, then attacker of the feature. Keep the three voices separate.
+- Cross-examiner, then interviewer, then advocate for the rejected option, then attacker of the feature. Keep the four voices separate.
 - What the project says it is comes first. Do not stretch it to fit the feature. Quote it.
 - The glossary's words are the project's words. When the user's word differs from the glossary's for the same concept, name the glossary term and use it from then on.
 - The user produces the argument. Do not invent their constraint, their metric, or their rejected alternative.
+- The interviewer proposes and the user decides. Every question carries a recommended answer and its reason. A behavior the user has not confirmed is not settled.
 - "It's better" is not an answer. Ask better at what, measured how.
 - In the steelman, side with the rejected option. Voice a practitioner who chose it on purpose, and name the constraints where it is the right call. If that option is genuinely bad, say so and do not invent merits.
-- In the grill, attack the strongest version of the feature. Cite the assumption, then a concrete failure: the system, the input, the person who notices.
+- In the grill, attack the shaped feature. Cite the assumption, then a concrete failure: the system, the input, the person who notices.
 - A thin answer is data. Name it.
 
 ## Procedure
@@ -50,12 +53,24 @@ Stop at the decision. Do not write an implement spec, an implementation plan, or
    - **Covered.** A feature doc, an older `docs/idea/` doc, or the code already does it. That is `feature-iterate`. Name the file or the code, and stop.
    - **Outside.** The feature contradicts what the project says it is, or a `## Not this` line of an existing feature. Quote the line and its file, ask whether the feature changes or the project does, and stop until the user answers. What the project says it is changes in `AGENTS.md` (`/project`) or the README, by the user.
    - **No description.** When neither `AGENTS.md` nor the README says what the project is, ask for one sentence and use it for this run.
-3. **Align the terms.** Read `docs/GLOSSARY.md` when it exists. For each noun the feature introduces or leans on, follow "Before adding a term" in [references/glossary.md](references/glossary.md). Use the glossary's term in everything after this step. Draft an entry for each new term. A conflict becomes a question in this round.
-4. **Earn the choice** from what the user has already said. The four fields are: the decision, the alternative they rejected, the constraint that makes the chosen option win, and the cost of being wrong plus the first signal they would see. A bare preference with none of these gets the unanswered questions and nothing else. When they have stated the feature and a rejected alternative, or they asked for the full test, fill the fields you can, mark the rest `missing`, and continue.
-5. **Steelman the rejected option.** One paragraph in its best-case form. Three reasons a thoughtful practitioner would pick it. The strongest counter to the chosen feature from that view. A head-to-head on which constraint favours which side. The conditions under which they should revisit the rejection. If step 4 still has no rejected alternative, write that this move is blocked.
-6. **Grill the feature** as it stands after the head-to-head. Surface 3–5 assumptions the earned argument is betting on. For each, one scenario where it breaks. Rank them `would-kill` or `would-hurt`. End by asking what would convince them this is the wrong call.
+3. **Align the terms.** Read `docs/GLOSSARY.md` when it exists. For each noun the feature introduces or leans on, follow "Before adding a term" in [references/glossary.md](references/glossary.md). Use the glossary's term in everything after this step. Draft an entry for each new term. A conflict becomes a question.
+4. **Earn the choice** from what the user has already said. The four fields are: the decision, the alternative they rejected, the constraint that makes the chosen option win, and the cost of being wrong plus the first signal they would see. Ask the missing fields in one turn, with any term conflict, and wait. When the user asked for the full test without them, mark them `missing` and go on. A thin answer goes on as thin: the steelman and the grill test it.
+5. **Shape the behavior.** Settle every item of the shape in [references/feature-doc.md](references/feature-doc.md), for the feature as a user will meet it.
+   - Fill what is known first, from the conversation, the feature docs, and the code. A question the code or a doc answers is not one for the user: look it up, and cite where.
+   - Ask about the rest following [Questions](#questions), the items others depend on first: Who and Entry before Does, and Does before Fails, Limits, and Keeps.
+   - A real choice has two reasonable answers, and the wrong one is costly to undo or would surprise a user. Mark it as a decision: the chosen answer, the rejected one, and the first sign the choice was wrong.
+   - An item the user leaves out of this feature becomes a `Not this` line.
+   - Each turn shows the shape: every item `settled` (from where: said, code, or doc), `proposed`, or `open`.
+6. **Steelman the rejected option.** One paragraph in its best-case form. Three reasons a thoughtful practitioner would pick it. The strongest counter to the chosen feature from that view. A head-to-head on which constraint favours which side. The conditions under which they should revisit the rejection. If step 4 still has no rejected alternative, write that this move is blocked. Then, for each decision marked in step 5, give the rejected answer's best case in one or two sentences, and when it would win.
+7. **Grill the feature** as shaped, after the head-to-head. Surface 3–5 assumptions the shape and the argument are betting on. For each, one scenario where it breaks. Rank them `would-kill` or `would-hurt`. End by asking what would convince them this is the wrong call.
 
-One round of questions. After they answer, write the full output even if a field stays thin.
+## Questions
+
+- Ask one to three questions a turn: the ones whose answers do not wait on another open answer.
+- Each question carries your recommended answer and its reason, so the user can answer yes. Ask for a decision, not an opinion.
+- What the user already said, in this run or earlier in the conversation, is an answer. Do not ask it again.
+- There is no fixed number of turns. Questions end when every item of the shape is settled or is a `Not this` line.
+- When the user stops early, list the open items and write nothing. The doc states a decided feature, and a feature with open items is not decided.
 
 A bare preference gets only its missing fields as questions. For "let's just add a CSV export of orders":
 
@@ -67,9 +82,22 @@ A bare preference gets only its missing fields as questions. For "let's just add
 
 Not: "Have you thought about whether CSV export is the right feature?" That asks for a verdict, not a reason.
 
+A shape turn, later in the same run:
+
+```
+Shape: 5 of 8 settled. Proposed: Limits. Open: Fails, Keeps.
+
+1. Fails: an export of the largest account runs past the 30-second request timeout (src/http/server.ts:41). What does the user get?
+   Recommended: the export runs in the background and the user gets an email with a link, because those accounts hold up to 200,000 orders.
+2. Keeps: how long does a finished export stay downloadable?
+   Recommended: 7 days, then it is deleted, the same as invoice PDFs (docs/feature/invoice-pdf.md).
+```
+
+Not: "What should happen on errors?" It names no case and offers no answer.
+
 ## Output
 
-When step 2 stops, give its finding and the question. When step 4 stops for a bare preference, ask only the missing questions, plus any term conflict. Otherwise:
+When step 2 stops, give its finding and the question. When step 4 asks, give only the missing fields and any term conflict. During step 5, each turn gives the shape and its questions, as above. When the shape is done:
 
 ```
 ## Fit
@@ -80,7 +108,7 @@ Covered by: none (checked <docs and searches>)
 ## Terms
 Uses: <glossary terms>
 New: **<Term>**: <draft definition>
-Conflict: "<word>" means <x> here; the glossary says <y>
+Resolved: "<word>" → **<Term>**
 
 ## The argument
 Decision: …
@@ -88,6 +116,13 @@ Rejected: …
 Winning constraint: …
 Cost of being wrong / first signal: …
 Verdict: strong | thin | missing <piece>
+
+## The shape
+<each Behavior line, as it will read in the doc>
+Meets: <feature doc>: <the line this feature makes untrue> | none
+Not this: …
+Decisions:
+- <question>: <chosen> over <rejected>. Wrong-call signal: …
 
 ## The steelman
 <one paragraph, or "blocked: no rejected alternative">
@@ -105,6 +140,9 @@ Head-to-head:
 
 When to revisit: …
 
+Rejected answers in the shape:
+- <question>: <rejected answer> wins when …
+
 ## The grill
 Feature as it stands: <one line>
 
@@ -118,48 +156,20 @@ Failure scenarios:
 What would change your mind?
 ```
 
-Leave out a `## Terms` line with nothing to say.
+Leave out a line with nothing to say.
 
 ## After confirmation
 
 When the user accepts the feature:
 
-1. Write `docs/feature/<slug>.md` with the template below. `slug` is lowercase and hyphenated, built from glossary words. Status is `decided`.
+1. Write `docs/feature/<slug>.md` with the template in [references/feature-doc.md](references/feature-doc.md). Each shape item becomes its `## Behavior` line, each decision a `## Decisions` entry, and each excluded item a `## Not this` line.
 2. Update `docs/GLOSSARY.md` with each new term and each resolved conflict, following [references/glossary.md](references/glossary.md). Create the file when it is missing.
+3. For each `Meets` line, update the line of that other feature doc that this feature makes untrue.
 
 Do not write `docs/spec/`. The next step is `to-implement-spec`. The spec it writes carries the work to `shipped`.
 
-```markdown
-# <Feature title>
-
-<One sentence: who can do what.>
-
-Status: decided
-
-## Behavior
-
-- Entry: <where a user starts it: a command, a screen, an endpoint>
-- Does: <what happens, in glossary terms>
-- Limits: <sizes, rates, permissions, what it refuses>
-
-## Decisions
-
-### <Short title>
-
-<One to three sentences: the decision and the constraint that makes it win.>
-
-- Rejected: <the alternative>, which wins instead when <its condition>.
-- Wrong-call signal: <the first thing someone would see if this turns out to be the wrong call>.
-
-## Not this
-
-- <what the feature explicitly excludes>
-```
-
-The file states the feature as decided. Do not add a history of the debate, a plan, or next steps. Leave out a section with nothing to say.
-
-Until the user accepts, write neither file.
+Until the user accepts, write nothing.
 
 ## Source
 
-Adapted from `convince-me`, `grill-me`, and `steelman` by [rahul-kulkarni105/skills](https://github.com/rahul-kulkarni105/skills) (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/). Those three names are not separate skills in this collection. This file runs their moves as one ordered test of a new feature. The glossary format in `references/glossary.md` is adapted from `domain-modeling` by [mattpocock/skills](https://github.com/mattpocock/skills) (MIT, see `LICENSE`).
+Adapted from `convince-me`, `grill-me`, and `steelman` by [rahul-kulkarni105/skills](https://github.com/rahul-kulkarni105/skills) (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/). Those three names are not separate skills in this collection. This file runs their moves as one ordered test of a new feature, with a shaping interview between the argument and the test. The glossary format in `references/glossary.md` is adapted from `domain-modeling` by [mattpocock/skills](https://github.com/mattpocock/skills) (MIT, see `LICENSE`).
