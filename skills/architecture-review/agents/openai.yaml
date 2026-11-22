@@ -1,5 +1,5 @@
 interface:
   display_name: "Architecture Review"
-  short_description: "Whole-codebase review by change cost and failure"
+  short_description: "Whole-codebase review against golden rules of design"
 policy:
   allow_implicit_invocation: false

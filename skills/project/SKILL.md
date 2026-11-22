@@ -26,7 +26,7 @@ Work at the git repo root. This skill writes `AGENTS.md`: what an agent cannot q
 - A choice for the task at hand only. Follow it, and write nothing.
 - How one feature behaves: `feature-new` or `feature-iterate`. A project term goes in `docs/GLOSSARY.md` through those skills.
 - A long-range direction: `polaris`.
-- A visual style: `DESIGN.md`, which `design-ui` writes.
+- A visual style or design system: `docs/design-system/DESIGN.md`, which `design-system` writes.
 - A personal preference, such as reply language or tone: the user's global agent file, not this repo.
 
 ## What belongs in AGENTS.md

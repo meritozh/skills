@@ -29,7 +29,7 @@
         "diff-review",
         "code-bugfix",
         "architecture-review",
-        "design-ui",
+        "design-system",
         "health"
       ]
     }
@@ -60,6 +60,10 @@
     {
       "path": "references/feature-doc.md",
       "skills": ["feature-new", "feature-iterate"]
+    },
+    {
+      "path": "references/architecture.md",
+      "skills": ["project", "architecture-review"]
     },
     {
       "path": "references/polaris-doc.md",

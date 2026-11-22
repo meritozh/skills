@@ -1,0 +1,5 @@
+interface:
+  display_name: "Design System"
+  short_description: "Produce, change, and audit the project's design system"
+policy:
+  allow_implicit_invocation: true

@@ -1,6 +1,6 @@
 ---
 name: architecture-review
-description: "Review a codebase's architecture across the whole project, typically after a stretch of iterations, by what its real changes cost and what its failures leave behind, measured against its own shape, history, and claims. Write a self-contained HTML report outside docs/ with a roadmap of improvements: one refactor goes to to-implement-spec, a direction that needs features of its own goes to polaris. Use for a periodic whole-codebase review. Not for a diff or PR review, and not for root-cause debugging."
+description: "Review a codebase's architecture across the whole project, typically after a stretch of iterations, against golden rules of good design: the universal rules the project skill writes into AGENTS.md (no spaghetti control flow, clear one-way layering, deep modules, effects at the edges, and so on), the repo's own Project rules, and the rules of each subsystem's domain (reads apart from writes in data processing, one writer per table in a service, one owner per state in a UI client, a small surface in a library). Judged by reading, not by metrics, then judged again for extensibility (where the next likely changes would land) and explainability (whether the code answers a newcomer's questions). Write a self-contained HTML report outside docs/ with a roadmap of improvements: one refactor goes to to-implement-spec, a direction that needs features of its own goes to polaris. Use for a periodic whole-codebase review. Not for a diff or PR review, and not for root-cause debugging."
 disable-model-invocation: true
 ---
 
@@ -8,239 +8,151 @@ disable-model-invocation: true
 
 User-invoked only: follow this skill only when the user ran `/architecture-review`. When the work belongs to another skill, name it (for example `/code-bugfix`), say why, and stop. Do not invoke it yourself.
 
-Review the repositories the user names. The subject is any codebase. Judge it with its own evidence, not against an imported ideal (clean architecture, microservices, DDD, plugins). Two questions decide every judgment:
+Review the repositories the user names. This is a taste review: the codebase is read against golden rules of good design and judged by a reader, in the codebase's own names. No rule is a metric and no finding needs a number. A finding needs a rule, a place with file and line, what the code does there now, what the rule would have it look like here, and a direction. After the rules, the review gives its own judgment on two things the rules serve: how the code will take its next changes, and whether a reader can explain it.
 
-- **Change cost.** Do the changes this codebase actually makes stay local?
-- **Failure residue.** When a step fails, what does the caller see, what state remains, and is a retry safe?
+The rules come from three places:
 
-A finding needs a file and line, a trigger, a direction, and a check that would show the fix worked.
+- The universal rules in [references/architecture.md](references/architecture.md). This file is shared with the `project` skill and is the same text `project` writes into `AGENTS.md` as `### Architecture`, so a repo that has run `project` has already agreed to them. Where the repo's `AGENTS.md` carries an older version of the text, read it as the version the repo agreed to, and note the difference.
+- The domain rules in [references/rules.md](references/rules.md) for each kind of subsystem found. Each domain section ends with *Not a break here*: shapes a universal rule would flag that are correct in that domain.
+- The repo's own rules: `### Project rules` in `AGENTS.md`, and any design notes in `docs/`.
 
-This is the whole-codebase review. A diff or PR review is `diff-review`. A bug is `code-bugfix`. Deciding a new feature is `feature-new`, and changing one is `feature-iterate`. Turning a confirmed feature or change into an implement spec is `to-implement-spec`. A long-range goal is `polaris`. Repo principles are `project`.
+When they disagree, the repo's own rule wins, then the domain's *Not a break here*, then the universal rule, and the report says so. A rule from a book that none of the three states is not a rule here. Write it as `taste` at the end of the report, outside the roadmap, and let the user decide whether to adopt it.
 
-This review is read-only. It does not edit the repositories, and its probes never touch user data or production services.
+This is the whole-codebase review. A diff or PR review is `diff-review`. A bug is `code-bugfix`. Deciding a new feature is `feature-new`, and changing one is `feature-iterate`. Turning a chosen refactor into an implement spec is `to-implement-spec`. A long-range goal is `polaris`. Repo principles are `project`.
+
+This review is read-only. It does not edit the repositories.
 
 ## Workflow
 
-1. Pin the baseline for each repo.
+1. Pin what you read.
 2. Read the claims and map the entry points.
-3. Identify the shape of each subsystem.
-4. Find the two or three dominant forces.
-5. Run the four lenses, then the checks for each shape.
-6. Probe what reading cannot settle.
-7. Score, write findings with a direction, and write the report.
+3. Name the domain of each subsystem.
+4. Choose where to read closely.
+5. Read against the rules.
+6. Judge extensibility and explainability.
+7. Write findings and the report.
 
-## 1. Pin the baseline
+## 1. Pin what you read
 
-Before any judgment, record for each repo the branch, the full commit, and the dirty and untracked counts, then a source fingerprint:
+For each repo, record the branch, the full commit, and whether the tree was dirty:
 
 ```bash
-git rev-parse --abbrev-ref HEAD; git rev-parse HEAD
-git status --porcelain | grep -vc '^??'    # dirty
-git status --porcelain | grep -c '^??'     # untracked
-git ls-files -z -co --exclude-standard | LC_ALL=C sort -zu \
-  | xargs -0 shasum -a 256 2>/dev/null \
-  | perl -pe 's/^([0-9a-f]{64})  (.*)$/$2\t$1/' > "$TMPDIR/<repo>-fingerprint.tsv"
-shasum -a 256 < "$TMPDIR/<repo>-fingerprint.tsv"
+git rev-parse --abbrev-ref HEAD; git rev-parse HEAD; git status --porcelain | wc -l
 ```
 
-The list is tracked plus unignored untracked files, sorted by path, one `path<TAB>sha256` line each; the last hash is the fingerprint. It binds the input you read. It is not a reproducible build. Say what a commit hash cannot rebuild: an ignored lockfile, a path dependency, or uncommitted work.
+This binds the report to a tree. Uncommitted work was reviewed as it stood; say so.
 
 ## 2. Claims and entry points
 
-Read README, `AGENTS.md` or `CLAUDE.md`, `docs/` (skip `docs/spec/archived/`, which records finished plans), and any architecture or design notes. Write each design promise in one line ("plugins never import the core", "one sync engine serves every provider"). Many codebases promise nothing in writing. Then infer the claims the structure implies (directory names, layer names, a `core/` beside `features/`) and mark each claim `written` or `inferred`.
+Read README, `AGENTS.md` or `CLAUDE.md`, `docs/` (skip `docs/spec/archived/`, which records finished plans), and any architecture or design notes. Write each design promise in one line ("plugins never import the core", "handlers only call the service layer"). Many codebases promise nothing in writing. Then infer the claims the structure implies (directory names, layer names, a `core/` beside `features/`) and mark each `written` or `inferred`. A claim is a rule this codebase set for itself; a broken claim ranks above a broken universal rule.
 
-List the real entry points: CLI commands, routes, UI screens, jobs, exported API. Size and entry-point commands are in [references/tools.md](references/tools.md).
+List the real entry points: CLI commands, routes, UI screens, jobs, exported API. Commands that help are in [references/tools.md](references/tools.md).
 
-Keep four kinds of evidence apart: a package dependency, a name in source, a production call path, and a command you ran are not interchangeable. Do not claim a line-by-line proof of every file, platform, or schedule.
+## 3. Domain
 
-## 3. Shape
+Name the kind of system each subsystem is, from its manifest, its entry points, and its layout. A repo can hold several. The domain decides which rules apply and where complexity is allowed to live, so it decides what counts as a break.
 
-Classify each subsystem by evidence: its manifest, its entry points, and its layout. A repo can hold several shapes. The shape decides where complexity belongs, so it decides what counts as a defect.
+| Domain | Recognize by |
+| --- | --- |
+| Multi-feature product or plugin host | Several user-facing features over shared machinery; `features/`, `plugins/`, `providers/`, a registry |
+| Library or SDK | A published package with exports and no main binary; callers are other code |
+| Data processing: pipeline, batch job, or compiler | Stages that read data from one place, transform it, and write it to another: extract, transform, load; parse, lower, emit; a DAG or a scheduler |
+| Service with storage | A server entry plus schema, migrations, or queues |
+| UI client | A component tree, a state store, routes or screens |
+| CLI or tool | A bin entry, an argument parser, subcommands |
 
-| Shape | Recognize by | Complexity belongs |
-| --- | --- | --- |
-| Multi-feature product or plugin host | Several user-facing features over shared machinery; `features/`, `plugins/`, `providers/`, a registry | In shared mechanisms; features only compose them |
-| Library or SDK | A published package with exports and no main binary; callers are other code | Behind a small, deep public surface |
-| Compiler, pipeline, or batch job | Stages that transform data: parse, lower, emit; extract, transform, load; a DAG | In the stages, with the intermediate representation as the contract between them |
-| Service with storage | A server entry plus schema, migrations, or queues | At the authoritative write points and transaction boundaries |
-| UI client | A component tree, a state store, routes or screens | In one owner per piece of state |
-| CLI or tool | A bin entry, an argument parser, subcommands | In the command contract, with side effects isolated |
+A monorepo or multi-repo adds one more: the contracts between packages or repos. A domain not in [references/rules.md](references/rules.md): write its rules in the report's method section, from the repo's own claims and the universal rules, and propose adding them to the file.
 
-A monorepo or a multi-repo review adds one layer: the contracts between packages or repos, who owns each schema, and how it is versioned.
+## 4. Where to read closely
 
-For each shape found, load its section of [references/shapes.md](references/shapes.md). Each section lists the shape's checks and the false findings to avoid for that shape.
+Read the whole codebase at the level of modules and imports. Read closely, function by function, where a break costs most: the entry paths, the core every feature passes through, the code that changes most, and anything a claim from step 2 names. `git log --since='1 year ago' --format= --name-only | sort | uniq -c | sort -rn | head -20` points at what changes most; it ranks nothing by itself.
 
-## 4. Dominant forces
+Say in the report which modules were read closely and which were skimmed.
 
-Pick the two or three forces that matter most to this product, each with evidence:
+## 5. Read against the rules
 
-- **Where change happens**: files and modules by commit count.
-- **Where failure costs most**: files touched by fix commits, and paths that handle money, user data, permissions, or user files.
-- **Who extends it**: the team only, or third parties through a public API or plugins.
-- **Who works in parallel**: owners in `CODEOWNERS`, or teams per package.
+Load the universal rules in [references/architecture.md](references/architecture.md), then the section of [references/rules.md](references/rules.md) for each domain found. For each subsystem, go rule by rule and decide one of three:
 
-```bash
-git log --since='1 year ago' --no-merges --format= --name-only | grep -v '^$' \
-  | sort | uniq -c | sort -rn | head -20                                    # change hotspots
-git log --since='1 year ago' --no-merges -i -E --grep='fix|bug|regress|hotfix' --format= --name-only \
-  | grep -v '^$' | sort | uniq -c | sort -rn | head -20                     # fix concentration
-```
+- **Holds.** The rule is how this code is written.
+- **Bends.** Exceptions exist, each with a reason the reader can state: one transaction spans two modules; a hot loop inlines a call. Name the reason. A bend with a reason is not a finding.
+- **Broken.** Breaking the rule is the norm in this subsystem, or one break sits on a central path.
 
-The forces weight everything after this step: which subsystems get a deep read, which scores lead the summary, and which findings lead the roadmap. A poorly structured area that nobody changes and that rarely fails ranks low.
+Judge in the codebase's own names. "Clear layering" is not a layer count; it is whether a reader can name what each layer is for and which way every dependency points. "No spaghetti" is not a nesting limit; it is whether the reader learns what happens before how, and whether each outcome is handled in one place. Each rule states what it asks and the signs of a break, so the judgment is recognizable without being computed. With this many rules, the 规则核对表 in the report lists only the rules that apply to a subsystem; a rule with nothing to say about a subsystem is left out, not marked holds.
 
-With a thin history (under about 50 commits, or one squashed import), say so. Lean on the written claims and the roadmap instead.
+What is not a finding:
 
-## 5. The four lenses
+- A bend with a stated reason.
+- A domain's correct shape judged by another domain's rule. Each domain section lists these under *Not a break here*.
+- A style you prefer that no rule states. That is `taste`.
+- "This module is complex." No rule, no place, no direction.
 
-Run all four on every subsystem the forces make matter. Each lens has its evidence. A lens that does not apply to a subsystem is skipped with one line saying why.
+## 6. Extensibility and explainability
 
-### Lens 1: Change locality
+The rules are the vocabulary. This step is the review's own judgment of what they serve, for each subsystem that matters, in the codebase's own names. It is reading and reasoning, not counting.
 
-**Replay real changes.** Take the most recent 5 to 10 feature or fix commits in the hot subsystems, skipping merges, formatting, and dependency bumps. Do not hand-pick them; write the selection rule in the report. Add one or two changes from the roadmap or open issues. For each, record the modules touched (`git show --stat <sha>`) and whether the core's control flow had to change.
+**Extensibility: where the next changes land.** Name the two or three changes this codebase is most likely to face next: from `docs/polaris/`, from feature docs with `Status: decided`, from open issues, and from the kind of change the recent commits keep making. For each, walk through where it would land today: which modules it edits, whether it must change the core's control flow, what it has to know about other modules to be safe, and which rule breaks stand in its way. Then say what to change first so that this change becomes one module's business. A change that would stay local as the code is today is worth saying too; it tells the user where the structure already pays off.
 
-**Measure co-change.** Count pairs of modules that change in the same commit. Set `depth` so a module is the unit this codebase names (a package, a crate, a top-level directory under `src/`):
+**Explainability: whether the code answers a reader.** Name the two or three questions a newcomer to this subsystem asks: where is X decided, what happens when Y fails, why does Z exist, which of these two modules do I change. For each, follow the code from its entry point and say whether the structure answers it, through its names, its layering, and what its interfaces say, or whether the answer needs reading implementations across several modules and holding them in mind at once. Then say what would make the code explain itself: a name that states the invariant, a boundary that gathers scattered logic, a module whose interface says what the body does, a comment at the interface where the code cannot.
 
-```bash
-git log --since='1 year ago' --no-merges --format='format:@@%n' --name-only \
-| awk -F/ -v depth=2 -v maxmods=8 '
-  function flush(  a,b,n){ n=0; for(a in seen) n++
-    if(n>1 && n<=maxmods) for(a in seen) for(b in seen) if(a<b) pair[a"  <->  "b]++
-    for(a in seen) delete seen[a] }
-  /^@@$/ { flush(); next }
-  NF     { m=$1; for(i=2;i<=depth && i<NF;i++) m=m"/"$i; seen[m]=1 }
-  END    { flush(); for(p in pair) print pair[p] "\t" p }' | sort -rn | head -20
-```
+Each of these produces advice. Advice with a place and a direction is written as a finding under its rule. Advice broader than one place, such as "this subsystem has no seam where the next feature needs one" or "the names in `sync/` describe mechanism, not intent", goes to the report's 扩展性与可解释性 section with the finding ids it rests on. Both carry the same weight in the roadmap as a rule finding.
 
-`maxmods` drops sweeping commits (mass renames, formatting) that would couple everything. Separate expected coupling (one generator writes both, one transaction spans both, a test and its subject, a schema and its migration) from unexpected coupling. Only unexpected coupling is a finding: it means a boundary sits in the wrong place.
-
-**Judge duplication by co-change, not by shape.** Find candidates with a clone detector ([references/tools.md](references/tools.md)), then check whether the copies change together:
-
-```bash
-comm -12 <(git log --format=%H -- <copyA> | sort) <(git log --format=%H -- <copyB> | sort) | wc -l
-```
-
-Copies that change together are a finding (merge them). Copies that evolve apart stay; merging them would create the wrong abstraction.
-
-### Lens 2: Dependency direction
-
-Build the import graph between modules ([references/tools.md](references/tools.md)). Findings:
-
-- A cycle between modules.
-- Policy depending on detail: the core imports UI, a framework, or a concrete storage or network client.
-- **A shared module that knows its callers.** It imports from a caller, or branches on a caller's name, type, or config key. This holds for every shape:
-
-  ```bash
-  rg -n -w -e '<callerA>' -e '<callerB>' <shared-dir> | cut -d: -f1 | sort | uniq -c | sort -rn
-  ```
-
-- A contract spread wide. Count the production files that touch it, by directory:
-
-  ```bash
-  rg -l '<ContractType>' --glob '!**/{test,tests,__tests__,spec}/**' --glob '!**/*.{test,spec}.*' . \
-    | xargs -n1 dirname | sort | uniq -c | sort -rn
-  ```
-
-Name each dependency that runs both ways and the atomicity it buys. Some two-way dependencies are the price of one transaction; say so instead of flagging them.
-
-### Lens 3: Facts and failure
-
-List the facts this product must not get wrong: balances, documents, settings, job state, anything users would lose. For each fact, find every writer by searching for the persistence call with that fact's table, key, or path. One fact with several writers is a finding.
-
-For each main path from step 2, walk it one step at a time: if this step fails, what does the caller see, what state remains, and is a retry safe? Look for transactions, idempotency keys, temp-then-rename for files, and compensation steps. A path whose failure leaves inconsistent state is a finding whatever the structure looks like.
-
-Keep one state machine when the steps share hidden state. Moving code while that state stays behind is not a split, and splitting one commit into independent writers adds crash points.
-
-### Lens 4: Interface depth and testability
-
-- **Deletion test.** A module whose deletion would make complexity vanish was a pass-through. One whose deletion would spread complexity into its callers earns its keep. The vocabulary is `to-implement-spec`'s: module, interface, depth, seam, adapter.
-- **Leaks.** Internal types, raw rows, or framework objects in a public signature.
-- **Testability.** Can the core's tests run with no network, database, or UI? Do the tests drive the public entry, or mock the module's own internals?
-- **Names.** A name is enough when a caller can state the invariant it guards without reading the implementation. A name fails when docs and code disagree, when one word names two things, or when one timing change forces a reading of several owners.
-- **Reading surface.** Count functions whose span exceeds 100 and 200 lines ([references/tools.md](references/tools.md)). This count describes reading cost. It does not enter the score.
-
-### Shape checks
-
-After the lenses, run the checks in [references/shapes.md](references/shapes.md) for each shape found. For a multi-feature product, that includes the extraction test: shared behavior lives in a module that does not name the features, and each feature only composes it.
-
-## 6. Probes
-
-When reading cannot settle a claim, run a probe in a temporary directory or against a substitute for the external system. Never against user data or production services. Record the command, the output that matters, and what the probe cannot prove.
-
-## 7. Score, findings, and directions
-
-Score each subsystem on the lenses its forces make matter, and each written or inferred claim against its lens.
-
-- **5**: the replayed changes stayed inside one module or the composition site; a failure leaves consistent state and a retry is safe.
-- **3**: the changes needed edits in the core or in two or more modules; a failure is recoverable by retry or a documented manual step.
-- **1**: the changes scattered across many modules, or a failure leaves inconsistent state, or a declared behavior cannot be delivered.
-
-A score between anchors is a judgment, not a formula. Put the phenomenon beside the score, with file and line. Every score needs at least one behavioral evidence: a replayed change or a probe that ran. A score backed only by names in source is marked `unverified`.
+## 7. Findings, directions, and the roadmap
 
 Each finding takes one direction:
 
-| Direction | When the evidence shows |
+| Direction | When |
 | --- | --- |
-| Move | Code changes together with data that lives in another module |
-| Merge | Two shallow modules always change together, or callers always call them in sequence |
-| Split | One module has two co-change clusters that never overlap |
-| Invert | A dependency runs from policy to detail; the core defines the interface and the detail implements it |
-| Pin | A fact has more than one writer; give it one |
-| Delete | A pass-through by the deletion test, or generality nothing composes |
-| Leave | The area is cold, or the change costs more than it saves; say which |
+| Straighten | Control flow hides what happens: flatten the nesting, guard then happy path, one place per outcome |
+| Split | One module or function does two jobs: a read and a write, a decision and an effect, two layers |
+| Move | Code sits in the wrong layer, or away from the data it changes |
+| Merge | Two shallow modules are always used together, or one only passes through to the other |
+| Invert | A dependency points outward: the core defines the interface and the detail implements it |
+| Pin | A fact has several writers, or an error has several handlers; give it one |
+| Delete | A pass-through, an abstraction with one use, or generality nothing composes |
+| Leave | The break is in cold code, or fixing it costs more than it saves; say which |
 
-The acceptance check is measurable: replaying the same changes touches N modules instead of M, the cycle is gone, the core's tests run without a database, the fact has one writer.
+The check is a re-read, not a measurement: the same place, after the change, and the rule holds there in a way the report states in advance.
 
 ```
-F3  Adding a provider edits the sync core
-Trigger:    adding a fourth storage provider, the change the roadmap issue asks for
-Where:      src/sync/engine.ts:140-212 switches on provider name; src/sync/types.ts:18 enum Provider
-Now:        the last 6 provider commits each touched 3 core files; S3 and GCS retry loops co-changed in 5 of 7 commits
-Direction:  invert (a Provider interface owned by src/sync/), merge (one retry loop)
-Check:      replaying those 6 commits touches zero files under src/sync/; S3 and GCS retry tests pass through one module
+F2  The nightly load reads and writes orders in one pass
+Rule:       Reads apart from writes (data processing); one owner per piece of state (AGENTS.md)
+Where:      jobs/nightly/load_orders.py:40-180
+Now:        the scan that reads orders stamps last_seen on each row as it goes;
+            the loader queries orders_daily to choose insert or update
+Here:       the scan yields rows and changes nothing; the transform is pure;
+            the load writes orders_daily idempotently and is the only job that does
+Direction:  split, pin
+Check:      re-read jobs/nightly: the read stage has no write; orders_daily has one writer
 ```
 
-Not a finding: "the sync engine is complex". No trigger, no line, no direction, no check.
+Not a finding: "the nightly job is messy". No rule, no place, no direction, no check.
 
-The roadmap orders findings by failure cost times hotspot weight, then by what must land first. The review names the direction, not the interface. The item the user picks goes to `to-implement-spec` as a refactor. A direction too big for one spec, one that spans many modules and needs features of its own, goes to `polaris` as an architecture goal.
+Order the roadmap by what the next likely change needs (an item that unblocks a change from step 6 ranks first), then by how central the break is (an entry path or the core before a leaf), then by how widespread (the norm in a subsystem before a single spot), then by what must land first. The review names the direction, not the interface. The item the user picks goes to `to-implement-spec` as a refactor. A direction too big for one spec, one that spans many modules and needs features of its own, goes to `polaris` as an architecture goal.
 
 ## Report
 
-Write one self-contained HTML file: inline CSS, no external fonts or scripts, so it opens offline. Give each finding an id (`F1`, `F2`, ...) and link to it from the summary and the roadmap. Put long evidence in `<details>`.
+Write one self-contained HTML file: inline CSS, no external fonts or scripts, so it opens offline. Give each finding an id (`F1`, `F2`, ...) and link to it from the summary and the roadmap. Put long code excerpts in `<details>`.
 
 Match the section structure below. Do not copy a sample report's visual style, and do not copy its findings. Subsection titles name this codebase.
 
 1. **执行摘要**
-   - 按主导压力排序的评分: each score, the lens or claim it covers, and the phenomenon with file and line.
-   - 最优先事项: the first findings, each with its direction and how to know it worked.
+   - 规则核对表: rules as rows, subsystems as columns; each cell holds, bends, or broken, with the finding id.
+   - 扩展性与可解释性一句话: for each subsystem that matters, one line on how it takes its next change and one on whether a reader can explain it.
+   - 最优先事项: the first findings, each with its rule, direction, and check.
 2. **项目全景**
    - 产品目标与当前能力.
-   - 形状与子系统划分: each subsystem's shape and the evidence for it.
-   - 主导压力: the two or three forces, with the hotspot and fix-concentration evidence.
-   - 声明的分层与实际依赖: written and inferred claims beside the real import graph.
-   - 代码规模与阅读面分布.
-3. **架构层面评估**
-   - 改动局部性: the replayed changes in a table, the selection rule, and the unexpected co-change pairs.
-   - 依赖方向: cycles, policy-to-detail edges, and shared modules that know their callers.
-   - 事实归属与权威写入点: the correctness kernel to protect, and each fact's writers.
-   - 接口深度、可测性与复杂度预算.
-   - 逐条核对设计声明.
-4. **子系统详评.** One part per subsystem: its shape, what a caller can observe, what stays internal, the shape checks, and the judgment. Then the findings, product path separate from library callers when both exist.
-5. **横切工程质量**
-   - 实测结果与证据范围.
-   - 热点为什么值得拆，哪些应该合在一起, decided by co-change.
-   - 错误如何穿过模块.
-   - 文档、版本与组合交付.
-6. **失败与残留.** For each main path, what the caller sees when a step fails, what state remains, and whether a retry is safe. This is not a capacity or load estimate.
-7. **改进路线图.** Each item with its finding ids, direction, and acceptance check, ordered by failure cost times hotspot weight, then by what must land first.
-8. **方法、复核清单与证据**
-   - 基线与方法: the baseline from step 1 including the fingerprint, the history window, and the replay selection rule.
-   - 关键判断的复核入口: for each score, the files and commands to re-check it.
-   - 隔离探针与源码索引.
+   - 子系统与所属领域: each subsystem's domain and the evidence for it.
+   - 声明的分层与实际依赖: written and inferred claims beside the dependencies actually found.
+   - 代码规模与精读范围: what was read closely and what was skimmed.
+3. **规则逐条核对.** One part per rule that applies: where it holds, where it bends and why, where it is broken, with file and line.
+4. **扩展性与可解释性**
+   - 下一步改动会落在哪: each likely change from step 6, where it lands today, what stands in its way, and what to change first.
+   - 代码能否自己解释: each reader's question from step 6, how the code answers it today, and what would make it answer by itself.
+5. **子系统详评.** One part per subsystem: its domain, the rules that matter most to it, the judgment, and its findings.
+6. **改进路线图.** Each item with its finding ids, rule, direction, and check, in roadmap order.
+7. **未采纳的 taste.** Styles the reviewer would prefer that no rule states, for the user to adopt or ignore.
+8. **方法与证据.** The commit from step 1, the rules used and where each came from (including whether the repo's `AGENTS.md` carries the universal rules), and the claims list.
 
 Skip a subsection only when it does not apply, and say why.
 
 Save it outside the repository's `docs/`. Default path: `$TMPDIR`, else `/tmp`, else `%TEMP%` on Windows, file `<date>-<repo>-architecture-review.html`. If the user names a path, that path is not under `docs/`. Do not add the file to the repo. Open it (`open` on macOS, `xdg-open` on Linux, `start` on Windows) and give the absolute path.
-
-## Source
-
-The section structure comes from a 2026-11-07 multi-repository review. The findings of that review are not part of this skill. Its architecture test, shared behavior lifted into modules that do not name the features, is now the multi-feature check in `references/shapes.md`. Its kernel, a shared module does not know its callers, is part of Lens 2 for every codebase.

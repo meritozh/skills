@@ -26,7 +26,7 @@
         "diff-review",
         "code-bugfix",
         "architecture-review",
-        "design-ui",
+        "design-system",
         "health"
       ]
     }

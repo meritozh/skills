@@ -1,8 +1,13 @@
 This directory adapts `ui` from https://github.com/tw93/Waza
-and the DESIGN.md writer from this repo's former `design-style` skill.
-`references/specification.md` is the Stitch DESIGN.md spec from
-https://github.com/google-labs-code/design.md
-Craft rules in `references/design-reference.md` credit their sources in that file.
+and the DESIGN.md writer from this repo's former `design-style` skill,
+under the MIT License below.
+
+`references/specification.md` is `docs/spec.md` from
+https://github.com/google-labs-code/design.md, Copyright 2026 Google LLC,
+copied unmodified below its source header. It is licensed under the
+Apache License, Version 2.0, a copy of which is in `LICENSE-APACHE`.
+
+Craft rules in `references/craft.md` credit their sources in that file.
 
 MIT License
 

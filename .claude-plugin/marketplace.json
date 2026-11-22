@@ -25,7 +25,7 @@
         "./skills/diff-review",
         "./skills/code-bugfix",
         "./skills/architecture-review",
-        "./skills/design-ui",
+        "./skills/design-system",
         "./skills/health"
       ]
     }

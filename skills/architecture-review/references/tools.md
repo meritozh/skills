@@ -1,6 +1,6 @@
-# Tools for a codebase review
+# Pointers
 
-Loaded from `architecture-review` when a step needs a measurement. Prefer tools already installed. `npx`, `pipx run`, and similar download and run third-party code: ask before using them when the environment restricts that. When no tool is available, fall back to the `rg` commands below and say the measurement is approximate.
+Loaded from `architecture-review` when a step needs to find where to read. These commands point the reader at code. None of them judges it, and none of their numbers goes into a finding. Prefer tools already installed. `npx`, `pipx run`, and similar download and run third-party code: ask before using them when the environment restricts that.
 
 Always pass `rg` a path. With no path and a stdin that is not a terminal, as in most agent shells, it reads stdin and hangs.
 
@@ -14,12 +14,14 @@ rg -n --type-add 'src:*.{ts,tsx,js,mjs,rs,go,py,swift,kt,java}' -t src \
 
 ## Import graph
 
+The fastest way to see the layering a codebase actually has, and to find a cycle or a dependency that points outward.
+
 | Language | Module graph | Cycles |
 | --- | --- | --- |
 | JavaScript, TypeScript | `madge --extensions ts,tsx <src>` | `madge --extensions ts,tsx --circular <src>` |
 | Go | `go list -f '{{.ImportPath}}: {{join .Imports " "}}' ./...` | The compiler rejects package cycles; check direction instead |
 | Rust | `cargo tree` for crates; the `cargo-modules` subcommand for modules | `cargo-modules` |
-| Python | `pydeps <package>` for a graph; `lint-imports` (import-linter) to enforce layers | import-linter contracts |
+| Python | `pydeps <package>` for a graph | `lint-imports` (import-linter) contracts |
 | Java, Kotlin | `jdeps -summary <jar or classes dir>` | ArchUnit rules in tests |
 
 Fallback for any language: list import lines and reduce them to module pairs.
@@ -28,22 +30,19 @@ Fallback for any language: list import lines and reduce them to module pairs.
 rg -n --no-heading '^\s*(import|from|use|require|#include)\b' <src-dir> | head -100
 ```
 
-## Clone detection
-
-`jscpd --reporters console <src-dir>` covers most languages. Then judge each clone pair with the co-change check in `SKILL.md` Lens 1. A clone report alone is not a finding.
-
-## Function span
-
-With universal-ctags (`ctags --version` says Universal):
+## Where a shared module knows its callers
 
 ```bash
-ctags -R --fields=+ne --output-format=json -f - <src-dir> \
-  | jq -r 'select((.kind=="function" or .kind=="method") and .end) | [(.end - .line + 1), .path, .line, .name] | @tsv' \
-  | sort -rn | awk -F'\t' '$1 > 100'
+rg -n -w -e '<callerA>' -e '<callerB>' <shared-dir>
 ```
 
-macOS ships a BSD `ctags` without these options. Without universal-ctags, use the language's own parser (`ast` in Python, `syn` in Rust, `go/ast`, the TypeScript compiler API). Do not estimate spans by eye.
+Each hit is a place to read: a shared module that names a caller, or branches on one.
 
-## History
+## What changes most
 
-The change-hotspot, fix-concentration, co-change, and copy co-change commands live in `SKILL.md` steps 4 and 5, next to the judgments they feed.
+```bash
+git log --since='1 year ago' --no-merges --format= --name-only | grep -v '^$' \
+  | sort | uniq -c | sort -rn | head -20
+```
+
+Read these closely first. The count says where to look, not what is wrong.

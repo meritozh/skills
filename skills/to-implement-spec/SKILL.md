@@ -55,6 +55,7 @@ A testable interface accepts its dependencies instead of constructing them, retu
    - A spec for this feature already exists: the work is in progress and the feature changed. Update the spec in place so it matches the feature doc as it stands. Find the steps that landed: `git log --format='%(trailers:key=Spec-Step,valueonly)' <commit that added the spec>..HEAD`. Leave those as written, and rewrite the rest. A new step takes a new number: a step's number never changes and is never reused.
    - Another spec changes a module this feature also changes: name it. The two must agree on that module's interface. Ask which lands first, and write this spec against the state the other one leaves.
    - A refactor picked from `architecture-review` has no feature doc. Write `docs/spec/<slug>.md` named for the area, with `Feature: none`.
+   - The feature has a user interface and `docs/design-system/DESIGN.md` exists: read it. UI steps name its tokens and components, never new literal values. A value or component the system lacks is a change to the system: name `/design-system`, and settle it before writing those steps.
    - An older `docs/design/<slug>.md` for a module this work touches: move each decision that still holds into the `## Decisions` of the feature doc it serves, and each term into `docs/GLOSSARY.md`, then delete the file in the same change.
 2. **Read the code it touches.** Find the entry points, the current callers, and the tests for the area:
 

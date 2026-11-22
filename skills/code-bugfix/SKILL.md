@@ -12,7 +12,7 @@ Prefix your first line with 🥷 inline, not as its own paragraph.
 
 A patch applied to a symptom creates a new bug somewhere else. This skill finds the cause first, then fixes it, then proves the fix.
 
-A diff review is `diff-review`. A whole-codebase review is `architecture-review`. Subjective visual taste is `design-ui`. When exploring an area, read its `docs/feature/` file, its open spec in `docs/spec/` (not `docs/spec/archived/`), and `docs/GLOSSARY.md` first.
+A diff review is `diff-review`. A whole-codebase review is `architecture-review`. A change to how the product looks across screens is `design-system`. When exploring an area, read its `docs/feature/` file, its open spec in `docs/spec/` (not `docs/spec/archived/`), and `docs/GLOSSARY.md` first.
 
 ## Ground rules
 
@@ -201,7 +201,7 @@ Keep the bookkeeping in `git bisect`, including when you test a suspect commit b
 
 ### Reference mode
 
-List every reported and visible symptom in the user's words. Name the reference (last good commit, old build, fixture, screenshot). Define the pass/fail check before editing, then name the exact delta between current and reference. Do not turn a broken render, race, font pipeline, or state path into "style polish". Pure taste: tell the user to run `/design-ui`, and stop.
+List every reported and visible symptom in the user's words. Name the reference (last good commit, old build, fixture, screenshot). Define the pass/fail check before editing, then name the exact delta between current and reference. Do not turn a broken render, race, font pipeline, or state path into "style polish". Pure taste about the product's look, not a broken path: tell the user to run `/design-system`, and stop.
 
 ## Hard rules
 
