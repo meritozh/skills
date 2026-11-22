@@ -2,4 +2,4 @@ interface:
   display_name: "Polaris"
   short_description: "Set a long-range goal and the route to reach it"
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true

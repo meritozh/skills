@@ -1,18 +1,27 @@
 ---
 name: go-work
-description: Carry out an implement spec, docs/spec/<slug>.md, until its feature ships. A coordinator reads the spec once and never edits it, hands each step to a subagent that lands it as one commit with a Spec-Step trailer, runs steps the spec marks independent in parallel in temporary worktrees, and resumes from git history. The commit that lands the last step sets the feature to shipped and archives the spec. Use after to-implement-spec. Not for writing or changing a spec, deciding a feature, a bug, or a review.
-disable-model-invocation: true
+description: "Carry out an implement spec, docs/spec/<slug>.md, until its feature ships: a small coordinator reads the spec once, runs each step as one commit with a Spec-Step trailer in its own subagent, runs independent steps in parallel worktrees, resumes from git history, and archives the spec at the end. Use when the user asks to build, implement, continue, or resume a feature that has an open spec (开始实现, 继续做, 按 spec 实现). Not for code changes without a spec, or for writing or changing a spec, which is to-implement-spec."
 ---
 
 # go-work
 
-User-invoked only: follow this skill only when the user ran `/go-work`. When the work belongs to another skill, name it (for example `/to-implement-spec`), say why, and stop. Do not invoke it yourself.
+Run this skill when the user ran `/go-work`, or when the request matches [When to use](#when-to-use). When you start it without `/go-work`, say so in one line, with the reason, so the user can redirect. When the work belongs to another skill, say which and why: switch to it when you can invoke it, otherwise name it for the user (for example `/to-implement-spec`) and stop.
 
 The input is one implement spec: a path, a slug, or nothing. With nothing, list the open specs (`ls docs/spec/*.md`). Take the only one, or ask which. With no open spec, name `/to-implement-spec` and stop.
 
 This skill carries the spec out. It never changes what the spec says. A step that cannot be done as written stops the run. A wrong spec is `to-implement-spec`, and a wrong feature is `feature-iterate`. Reviewing the result is `diff-review`. A bug outside the spec is `code-bugfix`.
 
-The session that runs this skill is the coordinator. It starts best in a new session, so that its context holds the spec and little else.
+The session that runs this skill is the coordinator. It starts best in a new session, so that its context holds the spec and little else. When it starts in a long session, say so, and use fresh subagents rather than forks.
+
+## When to use
+
+- The user asks to build, implement, continue, or resume a feature that has an open spec in `docs/spec/`.
+- A run stopped, blocked or out of context, and the user wants it to go on.
+
+## When not to use
+
+- No open spec. A decided feature needs `to-implement-spec` first, and a code change with no feature behind it needs no skill.
+- The spec no longer matches its feature, or a step cannot be done as written. That is `to-implement-spec`.
 
 ## Cost
 

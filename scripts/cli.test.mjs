@@ -573,3 +573,16 @@ test('shared copies in this repo match shared/', () => {
   assert.ok(report.shared.length > 0);
   assert.deepEqual(sharedProblems(report), []);
 });
+
+test('first-party descriptions are YAML-safe: quoted, or free of ": " and " #"', () => {
+  const root = repoRootFromHere();
+  const { firstParty } = listSkills(join(root, 'skills'), loadLock(join(root, 'sources.lock.json')));
+  const unsafe = [];
+  for (const { name } of firstParty) {
+    const text = readFileSync(join(root, 'skills', name, 'SKILL.md'), 'utf8');
+    const raw = /^description: (.*)$/m.exec(text)?.[1] ?? '';
+    const quoted = /^(["']).*\1$/.test(raw);
+    if (!quoted && /: | #/.test(raw)) unsafe.push(name);
+  }
+  assert.deepEqual(unsafe, []);
+});

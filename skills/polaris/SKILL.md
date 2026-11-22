@@ -1,12 +1,11 @@
 ---
 name: polaris
-description: Set a long-range goal for the project and the route to reach it, coarser and longer-lived than one feature. Pin what will be true when the goal is reached and the signal that shows it, check it against what the project says it is and how far today is from it, make the author earn the goal, compare routes and steelman the one set aside, break the chosen route into ordered parts, and grill the route. After the user confirms, write docs/polaris/<slug>.md. Also reviews an active goal: progress, a changed route, or reached. Use when the user has a direction bigger than one feature. Cutting a goal into features is to-features; one feature is feature-new or feature-iterate.
-disable-model-invocation: true
+description: "Set a long-range goal for the project and the route to reach it: the end state and the signal that shows it, two or three routes compared, the chosen route broken into ordered parts, written to docs/polaris/<slug>.md. Also reviews an active goal's progress, route, or reached state. Use when the user describes a direction bigger than one feature (a north star, a roadmap, a new platform or kind of user, a subsystem to replace, a reliability or speed target; 目标, 方向, 路线图), or asks how a goal is going. Not for one feature, which is feature-new or feature-iterate."
 ---
 
 # polaris
 
-User-invoked only: follow this skill only when the user ran `/polaris`. When the work belongs to another skill, name it (for example `/feature-new`), say why, and stop. Do not invoke it yourself.
+Run this skill when the user ran `/polaris`, or when the request matches [When to use](#when-to-use). When you start it without `/polaris`, say so in one line, with the reason, so the user can redirect. When the work belongs to another skill, say which and why: switch to it when you can invoke it, otherwise name it for the user (for example `/to-features`) and stop.
 
 A goal says what will be true when it is reached, for whom, and how anyone can tell. Its route says which parts get there, in what order. A goal is coarser than a feature and outlives many of them. It is ready to cut into features when it fits the project, its end state and signal are pinned, today's distance to it is known, its words match the project's terms, the author has earned it, at least two routes were compared and the one set aside has had its best case heard, the chosen route is broken into ordered parts, and the route has been attacked. Run those moves in that order.
 

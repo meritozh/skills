@@ -1,12 +1,11 @@
 ---
 name: feature-new
-description: Decide a new feature before it is built, from a one-line goal or from a proposal already talked through. Check that it fits what the project says it is and that nothing already covers it, align its words with docs/GLOSSARY.md, make the author earn it, then shape every behavior a user will meet, asking with a recommended answer and reading the code instead of asking where it can. Steelman the option the author rejected and grill the shaped feature. After the user confirms, write docs/feature/<slug>.md and update the glossary. Use when the user wants the project to do something it cannot do yet. Changing an existing feature is feature-iterate.
-disable-model-invocation: true
+description: "Decide a new feature before it is built, from a one-line idea or a proposal already talked through: check that it fits the project, make the author earn it, shape every behavior a user will meet by asking with recommended answers, pressure-test it, then write docs/feature/<slug>.md and the glossary. Use when the user wants the project to do something it cannot do yet and the feature is not decided (想加一个功能, 设计一个新 feature), or picks a New line from a goal's ## Features. Not when they ask to build something already decided, for a small reversible change, or for changing an existing feature, which is feature-iterate."
 ---
 
 # feature-new
 
-User-invoked only: follow this skill only when the user ran `/feature-new`. When the work belongs to another skill, name it (for example `/feature-iterate`), say why, and stop. Do not invoke it yourself.
+Run this skill when the user ran `/feature-new`, or when the request matches [When to use](#when-to-use). When you start it without `/feature-new`, say so in one line, with the reason, so the user can redirect. When the work belongs to another skill, say which and why: switch to it when you can invoke it, otherwise name it for the user (for example `/to-implement-spec`) and stop.
 
 A new feature is ready to build when it fits the project, nothing already covers it, its words match the project's terms, the author has earned it, every behavior a user will meet is decided, the option they dismissed has had its best case heard, and the shaped feature has been attacked. Run those moves in that order. A feature that does not fit is not shaped. A feature that already exists is an iteration.
 

@@ -1,12 +1,11 @@
 ---
 name: feature-iterate
-description: Move an existing feature forward, from a one-line goal or from a change already talked through. Load its doc and its code as they stand, pin what changes against what must not and what depends on today's behavior, align the words with docs/GLOSSARY.md, make the author earn the change, then shape every behavior the change touches and what each dependent meets afterward, asking with a recommended answer and reading the code instead of asking where it can. Steelman the option they rejected (by default, leaving the feature as it is) and grill the change where it meets today's callers, users, and data. After the user confirms, update docs/feature/<slug>.md in place and the glossary. Use when the user wants to change, extend, or narrow a feature that exists. A feature that does not exist yet is feature-new.
-disable-model-invocation: true
+description: "Decide a change to an existing feature before it is built: load its doc and code, pin the delta and what depends on today's behavior, make the author earn it, shape every behavior the change touches by asking with recommended answers, pressure-test it, then update docs/feature/<slug>.md in place. Use when the user wants an existing feature to do more, less, or something different and the change is not decided (改一下某个功能, 扩展, 调整行为), or picks an Iterate line from a goal's ## Features. Not for a bug where the doc is right (code-bugfix), a small reversible change, or a feature that does not exist yet (feature-new)."
 ---
 
 # feature-iterate
 
-User-invoked only: follow this skill only when the user ran `/feature-iterate`. When the work belongs to another skill, name it (for example `/feature-new`), say why, and stop. Do not invoke it yourself.
+Run this skill when the user ran `/feature-iterate`, or when the request matches [When to use](#when-to-use). When you start it without `/feature-iterate`, say so in one line, with the reason, so the user can redirect. When the work belongs to another skill, say which and why: switch to it when you can invoke it, otherwise name it for the user (for example `/to-implement-spec`) and stop.
 
 An existing feature already has users, callers, and stored data shaped by what it does today. A change is ready to build when its difference from today is pinned, the feature still fits the project, its words match the project's terms, the author has earned the change, every behavior it touches is decided for after the change, the option they dismissed has had its best case heard, and the change has been attacked where it meets what already depends on the feature. Run those moves in that order.
 
