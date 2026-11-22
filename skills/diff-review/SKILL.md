@@ -14,7 +14,7 @@ Do not re-trigger a host built-in `/review` from inside this skill.
 
 Find what would hurt after this diff merges. The review surface is the diff: changed hunks, untracked files that belong to the change, and a sibling only when the diff fixes one instance of a shape. A file the diff does not touch is context, not a finding.
 
-This skill is report-only. It does not edit files, apply fixes, commit, push, comment, merge, or close anything. A bug is `code-fix`. A whole-codebase review is `codebase-review`. An unconfirmed feature or change is `feature-new` or `feature-iterate`. A confirmed module design is `design-code`. Repo principles are `project`. Prose review goes to `/write`.
+This skill is report-only. It does not edit files, apply fixes, commit, push, comment, merge, or close anything. A bug is `code-fix`. A whole-codebase review is `codebase-review`. An unconfirmed feature or change is `feature-new` or `feature-iterate`. An implement spec is `to-implement-spec`. Repo principles are `project`. Prose review goes to `/write`.
 
 Done means every file in the frozen diff was read, every finding passes the quality gate, and every verification claim comes from a command run in this session.
 
@@ -92,7 +92,7 @@ Before hunting bugs, label the diff against the stated goal: **on target**, **dr
 - For each new setting, flag, environment variable, or command, ask who would change it and why one good default would not serve them. With no evidence of a real user split, report it as drift.
 - Over-design pass, every time: for each new file, option, fallback, layer, or abstraction, ask whether the change still holds with it removed. Report each one that does as removable.
 
-When findings cluster on one cause (the same bug class patched again, problems that follow from the architecture, a simple problem made complex), stop listing patches. State the route verdict first: keep, adjust, replace, or insufficient information. Name an alternative only when it removes the whole class at an acceptable migration cost. Skip this when the user said the route is settled or a design doc records the decision.
+When findings cluster on one cause (the same bug class patched again, problems that follow from the architecture, a simple problem made complex), stop listing patches. State the route verdict first: keep, adjust, replace, or insufficient information. Name an alternative only when it removes the whole class at an acceptable migration cost. Skip this when the user said the route is settled or a feature doc or spec records the decision.
 
 ## 6. Read the hunks
 

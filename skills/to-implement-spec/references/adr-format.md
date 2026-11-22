@@ -1,6 +1,6 @@
 # ADR format
 
-A decision that passes the tests below is a `###` entry under `## Decisions` in `docs/design/<slug>.md`. Do not create `docs/adr/`.
+A decision that passes the tests below is a `###` entry under `## Decisions` in the feature doc it serves, `docs/feature/<slug>.md`. Never in the spec, which is archived and no longer read once the work is done. Do not create `docs/adr/`.
 
 ## Template
 
@@ -20,12 +20,12 @@ Example:
 Reports join six tables with window functions, and the ORM generated N+1 queries we could not tune. Queries live in `reports/sql/` and are tested against PGlite.
 ```
 
-## Optional sections
+## Optional lines
 
-Add these only when they earn a place. Most decisions need none of them.
+Add these under the paragraph, in the feature doc's format, only when they earn a place. Most decisions need none of them.
 
-- **Considered options**, when a rejected alternative is worth remembering.
-- **Consequences**, when a downstream effect is not obvious.
+- `- Rejected: <the alternative>, which wins instead when <its condition>.` when a rejected alternative is worth remembering.
+- `- Wrong-call signal: <the first thing someone would see>.` when a wrong call would show up somewhere not obvious.
 
 When a decision changes, replace its text. The doc states the current decision, not its history.
 

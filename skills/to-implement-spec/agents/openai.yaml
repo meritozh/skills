@@ -1,0 +1,5 @@
+interface:
+  display_name: "To Implement Spec"
+  short_description: "Turn a confirmed feature into an implement spec"
+policy:
+  allow_implicit_invocation: false

@@ -10,7 +10,7 @@ User-invoked only: follow this skill only when the user ran `/feature-iterate`. 
 
 An existing feature already has users, callers, and stored data shaped by what it does today. A change is ready to build when its difference from today is pinned, the feature still fits the project, its words match the project's terms, the author has earned the change, the option they dismissed has had its best case heard, and the change has been attacked where it meets what already depends on the feature. Run those moves in that order.
 
-Stop at the decision. Do not write a module design, an implementation plan, or code. A feature that does not exist yet is `feature-new`. Module design is `design-code`. A diff review is `diff-review`. A bug is `code-fix`. A whole-codebase review is `codebase-review`. Repo principles are `project`.
+Stop at the decision. Do not write an implement spec, an implementation plan, or code. A feature that does not exist yet is `feature-new`. An implement spec is `to-implement-spec`. A diff review is `diff-review`. A bug is `code-fix`. A whole-codebase review is `codebase-review`. Repo principles are `project`.
 
 ## When to use
 
@@ -49,6 +49,7 @@ Stop at the decision. Do not write a module design, an implementation plan, or c
    - **Code but no doc.** Write down the feature as it stands today, from the code: its behavior, limits, and what it does not do. Show it as the baseline. It becomes the doc once the change is confirmed.
    - **An older `docs/idea/<slug>.md`** for the feature holds its decisions. Read it with the feature doc. It is folded in after confirmation.
    - **Status `decided`.** The doc is ahead of the code: an earlier change is not built yet. Say so. The new change builds on the doc, not on the code.
+   - **`docs/spec/<slug>.md` exists.** That earlier change is being built now. Say so, and find the steps that already landed, the commits with the trailer `Spec-Step: <slug>#<n>`: the spec must catch up with this change before the work goes on.
    - **Status `shipped`, and doc and code disagree.** Say where, and ask which is right.
 2. **Pin the delta.** Restate the change in one sentence: from <today> to <after>. Then list:
    - What changes: behavior, entry, limits, and `## Not this` lines.
@@ -149,11 +150,11 @@ When the user accepts the change:
    - Set Status to `decided`. The commit that makes the code do what the doc says sets `shipped`.
    - With no doc yet, write one from the baseline plus the change, with the template below.
    - Fold an older `docs/idea/<slug>.md` into `## Decisions`, and delete it in the same change.
-   - When the slug no longer names the feature, rename the file with `git mv` and update every link to it.
+   - When the slug no longer names the feature, rename it and its open `docs/spec/<slug>.md` with `git mv`, and update every link to them. Leave archived specs as they are. When the spec has landed steps, rename after the feature ships instead: those commits name the old slug.
 2. Update `docs/GLOSSARY.md` with each new term, rename, and resolved conflict, following [references/glossary.md](references/glossary.md). Create the file when it is missing.
 3. When another feature doc states something the change makes untrue, update that line too.
 
-Do not write `docs/design/`. When the change needs a new module or a changed interface, the next step is `design-code`. Otherwise the next step is implementation.
+Do not write `docs/spec/`. The next step is `to-implement-spec`, which brings the feature's spec in line with the changed doc, then implementation.
 
 ```markdown
 # <Feature title>

@@ -25,7 +25,7 @@ Look in this order:
 
 1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`), fetched the way the tracker documents.
 2. A path the user passed.
-3. A feature doc under `docs/feature/`, or a spec under `docs/`, `specs/`, or `.scratch/`, matching the branch or feature.
+3. The feature doc and implement spec the branch delivers (`docs/feature/<slug>.md`, `docs/spec/<slug>.md`), or a spec under `specs/` or `.scratch/` matching the branch. A branch that finishes the work moves its implement spec to `docs/spec/archived/<YYYY-MM-DD>-<slug>.md`; read it at that path. It is the one archived spec a review reads.
 4. If nothing is found, ask. If the user says there is no spec, skip the Spec sub-agent and report "no spec available".
 
 ## 3. Standards sources

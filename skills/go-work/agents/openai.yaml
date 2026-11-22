@@ -1,0 +1,5 @@
+interface:
+  display_name: "Go Work"
+  short_description: "Carry out an implement spec step by step"
+policy:
+  allow_implicit_invocation: false

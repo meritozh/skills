@@ -10,7 +10,7 @@ User-invoked only: follow this skill only when the user ran `/feature-new`. When
 
 A new feature is ready to build when it fits the project, nothing already covers it, its words match the project's terms, the author has earned it, the option they dismissed has had its best case heard, and the strongest version of the feature has been attacked. Run those moves in that order. A feature that does not fit is not pressure-tested. A feature that already exists is an iteration.
 
-Stop at the decision. Do not write a module design, an implementation plan, or code. Changing a feature that already exists is `feature-iterate`. Module design is `design-code`. A diff review is `diff-review`. A bug is `code-fix`. A whole-codebase review is `codebase-review`. Repo principles are `project`.
+Stop at the decision. Do not write an implement spec, an implementation plan, or code. Changing a feature that already exists is `feature-iterate`. An implement spec is `to-implement-spec`. A diff review is `diff-review`. A bug is `code-fix`. A whole-codebase review is `codebase-review`. Repo principles are `project`.
 
 ## When to use
 
@@ -127,7 +127,7 @@ When the user accepts the feature:
 1. Write `docs/feature/<slug>.md` with the template below. `slug` is lowercase and hyphenated, built from glossary words. Status is `decided`.
 2. Update `docs/GLOSSARY.md` with each new term and each resolved conflict, following [references/glossary.md](references/glossary.md). Create the file when it is missing.
 
-Do not write `docs/design/`. When the feature needs a new module or a changed interface, the next step is `design-code`. Otherwise the next step is implementation, and the commit that makes the code do what the doc says sets Status to `shipped`.
+Do not write `docs/spec/`. The next step is `to-implement-spec`. The spec it writes carries the work to `shipped`.
 
 ```markdown
 # <Feature title>

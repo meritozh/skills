@@ -9,6 +9,6 @@ Design and change code so that the changes this repo actually makes stay local, 
 - **Seams where something varies.** Pass a dependency in at a seam only when it has two adapters; production and test count as two. Tests go through a module's interface, not its internals.
 - **One writer per fact.** Each piece of state has one authoritative write point. A step that can fail leaves state consistent: transactions, idempotent retries, and write-to-temp-then-rename for files.
 - **Code that changes together lives together.** When one kind of change keeps touching the same set of modules, move the boundary instead of patching each side again.
-- **One name per concept.** Use the terms in `docs/GLOSSARY.md`, and inside a module the terms in its design doc. One word never names two things.
+- **One name per concept.** Use the terms in `docs/GLOSSARY.md`. One word never names two things.
 
 How far a change may break existing interfaces and data follows Project status.

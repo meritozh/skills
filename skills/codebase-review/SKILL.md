@@ -15,7 +15,7 @@ Review the repositories the user names. The subject is any codebase. Judge it wi
 
 A finding needs a file and line, a trigger, a direction, and a check that would show the fix worked.
 
-This is the whole-codebase review. A diff or PR review is `diff-review`. A bug is `code-fix`. Deciding a new feature is `feature-new`, and changing one is `feature-iterate`. Designing one confirmed module is `design-code`. Repo principles are `project`.
+This is the whole-codebase review. A diff or PR review is `diff-review`. A bug is `code-fix`. Deciding a new feature is `feature-new`, and changing one is `feature-iterate`. Turning a confirmed feature or change into an implement spec is `to-implement-spec`. Repo principles are `project`.
 
 This review is read-only. It does not edit the repositories, and its probes never touch user data or production services.
 
@@ -47,7 +47,7 @@ The list is tracked plus unignored untracked files, sorted by path, one `path<TA
 
 ## 2. Claims and entry points
 
-Read README, `AGENTS.md` or `CLAUDE.md`, `docs/`, and any architecture or design notes. Write each design promise in one line ("plugins never import the core", "one sync engine serves every provider"). Many codebases promise nothing in writing. Then infer the claims the structure implies (directory names, layer names, a `core/` beside `features/`) and mark each claim `written` or `inferred`.
+Read README, `AGENTS.md` or `CLAUDE.md`, `docs/` (skip `docs/spec/archived/`, which records finished plans), and any architecture or design notes. Write each design promise in one line ("plugins never import the core", "one sync engine serves every provider"). Many codebases promise nothing in writing. Then infer the claims the structure implies (directory names, layer names, a `core/` beside `features/`) and mark each claim `written` or `inferred`.
 
 List the real entry points: CLI commands, routes, UI screens, jobs, exported API. Size and entry-point commands are in [references/tools.md](references/tools.md).
 
@@ -152,7 +152,7 @@ Keep one state machine when the steps share hidden state. Moving code while that
 
 ### Lens 4: Interface depth and testability
 
-- **Deletion test.** A module whose deletion would make complexity vanish was a pass-through. One whose deletion would spread complexity into its callers earns its keep. The vocabulary is `design-code`'s: module, interface, depth, seam, adapter.
+- **Deletion test.** A module whose deletion would make complexity vanish was a pass-through. One whose deletion would spread complexity into its callers earns its keep. The vocabulary is `to-implement-spec`'s: module, interface, depth, seam, adapter.
 - **Leaks.** Internal types, raw rows, or framework objects in a public signature.
 - **Testability.** Can the core's tests run with no network, database, or UI? Do the tests drive the public entry, or mock the module's own internals?
 - **Names.** A name is enough when a caller can state the invariant it guards without reading the implementation. A name fails when docs and code disagree, when one word names two things, or when one timing change forces a reading of several owners.
@@ -201,7 +201,7 @@ Check:      replaying those 6 commits touches zero files under src/sync/; S3 and
 
 Not a finding: "the sync engine is complex". No trigger, no line, no direction, no check.
 
-The roadmap orders findings by failure cost times hotspot weight, then by what must land first. The review names the direction, not the interface. The item the user picks goes to `design-code`.
+The roadmap orders findings by failure cost times hotspot weight, then by what must land first. The review names the direction, not the interface. The item the user picks goes to `to-implement-spec`.
 
 ## Report
 
