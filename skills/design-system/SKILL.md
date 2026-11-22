@@ -1,13 +1,13 @@
 ---
 name: design-system
-description: "Produce, iterate, and maintain the project's design system in docs/design-system/: a DESIGN.md that follows the google-labs-code/design.md spec (tokens for color, type, spacing, shape, motion, and components, with the prose that says why and how), plus the component sheets and guides it references. Creates it from the product's code, an older DESIGN.md, or a style brief; changes it when the look, a token, or a component changes; audits it against the spec and the code. Use when the user wants to set up, change, or check the project's design system or visual style (设计系统, 设计规范, 视觉风格, 换主色, 加暗色模式, DESIGN.md). Not for building or polishing a screen, which follows the design system through to-implement-spec and go-work, for a broken render (code-bugfix), or for print documents."
+description: "Produce, iterate, and maintain the project's design system in docs/design-system/: a DESIGN.md that follows the google-labs-code/design.md spec (tokens for color, type, spacing, shape, motion, and components, with the prose that says why and how), plus the component sheets and guides it references. Creates it from the product's code, an older DESIGN.md, or a style brief; changes it when the look, a token, or a component changes; audits it against the spec and the code. Use when the user wants to set up, change, or check the project's design system or visual style (设计系统, 设计规范, 视觉风格, 换主色, 加暗色模式, DESIGN.md). Not for applying it to the existing code (design-system-adopt, run by the user), building a feature (to-implement-spec, go-work), a broken render (code-bugfix), or print documents."
 ---
 
 # design-system
 
 Run this skill when the user ran `/design-system`, or when the request matches [When to use](#when-to-use). When you start it without `/design-system`, say so in one line, with the reason, so the user can redirect. When the work belongs to another skill, say which and why: switch to it when you can invoke it, otherwise name it for the user (for example `/to-implement-spec`) and stop.
 
-The design system is the project's visual identity written down: how the product looks, moves, and writes, the exact values, and why they are those values. It lives in `docs/design-system/`, rooted at `DESIGN.md` in the format of [google-labs-code/design.md](https://github.com/google-labs-code/design.md). The tokens are the normative values. The prose carries the intent, and the prose is where the design lives. Everything that builds UI reads it: `to-implement-spec` names its tokens and components in a spec's steps, and `go-work` builds with them.
+The design system is the project's visual identity written down: how the product looks, moves, and writes, the exact values, and why they are those values. It lives in `docs/design-system/`, rooted at `DESIGN.md` in the format of [google-labs-code/design.md](https://github.com/google-labs-code/design.md). The tokens are the normative values. The prose carries the intent, and the prose is where the design lives. Everything that builds UI reads it: `to-implement-spec` names its tokens and components in a spec's steps, `go-work` builds with them, and `design-system-adopt`, which only the user starts, brings the existing code in line with it.
 
 One run does one of three things:
 
@@ -15,7 +15,7 @@ One run does one of three things:
 - **Change:** decide a change to the system and write it in place: a new direction, a token, a section, a component, a theme.
 - **Audit:** check the system against the spec, against itself, and against the code, then fix what lives in `docs/design-system/`.
 
-Stop at the system. Do not build, restyle, or polish product screens or components: a plan for that is `to-implement-spec`, and building it is `go-work`. The one piece of product code this skill keeps in step is the [token source](#what-it-writes). A render that is broken rather than disliked is `code-bugfix`. A feature's behavior is `feature-new` or `feature-iterate`. A report, deck, resume, or other paged document is a typesetting skill such as `kami`.
+Stop at the system. Do not build, restyle, or polish product screens or components: applying the system to existing code is `/design-system-adopt`, a plan for new UI is `to-implement-spec`, and building it is `go-work`. The one piece of product code this skill keeps in step is the [token source](#what-it-writes). A render that is broken rather than disliked is `code-bugfix`. A feature's behavior is `feature-new` or `feature-iterate`. A report, deck, resume, or other paged document is a typesetting skill such as `kami`.
 
 ## When to use
 
@@ -27,7 +27,7 @@ Stop at the system. Do not build, restyle, or polish product screens or componen
 
 ## When not to use
 
-- One screen looks off, and the system already says what it should be. That is UI work against the system, not a change to it.
+- One screen looks off, and the system already says what it should be. That is applying the system, not changing it: `/design-system-adopt <path>`.
 - The render is broken: overflow from a bug, a state that never clears, a font that fails to load. That is `code-bugfix`.
 - A paged document. That is a typesetting skill.
 
@@ -107,7 +107,7 @@ Run every check, then report. Fix nothing before the report.
 4. **Against the code.** The token source against the tokens, value by value. Then the drift: literals in product code that match no token, fonts the code loads that typography does not name, durations and easings typed inline. Give counts and the top files, not an inventory.
 5. **Against the glossary.** The terminology in Voice & Content Strategy against `docs/GLOSSARY.md`.
 
-For each finding, say which side is right. When the system is right and the code drifted, the fix is UI work: list it. When the code is right, the system is stale: the fix is a Change. Apply the `docs/design-system/` fixes the user accepts, then Check.
+For each finding, say which side is right. When the system is right and the code drifted, the fix is in the code: list it for `/design-system-adopt`. When the code is right, the system is stale: the fix is a Change. Apply the `docs/design-system/` fixes the user accepts, then Check.
 
 ### 5. Check
 
@@ -143,7 +143,7 @@ Create and Change end with:
 - The direction in one sentence, and the two or three choices that are not obvious (typeface, color, layout logic), each with its reason.
 - The files written, and the token source when it changed.
 - The check: the lint summary, each warning kept and why, any CLI lag, and the sheets rendered or left unrendered.
-- The product code that no longer matches the system: the count, the top files, and the next step, which is `/to-implement-spec` for a rollout across screens.
+- The product code that no longer matches the system: the count, the top files, and the next step, which is `/design-system-adopt`.
 
 Audit ends with the findings grouped by check, each with file and line, which side is right, and the fix; then what was fixed once the user agreed.
 

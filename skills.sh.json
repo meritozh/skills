@@ -27,6 +27,7 @@
         "code-bugfix",
         "architecture-review",
         "design-system",
+        "design-system-adopt",
         "health"
       ]
     }
