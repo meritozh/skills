@@ -54,7 +54,14 @@ git status --short -- <doc>
 
 - **Feature doc with `Status: shipped`.** It is built. The battle runs, but a ruling that changes what the feature does is `/feature-iterate`, and a line the code fails to do is `/code-bugfix`.
 - **Spec whose `Feature:` hash differs from `git hash-object docs/feature/<slug>.md`.** The feature changed after the spec was written, so every other objection would be against a stale plan. Report that one blocker, name `/to-implement-spec <slug>`, and stop.
-- **Spec with landed steps** (`git log --format='%(trailers:key=Spec-Step,valueonly)' | grep '^<slug>#'`). Battle only the steps not landed and the interfaces they use. Landed steps are code, which `diff-review` reviews.
+- **Spec with landed steps.** Count only the steps landed since this spec was added, as `go-work` does. An earlier spec under the same slug, since archived, left trailers of its own, and those steps are not this spec's. A spec not committed yet has no landed steps.
+
+  ```bash
+  base=$(git log -1 --diff-filter=A --format=%H -- docs/spec/<slug>.md)    # the commit that added this spec
+  git log --format='%(trailers:key=Spec-Step,valueonly)' "$base"..HEAD | grep '^<slug>#'
+  ```
+
+  Battle only the steps not landed and the interfaces they use. Landed steps are code, which `diff-review` reviews.
 
 ### 2. Choose the prosecutor
 
@@ -123,7 +130,7 @@ Once the user has ruled:
 - A ruling that makes a line of another feature doc untrue updates that line too, as `feature-new` does for `Meets`.
 - Status stays as it is.
 - Write nothing for a ruling that overturns a `## Decisions` entry, drops a `Not this` line, or changes what a `shipped` feature does. Each of those was tested once as a decision, and changing it gets the full test again: name `/feature-iterate`, with the ruling as its starting point.
-- When an open spec exists for the feature, its hash no longer matches. The next step is `/to-implement-spec <slug>`.
+- When this step changed the feature doc and an open spec exists for the feature, the spec's hash no longer matches. The next step is `/to-implement-spec <slug>`. A battle that left the doc unchanged (every objection refuted, out of scope, overruled, or sent to `/feature-iterate`) leaves the spec as it was.
 
 **Spec.** Write nothing to `docs/spec/<slug>.md`: only `to-implement-spec` changes a spec, and its fixes are design work that needs that skill's procedure. Give the hand-off instead, one line per fix and ruling, for `/to-implement-spec <slug>`, which takes them as settled answers. A ruling that the feature doc is wrong (the spec cannot deliver a line as decided) is applied to the feature doc first, under the rules above, so the spec is rewritten against the fixed doc.
 
@@ -185,6 +192,6 @@ next:        <command>
   - #<n>: <the ruling, as one settled answer>
   ```
 
-The next command: a feature doc that holds with no open spec goes to `/to-implement-spec <slug>`, and so does one that changed while a spec is open. A spec that holds goes to `/go-work <slug>`, best in a new session, once the docs are committed. A verdict of `back to` goes to that skill, with the hand-off.
+The next command: after a feature doc battle, `/to-implement-spec <slug>` when no spec is open or the doc changed, and `/go-work <slug>` when a spec is open and the doc did not change. After a spec battle that holds, `/go-work <slug>`, best in a new session, once the docs are committed. A verdict of `back to` goes to that skill, with the hand-off.
 
 Leave out a section with nothing in it.
