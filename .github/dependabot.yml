@@ -1,0 +1,9 @@
+# Weekly version updates for first-party dependency manifests.
+# Vendored skill trees recorded in sources.lock.json are copied by sync
+# and are not updated here.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
