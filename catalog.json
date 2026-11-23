@@ -25,6 +25,7 @@
         "feature-new",
         "feature-iterate",
         "to-implement-spec",
+        "batman",
         "go-work",
         "diff-review",
         "code-bugfix",
@@ -52,15 +53,15 @@
   "shared": [
     {
       "path": "LICENSE",
-      "skills": ["feature-new", "feature-iterate", "polaris", "to-features"]
+      "skills": ["feature-new", "feature-iterate", "polaris", "to-features", "batman"]
     },
     {
       "path": "references/glossary.md",
-      "skills": ["feature-new", "feature-iterate", "to-implement-spec", "polaris", "to-features"]
+      "skills": ["feature-new", "feature-iterate", "to-implement-spec", "polaris", "to-features", "batman"]
     },
     {
       "path": "references/feature-doc.md",
-      "skills": ["feature-new", "feature-iterate"]
+      "skills": ["feature-new", "feature-iterate", "batman"]
     },
     {
       "path": "references/architecture.md",

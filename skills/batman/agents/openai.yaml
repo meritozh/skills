@@ -1,0 +1,5 @@
+interface:
+  display_name: "Batman"
+  short_description: "Battle a feature doc or spec before it is built"
+policy:
+  allow_implicit_invocation: false
