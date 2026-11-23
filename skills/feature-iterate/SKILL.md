@@ -198,7 +198,7 @@ When the user accepts the change:
 3. For each `Meets` line, update the line of that other feature doc that the change makes untrue.
 4. When the change is a line in a goal's `## Features`, link the line to the feature doc and keep its sentence after the link. Keep its number, Part, and After.
 
-Do not write `docs/spec/`. The next step is `to-implement-spec`, which brings the feature's spec in line with the changed doc, then implementation.
+Do not write `docs/spec/`. The next step is `to-implement-spec`, which brings the feature's spec in line with the changed doc, then implementation. To have a strict reviewer with fresh eyes attack the doc first, the user runs `/batman <slug>`.
 
 Until the user accepts, write nothing.
 

@@ -168,7 +168,7 @@ When the user accepts the feature:
 3. For each `Meets` line, update the line of that other feature doc that this feature makes untrue.
 4. When the feature is a line in a goal's `## Features`, replace the line's sentence with a link to the feature doc. Keep its number, Part, and After.
 
-Do not write `docs/spec/`. The next step is `to-implement-spec`. The spec it writes carries the work to `shipped`.
+Do not write `docs/spec/`. The next step is `to-implement-spec`. The spec it writes carries the work to `shipped`. To have a strict reviewer with fresh eyes attack the doc first, the user runs `/batman <slug>`.
 
 Until the user accepts, write nothing.
 
