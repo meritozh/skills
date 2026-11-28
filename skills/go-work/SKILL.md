@@ -1,45 +1,35 @@
 ---
 name: go-work
-description: "Carry out an implement spec, docs/spec/<slug>.md, until its feature ships: a small coordinator reads the spec once, runs each step as one commit with a Spec-Step trailer in its own subagent, runs independent steps in parallel worktrees, resumes from git history, and archives the spec at the end. Use when the user asks to build, implement, continue, or resume a feature that has an open spec (开始实现, 继续做, 按 spec 实现). Not for code changes without a spec, or for writing or changing a spec, which is to-implement-spec."
+description: "Carry out an implement spec, docs/spec/<slug>.md, until its feature ships: a coordinator reads the spec once, runs each step in its own subagent as one commit with a Spec-Step trailer, runs independent steps in parallel worktrees, resumes from git history, and archives the spec at the end. Use when the user asks to build, implement, continue, or resume a feature that has an open spec (开始实现, 继续做, 按 spec 实现). Not for code changes without a spec, or for writing or changing a spec, which is to-implement-spec."
 ---
 
 # go-work
 
-Run this skill when the user ran `/go-work`, or when the request matches [When to use](#when-to-use). When you start it without `/go-work`, say so in one line, with the reason, so the user can redirect. When the work belongs to another skill, say which and why: switch to it when you can invoke it, otherwise name it for the user (for example `/to-implement-spec`) and stop.
+Run this skill when the user ran `/go-work`, or when the request matches the description. When you start it without `/go-work`, say so in one line, with the reason. When the work belongs to another skill, switch to it, or name it and stop.
 
-The input is one implement spec: a path, a slug, or nothing. With nothing, list the open specs (`ls docs/spec/*.md`). Take the only one, or ask which. With no open spec, name `/to-implement-spec` and stop.
+The input is a spec path, a slug, or nothing. With nothing, list the open specs (`ls docs/spec/*.md`) and take the only one, or ask which. With no open spec, name `/to-implement-spec` and stop. A code change with no feature behind it needs no skill.
 
-This skill carries the spec out. It never changes what the spec says. A step that cannot be done as written stops the run. A wrong spec is `to-implement-spec`, and a wrong feature is `feature-iterate`. Reviewing the result is `diff-review`. A bug outside the spec is `code-bugfix`.
+This skill never changes what the spec says. A wrong spec is `to-implement-spec`, a wrong feature is `feature-iterate`, reviewing the result is `diff-review`, and a bug outside the spec is `code-bugfix`.
 
-The session that runs this skill is the coordinator. It starts best in a new session, so that its context holds the spec and little else. When it starts in a long session, say so, and use fresh subagents rather than forks.
+Stop for the user only to ask which spec, whether to commit the docs, and which run goes on. Ask following [references/asking.md](references/asking.md). A blocked step is reported, not asked.
 
-## When to use
-
-- The user asks to build, implement, continue, or resume a feature that has an open spec in `docs/spec/`.
-- A run stopped, blocked or out of context, and the user wants it to go on.
-
-## When not to use
-
-- No open spec. A decided feature needs `to-implement-spec` first, and a code change with no feature behind it needs no skill.
-- The spec no longer matches its feature, or a step cannot be done as written. That is `to-implement-spec`.
+The session that runs this skill is the coordinator. In a long session, say so and use fresh subagents, not forks.
 
 ## Cost
 
-Every turn re-sends the whole context. A prompt cache makes an unchanged prefix cheap, but whatever enters the context stays for every later turn: in one long context, step 1's file reads and test logs ride along through every step after it. So:
+Keep the coordinator's context small ([principles/guard-the-context.md](principles/guard-the-context.md)):
 
-- **The coordinator stays small.** It holds the spec, the step list, and a few lines per step. It does not read code, print diffs, or keep test logs.
-- **Each step runs in its own context**, a subagent that is discarded when the step lands. Only its short report comes back.
-- **The spec is read once and never edited during the run.** Progress lives in git: each step's commit ends with the trailer `Spec-Step: <slug>#<n>`. No step re-reads a changed spec, parallel worktrees never conflict on it, and a run that stops resumes in a new session from `git log`.
-- **Command output stays short.** Run a check as `<check> > "${TMPDIR:-/tmp}/go-work-<slug>.log" 2>&1; echo "exit=$?"`, and read only the tail of a failure (`tail -40`).
-- **Parallel steps trade tokens for time.** Each parallel subagent builds its own picture of the code, and each new worktree starts with no installed dependencies and no build cache.
+- **The coordinator** holds the spec, the step list, and a few lines per step. It does not read code, print diffs, or keep logs.
+- **The spec is never edited during the run.** Progress lives in git: each step's commit ends with the trailer `Spec-Step: <slug>#<n>`, so a stopped run resumes in a new session from `git log`.
+- **Run files** go in `.scratch/go-work/<slug>/` at the repo root, following [references/scratch.md](references/scratch.md): each check's output as `<name>.log`, which only a failure's tail is read from, and `state.md`, one line per step (landed `<hash>`, blocked and why, running in which worktree) plus every `note:` a later step needs. Update `state.md` after each report. It is a cache: git wins, and on a mismatch fix `state.md`.
 
 ## Runner
 
-Pick one at the start and use it for every step:
+Pick one at the start for every step:
 
-- **Fork:** a subagent that inherits this conversation. It starts with the spec and these rules already loaded, reuses this conversation's cached prefix, and keeps its tool output out of this context. Use it when the harness has one and this conversation is short. A fork of a long session, such as one that also decided the feature and wrote the spec, inherits all of that history.
-- **Fresh subagent:** otherwise, when the harness has subagents. The brief names the spec and the step, and the subagent reads the spec once itself.
-- **Inline:** when the harness has no subagents, or the spec has one step. Follow the brief below yourself: read only the lines you need, keep output short, and do not re-read the spec. When the context grows long (the harness warns, or earlier turns were summarized), finish the current step, stop, and tell the user to run `/go-work <slug>` in a new session. Nothing is lost, because progress is in git.
+- **Fork:** a subagent that inherits this conversation. Use it when the harness has one and this conversation is short.
+- **Fresh subagent:** otherwise, when the harness has subagents.
+- **Inline:** when the harness has no subagents, or the spec has one step. Follow the brief below yourself, reading only the lines you need. When the context grows long (the harness warns, or earlier turns were summarized), finish the current step, stop, and tell the user to run `/go-work <slug>` in a new session.
 
 ## Procedure
 
@@ -52,47 +42,55 @@ git diff --quiet HEAD -- docs/spec/<slug>.md docs/feature/<slug>.md docs/GLOSSAR
 git rev-parse HEAD                     # the run's start point
 ```
 
-- **The spec is untracked, or the spec, its feature doc, or the glossary has uncommitted changes.** A worktree sees only commits. Show the files, and ask once whether to commit them as one docs commit. Do not start until they are committed.
-- **Other uncommitted changes** stay as they are. Name them. Each step stages only its own files.
-- **Read the spec once, whole.** Take setup and the check before commit from `### Commands` in `AGENTS.md`, which most harnesses have already loaded.
-- **The feature hash.** The hash in the spec's header must equal `git hash-object docs/feature/<slug>.md`. When it does not, the feature changed after the spec was written: stop, and name `/to-implement-spec`. A spec with `Feature: none` has no hash.
+- **The spec is untracked, or the spec, its feature doc, or the glossary has uncommitted changes.** Show the files, and ask once whether to commit them as one docs commit. Start only once they are committed.
+- **Other uncommitted changes** stay as they are. Name them.
+- **Read the spec once, whole.** Take setup and the check before commit from `### Commands` in `AGENTS.md`.
+- **The feature hash** in the spec's header must equal `git hash-object docs/feature/<slug>.md`. When it does not, stop, and name `/to-implement-spec`. A spec with `Feature: none` has no hash.
+- **Each step is a verifiable unit** ([principles/sequence-verifiable-units.md](principles/sequence-verifiable-units.md)). A step with no `Check:`, or with a Check that cannot fail when the step is wrong, cannot be done as written: stop, and name `/to-implement-spec`.
 
 ### 2. Find what landed
+
+State comes from git ([principles/make-operations-idempotent.md](principles/make-operations-idempotent.md)). Run this on every start, including a resume, then read `state.md` for the notes of landed steps.
 
 ```bash
 base=$(git log -1 --diff-filter=A --format=%H -- docs/spec/<slug>.md)    # the commit that added this spec
 git log --format='%(trailers:key=Spec-Step,valueonly)' "$base"..HEAD | grep '^<slug>#'
 git log --all --not HEAD --grep='^Spec-Step: <slug>#' --format='%h %s'  # this spec's steps outside HEAD
+git worktree list | grep "go-work-.*-<slug>-"                            # worktrees a stopped run left
 ```
 
 - A step has landed when a commit since `base` carries its trailer.
-- This spec's steps outside `HEAD`, on another branch or in another worktree, mean another run is working it, or a run left them unmerged. Name them, and stop until the user says which run goes on. Runs on different specs, in different worktrees, can go at once.
+- This spec's steps outside `HEAD` mean another run is working it or left them unmerged. Name them, and stop until the user says which run goes on. Runs on other specs, in other worktrees, can go at once.
+- A leftover `go-work-<repo>-<slug>-<n>` worktree with no commit outside `HEAD` is stale. Remove it.
 - A step is ready when it has not landed and every step in its `After` has.
 
 ### 3. Run the ready steps
 
 Repeat until every step has landed or one is blocked.
 
-- **One ready step**, or the user asked for one at a time: run it in this worktree.
-- **Several ready steps:** run up to three at once, or as many as the user said, each in its own temporary worktree from `HEAD`. Steps the spec does not order with `After` change different modules and files. Start them together.
+- **One ready step**, or the user asked for one at a time: run it here.
+- **Several ready steps:** start up to three at once, or as many as the user said. Each gets its own temporary worktree from `HEAD` ([principles/separate-shared-state.md](principles/separate-shared-state.md)):
 
   ```bash
   git worktree add --detach "${TMPDIR:-/tmp}/go-work-<repo>-<slug>-<n>" HEAD
   ```
 
-  A detached worktree adds no branch. Run the setup command in it first. When setup is a cold build that takes minutes, as in a large Rust or C++ tree, run the steps one after another instead.
+  Run the setup command in it first. When setup is a cold build that takes minutes, run the steps one after another instead.
 
-Each step gets this brief. A fork already holds the spec and `AGENTS.md`, so it skips reading them.
+Each step gets this brief. A fork skips reading the spec and `AGENTS.md`.
 
 ```text
+Read <absolute path of this skill's directory>/references/worker.md before anything else.
+
 Land step <n> of the implement spec docs/spec/<slug>.md.
 [Parallel steps only:] Work only in <worktree path>, and run every command there.
 
-Read the spec once. Follow AGENTS.md; read it only if it is not already in your context. Do exactly step <n>, with the interfaces, data, and tests the spec gives for it. Steps <landed numbers> have landed. Do not redo them, and do not start another step.
+Read the spec once. Follow AGENTS.md; read it only if it is not already in your context. Do exactly step <n>, with the interfaces, data, and tests the spec gives for it. Steps <landed numbers> have landed. Do not redo them or start another step.
 - Do not edit the spec. When the step cannot be done as written (an interface does not fit, a test cannot pass, the step needs a change the spec does not name), stop without committing and say why.
-- Run the step's Check with its output to a log file. Read only the tail of a failure.
-- Stage only this step's files. Make one commit: an imperative subject under 72 characters, a blank line, then the trailer `Spec-Step: <slug>#<n>`.
-- Do not push, create branches, or touch another worktree.
+- Each test you add follows <absolute path of this skill's principles/test-behavior.md>. Its expected values come from the spec, not from the code.
+- Run the step's Check with its output to <repo root>/.scratch/go-work/<slug>/step-<n>.log. Read only the tail of a failure.
+- Stage only this step's files. Make one commit: an imperative subject under 72 characters, a blank line, then the trailer `Spec-Step: <slug>#<n>`. The subject says what the step changes, in glossary terms, as `technical-writing` gives a commit message.
+- Do not create branches or touch another worktree.
 
 Reply in at most three lines:
 landed <hash> | blocked: <why>
@@ -100,19 +98,25 @@ check: <command> exit <code>
 note: <only what a later step must know, such as a name that differs from the spec>
 ```
 
+`<repo root>` is the absolute path of this checkout, also for a step in a temporary worktree.
+
 ### 4. Take each report
 
+A report is a claim ([principles/prove-it-works.md](principles/prove-it-works.md)):
+
 - **Verify the commit** without reading its diff: `git show --stat --format='%h %s%n%(trailers:key=Spec-Step,valueonly)' <hash>`. The trailer is there, and the files fit the step.
-- **Bring parallel steps into this worktree** in step-number order: `git cherry-pick <hash>`, then run the step's Check. On a conflict, `git cherry-pick --abort`, and run that step again here on the new `HEAD`. Then remove its worktree: `git worktree remove --force <path>`.
-- **A Check that fails here** goes back once with the log tail: to the same subagent when the harness can continue one, else to a new one. The fix amends that commit. A second failure blocks the step.
-- **A blocked step** ends the run. Let the steps already running finish, bring in the ones that landed, and stop. Report the reason and the steps still open. Do not patch the spec or work around it.
-- **Keep only the report lines.** Do not re-read the spec: it has not changed.
+- **Run the step's Check here** on the landed commit, its output to `check-<n>.log`. For a parallel step, first bring it into this worktree in step-number order: `git cherry-pick <hash>`. On a conflict, `git cherry-pick --abort`, and run that step again here on the new `HEAD`. Then remove its worktree: `git worktree remove --force <path>`.
+- **A Check that fails here** goes back once with the log tail: to the same subagent when the harness can continue one, else to a new one. The fix amends that commit.
+- **A second failure** blocks the step. Before any third attempt, follow [principles/attack-the-premise.md](principles/attack-the-premise.md). A premise that the spec states is a wrong spec, and goes to `to-implement-spec`.
+- **A blocked step** ends the run. Let running steps finish, bring in the ones that landed, and stop. Report the reason and the steps still open. Do not work around it.
+- **Keep only the report lines**, and add them to `state.md`. Do not re-read the spec.
 
 ### 5. Finish
 
 When the last step has landed:
 
-1. Run the check before commit on the whole tree, quietly. A failure stops the run: report it with the log tail.
+1. Run the check before commit on the whole tree, its output to `final.log`. On a failure, stop and report the log tail.
 2. Amend the last step's commit so it also closes the spec: set the feature doc's Status to `shipped`, and run `git mv docs/spec/<slug>.md docs/spec/archived/<YYYY-MM-DD>-<slug>.md`, dated today. When `docs/spec/archived/.ignore` is missing, create it holding `*`. Then `git commit --amend --no-edit`; when that commit is already pushed, make a new commit instead. A spec with `Feature: none` is only archived.
-3. Run `git worktree list`, remove every worktree this run added, and run `git worktree prune`.
-4. Report `git log --oneline <start>..HEAD`, any blocked step, and the final check. The next step is `/diff-review` on `<start>..HEAD`. Do not push.
+3. Remove every worktree this run added (`git worktree list`), then run `git worktree prune`.
+4. Report `git log --oneline <start>..HEAD`, any blocked step and its reason, and the final check. The next step is `/diff-review` on `<start>..HEAD`. Do not push.
+5. Delete `.scratch/go-work/<slug>/`. A blocked run keeps it for the resume.

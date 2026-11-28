@@ -2,16 +2,6 @@
   "name": "skills",
   "plugins": [
     {
-      "name": "general",
-      "source": "./",
-      "skills": [
-        "./skills/kami",
-        "./skills/learn",
-        "./skills/read",
-        "./skills/write"
-      ]
-    },
-    {
       "name": "engineering",
       "source": "./",
       "skills": [
@@ -20,15 +10,22 @@
         "./skills/to-features",
         "./skills/feature-new",
         "./skills/feature-iterate",
+        "./skills/prototype",
         "./skills/to-implement-spec",
+        "./skills/architect",
+        "./skills/arena",
         "./skills/batman",
         "./skills/go-work",
         "./skills/diff-review",
+        "./skills/pr",
+        "./skills/rpi",
+        "./skills/note",
+        "./skills/technical-writing",
+        "./skills/unslop",
+        "./skills/show-me",
         "./skills/code-bugfix",
         "./skills/architecture-review",
-        "./skills/design-system",
-        "./skills/design-system-adopt",
-        "./skills/health"
+        "./skills/ui-design"
       ]
     }
   ]

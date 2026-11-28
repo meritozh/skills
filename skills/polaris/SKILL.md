@@ -1,44 +1,19 @@
 ---
 name: polaris
-description: "Set a long-range goal for the project and the route to reach it: the end state and the signal that shows it, two or three routes compared, the chosen route broken into ordered parts, written to docs/polaris/<slug>.md. Also reviews an active goal's progress, route, or reached state. Use when the user describes a direction bigger than one feature (a north star, a roadmap, a new platform or kind of user, a subsystem to replace, a reliability or speed target; 目标, 方向, 路线图), or asks how a goal is going. Not for one feature, which is feature-new or feature-iterate."
+description: "Set a long-range goal and the route to it, for work too big for one feature: what will be true when it is reached and the signal that shows it, today's distance from it, the route chosen from two or three, and its ordered parts, written to docs/polaris/<slug>.md. Also reviews an active goal's progress, route, or reached state. Use when the user describes a direction bigger than one feature (a north star, a roadmap, a new platform or kind of user, a subsystem to replace, a reliability or speed target; 目标, 方向, 路线图), or asks how a goal is going. Not for one feature, which is feature-new or feature-iterate."
 ---
 
 # polaris
 
-Run this skill when the user ran `/polaris`, or when the request matches [When to use](#when-to-use). When you start it without `/polaris`, say so in one line, with the reason, so the user can redirect. When the work belongs to another skill, say which and why: switch to it when you can invoke it, otherwise name it for the user (for example `/to-features`) and stop.
+Run this skill when the user ran `/polaris`, or when the request matches the description. When you start it without `/polaris`, say so in one line, with the reason, so the user can redirect. When the work belongs to another skill, say which and why: switch to it when you can invoke it, otherwise name it for the user and stop.
 
-A goal says what will be true when it is reached, for whom, and how anyone can tell. Its route says which parts get there, in what order. A goal is coarser than a feature and outlives many of them. It is ready to cut into features when it fits the project, its end state and signal are pinned, today's distance to it is known, its words match the project's terms, the author has earned it, at least two routes were compared and the one set aside has had its best case heard, the chosen route is broken into ordered parts, and the route has been attacked. Run those moves in that order.
+Work comes in two sizes. A **feature** is what one feature doc and one implement spec can carry. A **goal** is bigger: it needs several features, so it first needs a target and a route. This skill sets the goal and its route and stops there. Cutting the route into features is `to-features`; deciding each feature is `feature-new` or `feature-iterate`; planning the code is `to-implement-spec`. A goal that turns out to fit one feature goes to `feature-new` or `feature-iterate`.
 
-Run it with one sentence, or after talking the goal through. What the conversation already settled is an answer, so the skill asks only what is still open.
-
-Stop at the goal and its route. Do not list features, write specs, or write code. Cutting the route into features is `to-features`. Deciding one feature is `feature-new`, and changing one is `feature-iterate`. What the project is, and its rules, are `project`. A single refactor is `to-implement-spec`.
-
-## When to use
-
-- The user has a direction bigger than one feature: a new kind of user, a new platform, a subsystem to replace, a reliability or speed target.
-- `architecture-review` found a direction that spans many modules and needs features of its own.
-- An active goal needs review: what has shipped toward it, whether the route still holds, whether it is reached.
-
-## When not to use
-
-- The direction fits in one feature. That is `feature-new` or `feature-iterate`.
-- It changes what the project is. That is the opening of `AGENTS.md` (`/project`) or the README, by the user.
-
-## Stance
-
-- Outcome, not output. A goal says what will be true for a user or for the project, not what gets built. "Ship a plugin API" is a part. "Teams extend the editor without forking it" is a goal.
-- A goal without a signal never ends. The signal is something someone can observe, and a number when one exists.
-- Coarse on purpose. A part names a capability, not a screen, an endpoint, or a module. Detail belongs to the feature skills.
-- Today comes from the feature docs and the code, not from memory.
-- The glossary's words are the project's words. When the user's word differs from the glossary's for the same concept, name the glossary term and use it from then on.
-- Cross-examiner, then interviewer, then advocate for the route set aside, then attacker of the chosen route. Keep the four voices separate.
-- The user produces the argument. Do not invent their constraint, their metric, or their rejected alternative.
-- The interviewer proposes and the user decides. Every question carries a recommended answer and its reason.
-- A thin answer is data. Name it.
+The goal doc is the record of the work. It is written early as a `draft` with its open questions in it, so the work can stop and resume in another session, and it becomes `active` when nothing is open. Its form is [references/polaris-doc.md](references/polaris-doc.md). A strict attack on it is `batman`'s job, after it is written, not this skill's. An idea that comes up and does not belong to this work goes to `note` in one line, and the work goes on.
 
 ## Procedure
 
-1. **Load.** Read what the project says it is, and what already exists toward the goal:
+1. **Research today.** Before asking anything, find what already exists toward the goal: what the project says it is, the goals and features that touch it, and the code. For a wide search, use subagents when the harness has them. Each brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`; keep only their conclusions, with file:line, in this thread. Every claim cites its file and line ([principles/show-the-evidence.md](principles/show-the-evidence.md)).
 
    ```bash
    head -20 AGENTS.md README.md
@@ -46,118 +21,51 @@ Stop at the goal and its route. Do not list features, write specs, or write code
    rg -il '<subject>|<key term>' docs
    ```
 
-   - **The user named an existing goal**, or asked how one is going: follow [Review](#review).
-   - **An active goal overlaps this one.** Name it, and ask whether the two merge or the boundary moves.
-2. **Pin the goal.** One sentence: when it is reached, who can do what, or what is true. Then its signal, and its horizon: a rough time frame (weeks, a quarter, a year).
-3. **Check the fit.** Quote the line that says what the project is. When the goal contradicts it, ask whether the goal changes or the project does, and stop until the user answers. When nothing says what the project is, ask for one sentence and use it for this run.
-4. **Measure today.** From the feature docs and the code: what already serves the goal, with each feature's Status, and what is missing. A few lines, not an inventory.
-5. **Align the terms.** Read `docs/GLOSSARY.md` when it exists. For each noun the goal introduces or leans on, follow "Before adding a term" in [references/glossary.md](references/glossary.md). Use the glossary's term in everything after this step. A conflict becomes a question.
-6. **Earn the goal** from what the user has already said. The four fields are: the goal, the goal or course they set aside (staying the course counts), the constraint that makes this goal win now, and the cost of being wrong plus the first signal they would see. Ask the missing fields in one turn, with any term conflict, and wait. A thin answer goes on as thin: the route comparison and the grill test it.
-7. **Compare routes.** Draft two or three routes, the user's included. A route is an ordered list of parts. For each: what a user gets first, what it risks, what it costs, and what it closes off. Give a head-to-head on the constraints from step 6, and your recommendation. When the user has picked, steelman the route set aside: its best case in one paragraph, the conditions where it wins, and when to revisit.
-8. **Shape the parts.** For each part of the chosen route, settle the capability it adds, in glossary terms; its `After`, the parts it needs; the existing features it builds on or changes; and `Done when`, the signal that the part is in place. The first part gives a user something usable end to end, however thin, unless the user decides otherwise. What the goal excludes becomes a `Not this` line. Ask following [Questions](#questions).
-9. **Grill the route** as shaped. Surface 3–5 assumptions it is betting on. For each, one scenario where it breaks. Rank them `would-kill` or `would-hurt`. End by asking what would convince them this is the wrong goal or the wrong route.
+   - An existing goal named, or asked about: follow [Review](#review).
+   - An active goal overlaps this one: ask whether they merge or the boundary moves.
+2. **Pin the target.** One sentence of who can do what, or what is true, when the goal is reached. Its signal: something a named person can observe, with a number when one exists. A goal has no date or horizon: the doc says where the work goes, not when. Check it against the line that says what the project is; a contradiction is a question for the user. Use the glossary's terms ([references/glossary.md](references/glossary.md)), and make a conflicting word a question.
+3. **Write the draft.** `docs/polaris/<slug>.md`, `Status: draft`, with the paragraph on today from step 1, what is settled, and every open item under `## Open questions`, each with its options and the recommended one.
+4. **Choose the route.** Draft two or three routes that differ in structure, the user's included, and weigh what a user gets first ([principles/compare-real-options.md](principles/compare-real-options.md), [principles/experience-first.md](principles/experience-first.md)). A route is an ordered list of parts. A fact a spike or prototype could settle, such as whether a library or a sync model holds up, gets the spike, not a question. Compare the routes in one table, with your recommendation, and ask the user to pick:
+
+   | Route | A user gets first | Risk | Cost | Closes off |
+   | --- | --- | --- | --- | --- |
+
+   The chosen route goes under `## Route` as one paragraph: the constraint that makes it win, the best route set aside with the condition under which it would win, and the first thing someone would see if the route is wrong.
+5. **Shape the parts.** For each part of the route: the capability it adds, in glossary terms (not a screen, an endpoint, or a module), and why it comes at this point; `After`, the parts it needs; `Builds on`, the features it uses or changes; `Done when`, its signal. The first part gives a user something usable end to end, unless the user decides otherwise. Every `Done when` holding should make the goal's signal hold. What the goal excludes becomes a `Not this` line. Cut parts the signal does not need; recommending that a part not be built is a valid answer ([principles/subtract-before-you-add.md](principles/subtract-before-you-add.md)).
+6. **Settle the open questions.** Ask them following [Questions](#questions). After each answer, write it into its line of the doc and delete the question.
+7. **Finish.** When `## Open questions` is empty, run `technical-writing` on the doc, then show the goal sentence, the signal, the route, and the parts, and ask once to confirm the goal as it stands. On yes, delete the section and set `Status: active`. Update `docs/GLOSSARY.md` with each new term and each resolved conflict, creating it when missing. Leave out `## Features`: `to-features` writes it.
+
+The next step is `to-features <slug>`, then `batman` on the goal when a fresh-eyed attack is wanted.
 
 ## Questions
 
-- Ask one to three questions a turn: the ones whose answers do not wait on another open answer.
-- Each question carries your recommended answer and its reason, so the user can answer yes. Ask for a decision, not an opinion.
-- What the user already said, in this run or earlier in the conversation, is an answer. Do not ask it again.
-- There is no fixed number of turns. Questions end when the goal, its signal, the route, and every part are settled.
-- When the user stops early, list the open items and write nothing. The doc states a decided goal.
+- Fill what the code and the docs answer yourself, and cite where. Ask the user only what is theirs to decide or only they know.
+- Ask with the question tool, following [references/asking.md](references/asking.md), each question with a recommended answer first and its reason. Ask for a decision, not an opinion.
+- When the user stops, the draft keeps its open questions. Say what is open and stop.
 
 For "make the app work offline":
 
 ```
-1. Signal: what would show the goal is reached?
-   Recommended: a field user can record a visit with no connection, and it syncs within a minute of reconnecting, because field users are who asked (said earlier).
-2. Horizon: one quarter?
-   Recommended: yes. The sync engine is the long part (src/sync/ has no queue today), and a quarter fits one route.
+Signal: what shows the goal is reached?
+- A field user records a visit with no connection, and it syncs within a minute of reconnecting (Recommended): field users are who asked.
+- Every screen works offline: wider, and nobody asked for the admin screens.
 ```
 
 Not: "What does offline mean to you?" It offers no answer to confirm or correct.
 
 ## Review
 
-For an active goal in `docs/polaris/<slug>.md`:
+For an active goal:
 
-1. Read the goal, and the Status of each feature doc its `## Features` links. Report progress per part: features shipped, decided, and not yet decided.
-2. Check the signal. When it holds, ask whether the goal is reached. On yes, set `Status: reached`.
-3. When the user wants a different route or new parts, run steps 7–9 on what has not shipped. Parts and features already decided stay unless the user drops them. The next step is `/to-features <slug>`, which revises the unlinked feature lines.
+1. Read the goal and the Status of each feature doc its `## Features` links. Report per part: features shipped, decided, and not yet decided.
+2. When the signal holds, ask whether the goal is reached. On yes, set `Status: reached`.
+3. When the user wants a different route or new parts, run steps 4–6 on what has not shipped, drafting the route you would choose had the new requirement been there from the start ([principles/redesign-from-first-principles.md](principles/redesign-from-first-principles.md)). Parts and features already decided stay unless the user drops them. The next step is `to-features <slug>`.
 4. A goal the user drops: delete its doc. Its decided features keep their own docs.
 
-## Output
+## Report
 
-When step 1 or 3 stops, give its finding and the question. When step 6 asks, give only the missing fields and any term conflict. During steps 7 and 8, each turn gives the routes or the parts, and its questions. When everything is settled:
-
-```
-## Goal
-<one sentence>
-Signal: …
-Horizon: …
-
-## Fit
-Project: "<the line that says what the project is>" (<file>)
-Fits: yes | no: "<the line it contradicts>" (<file>)
-
-## Today
-Serves the goal: <feature docs, each with its Status> | none
-Missing: …
-
-## Terms
-Uses: <glossary terms>
-New: **<Term>**: <draft definition>
-Resolved: "<word>" → **<Term>**
-
-## The argument
-Goal: …
-Set aside: …
-Winning constraint: …
-Cost of being wrong / first signal: …
-Verdict: strong | thin | missing <piece>
-
-## Routes
-| Route | A user gets first | Risk | Cost | Closes off |
-| --- | --- | --- | --- | --- |
-| … | … | … | … | … |
-
-Chosen: <route>, because <constraint>.
-Steelman of <route set aside>: <one paragraph>
-Wins when: …
-Revisit when: …
-
-## Parts
-1. <Part>: <capability>. After: none. Builds on: <feature docs> | none. Done when: …
-2. …
-
-Not this:
-- …
-
-## The grill
-Route as it stands: <one line>
-
-Assumptions:
-1. <assumption> — <concrete way it breaks>
-
-Failure scenarios:
-1. [would-kill] …
-2. [would-hurt] …
-
-What would change your mind?
-```
-
-Leave out a line with nothing to say.
-
-## After confirmation
-
-When the user accepts the goal:
-
-1. Write `docs/polaris/<slug>.md` with the template in [references/polaris-doc.md](references/polaris-doc.md). Status is `active`. Leave out `## Features`: `to-features` writes it.
-2. Update `docs/GLOSSARY.md` with each new term and each resolved conflict, following [references/glossary.md](references/glossary.md). Create the file when it is missing.
-
-The next step is `/to-features <slug>`.
-
-Until the user accepts, write nothing.
+After each answer, one line: the doc, its Status, and what is still open. When the doc is active: the goal sentence, the signal, the route and the one set aside, and the parts with their `After`.
 
 ## Source
 
-The argument, the steelman, and the grill are adapted from `convince-me`, `steelman`, and `grill-me` by [rahul-kulkarni105/skills](https://github.com/rahul-kulkarni105/skills) (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/). This file applies them to a goal and its route. The glossary format in `references/glossary.md` is adapted from `domain-modeling` by [mattpocock/skills](https://github.com/mattpocock/skills) (MIT, see `LICENSE`).
+The route comparison, with the rejected route and the condition under which it wins, descends from `convince-me` and `steelman` by [rahul-kulkarni105/skills](https://github.com/rahul-kulkarni105/skills) (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/). The glossary format in `references/glossary.md` is adapted from `domain-modeling` by [mattpocock/skills](https://github.com/mattpocock/skills) (MIT, see `LICENSE`).

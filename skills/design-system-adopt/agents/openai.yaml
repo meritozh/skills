@@ -1,5 +1,0 @@
-interface:
-  display_name: "Design System Adopt"
-  short_description: "Apply the design system across the existing code"
-policy:
-  allow_implicit_invocation: false

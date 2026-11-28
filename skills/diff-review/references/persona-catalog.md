@@ -1,51 +1,48 @@
-# Specialist Reviewer Activation Catalog
+# Specialist reviewers
 
-The orchestrator reads the full diff and uses judgment (not keyword matching) to decide which specialists to activate. This catalog defines the signals to reason about.
+Activate specialists by reading the full diff and judging, not by matching keywords. They add to the main pass and never replace it.
 
-## Review Coordination
+## Briefing
 
-Use the activation signals below. When the environment has an agent or sub-agent facility, launch all activated specialists in parallel, each with the full diff and its own persona brief. If no parallel reviewer facility exists, run the specialist passes sequentially in the same session.
+With an agent facility, launch every activated specialist in parallel; without one, run the passes one after another here.
 
-Merge findings: when two specialists flag the same code location, keep the higher severity and note cross-reviewer agreement. Findings on different code locations are never duplicates even if they share a theme.
+Every brief (specialist, skeptic, or adversarial angle) follows [principles/guard-the-context.md](../principles/guard-the-context.md):
 
-Every specialist finding is a claim to verify, not a fact to act on. For HIGH and CRITICAL claims, when the agent facility allows it, spawn one independent skeptic per finding whose only brief is to refute it against the actual code; a finding the skeptic refutes on direct read is dropped or downgraded regardless of which persona raised it. Without the facility, run the skeptic pass yourself: re-read the cited code this turn and confirm the claim is real and live, not already handled elsewhere, not consistent-by-design, not a latent-only risk labeled as a live bug. Parallel reviewers over-report from name-based inference and partial context; drop what dissolves on direct read, and cite the verification path before a claim enters the report.
+```text
+Read <absolute path of this skill's directory>/references/worker.md before anything else.
+Read <absolute path of the persona file>.
+Diff: git diff <base-sha>..<head-sha>, plus these dirty or untracked files: <paths>.
+Files to read: <the frozen file list, or this reviewer's share of it>.
+Reply in the persona's Output format.
+```
 
-## Always-On (no condition required)
+A skeptic's or angle's brief names its one finding to refute, or its angle, in place of the persona file. A skeptic replies `holds`, `refuted`, or `downgraded to <severity>`, with one line of evidence.
 
-The main `diff-review` pass always runs. Specialists add to it; they never replace it.
+## Merging and verifying
 
-## Conditional Specialists
+When two specialists flag one location, keep the higher severity and note the agreement. Findings on different locations are never duplicates.
 
-### Security Reviewer
+Every specialist finding is a claim to verify. For each HIGH or CRITICAL claim, start one skeptic whose only task is to refute it against the code, or, without the facility, re-read the cited code this turn yourself. Drop or downgrade a claim that is refuted on direct read, handled elsewhere, consistent by design, or a latent risk labeled as a live bug. Cite the verification path before a claim enters the report.
 
-**Agent file:** `agents/reviewer-security.md`
-**Activate at:** Standard or Deep depth
+## Security reviewer
 
-Activate when the diff changes code an attacker could reach or influence: trust-boundary input, auth or crypto, credentials, or query/shell/path construction.
+Persona file: `agents/reviewer-security.md`. Standard or Deep depth.
 
-**Do not activate** for: pure UI changes, config file updates, test-only changes, documentation.
+Activate when the diff changes code an attacker could reach: input across a trust boundary, auth or crypto, credentials, or query, shell, or path construction. Not for pure UI, config, test-only, or documentation changes.
 
-### Architecture Reviewer
+## Architecture reviewer
 
-**Agent file:** `agents/reviewer-architecture.md`
-**Activate at:** Standard or Deep depth
+Persona file: `agents/reviewer-architecture.md`. Standard or Deep depth.
 
-Activate when the diff changes how modules relate: boundaries, public APIs or signatures, cross-module dependencies, or a major dependency, rather than logic inside one module.
+Activate when the diff changes how modules relate: boundaries, public APIs or signatures, cross-module dependencies, or a major dependency. Not for single-file bug fixes, test additions, style changes, or documentation.
 
-**Do not activate** for: single-file bug fixes, test additions, style changes, documentation updates.
+## Adversarial pass (Deep only)
 
-## Adversarial Pass (Deep only)
+No persona file. With an agent facility, run the four angles as parallel agents, each blind to the others' findings; otherwise as one more pass after all findings are collected. Each asks how to break the system through this diff:
 
-No dedicated agent file. When the environment has an agent facility, the orchestrator runs the four angles as parallel agents, each blind to the others' findings; otherwise it runs them as an extra reasoning pass after all findings are collected.
+1. **Assumption violation.** What does this code assume is always true (a format, an order, a range), and what happens when it is not?
+2. **Composition failures.** What breaks when the new code meets the existing system under concurrent load or partial failure?
+3. **Cascade construction.** What sequence of valid operations leads to an invalid state?
+4. **Abuse cases.** What happens on the 1000th request, during a deployment, or with two users editing the same resource at once?
 
-**Activate at:** Deep depth only (step 4 in SKILL.md).
-
-Adversarial pass asks: "If I wanted to break this system through this specific diff, what would I do?"
-
-Four attack angles:
-1. **Assumption violation** -- What does this code assume is always true? (format, ordering, range) What happens when it is not?
-2. **Composition failures** -- What breaks when this new code interacts with the existing system under concurrent load or partial failure?
-3. **Cascade construction** -- What sequence of valid operations leads to an invalid state?
-4. **Abuse cases** -- What happens on the 1000th request, during a deployment, with two users editing the same resource simultaneously?
-
-Give each adversarial finding a confidence from 0 to 1. Drop anything below 0.60. Convergence from independent angles raises confidence; a finding only one angle raised gets the same skeptic check as a specialist claim.
+Give each adversarial finding a confidence from 0 to 1, and drop anything below 0.60. Agreement from independent angles raises confidence. A finding only one angle raised gets the skeptic check.

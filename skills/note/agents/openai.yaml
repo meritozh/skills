@@ -1,0 +1,5 @@
+interface:
+  display_name: "Note"
+  short_description: "Jot an idea down in one line, digest the notes later"
+policy:
+  allow_implicit_invocation: true

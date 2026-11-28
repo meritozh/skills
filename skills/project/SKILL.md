@@ -1,55 +1,41 @@
 ---
 name: project
-description: "Keep this repo's AGENTS.md: the commands, layout, and gotchas an agent cannot learn quickly from the code, built-in principles for project status, docs, commits, cleanup, and architecture, and the project's own rules, with CLAUDE.md as a symlink to it. Run the full setup when the user asks to set up or refresh the repo's agent rules (初始化项目规范, 更新 AGENTS.md). Also use it, briefly, when the user states a standing rule or preference for the whole repo in the middle of other work (以后都…, 这个项目一律…, 我们不用…): record it in one line, unless AGENTS.md already says it. Not for a choice that holds only for the current task, how a feature behaves, a personal preference, or a long-range goal."
+description: "Keep this repo's AGENTS.md, with CLAUDE.md as a symlink to it: the commands, layout, and gotchas an agent cannot learn quickly from the code, built-in principles for project status, docs, commits, cleanup, and architecture, and the project's own rules. Run the full setup when the user asks to set up or refresh the repo's agent rules (初始化项目规范, 更新 AGENTS.md). Also use it, briefly, when the user states a standing rule or preference for the whole repo mid-work (以后都…, 这个项目一律…, 我们不用…): record it in one line, unless AGENTS.md already says it. Not for a choice that holds only for the current task, how a feature behaves, a personal preference, or a long-range goal."
 ---
 
 # Project
 
-Run this skill when the user ran `/project`, or when the request matches [When to use](#when-to-use). It has two modes:
+Run this skill on `/project` or a request that matches the description, in one of two modes:
 
-- **Full run:** read the repo, ask the user what it cannot tell, and write the whole file. `/project` alone runs it, and so does a request to set up or refresh the repo's agent rules.
-- **Capture:** record one standing rule the user states in the middle of other work, then go back to that work. `/project` with a rule in its message runs a capture.
+- **[Full run](#full-run):** `/project` alone, or a request to set up or refresh the agent rules.
+- **[Capture](#capture):** `/project` with a rule in its message, or one standing rule, boundary, design preference, command, gotcha, or status change stated mid-work. Record it, then go back to the work.
 
 When you start it without `/project`, say so in one line, with the reason. When the work belongs to another skill, say which and why: switch to it when you can invoke it, otherwise name it for the user and stop.
 
-Work at the git repo root. This skill writes `AGENTS.md`: what an agent cannot quickly learn from the code, and the standing rules every agent follows while working here. It does not set a long-range goal (`polaris`), cut one into features (`to-features`), decide a new feature (`feature-new`), change an existing one (`feature-iterate`), write an implement spec (`to-implement-spec`), carry one out (`go-work`), review a diff (`diff-review`), diagnose a bug (`code-bugfix`), or review the whole codebase (`architecture-review`).
+Work at the git repo root. This skill owns two sections of `AGENTS.md`: `## Repo` for facts and `## Principles` for rules. `CLAUDE.md` is a relative symlink to `AGENTS.md`.
 
-`AGENTS.md` has two sections this skill owns: `## Repo` holds the facts of this repo, and `## Principles` holds the rules. `CLAUDE.md` is a relative symlink to `AGENTS.md`.
-
-## When to use
-
-- The user asks to set up or refresh the repo's agent rules: `/project`, "初始化项目规范", "更新 AGENTS.md". That is a full run.
-- In the middle of other work, the user states something that holds for every future task in this repo: a rule, a boundary, a design preference, a command, a gotcha, or a change of project status. That is a capture.
-
-## When not to use
-
-- A choice for the task at hand only. Follow it, and write nothing.
-- How one feature behaves: `feature-new` or `feature-iterate`. A project term goes in `docs/GLOSSARY.md` through those skills.
-- A long-range direction: `polaris`.
-- A visual style or design system: `docs/design-system/DESIGN.md`, which `design-system` writes.
-- A personal preference, such as reply language or tone: the user's global agent file, not this repo.
+Not for this skill: a choice for the task at hand only (follow it and write nothing); how one feature behaves, or a term for `docs/GLOSSARY.md` (`feature-new`, `feature-iterate`); a long-range direction (`polaris`) or cutting it into features (`to-features`); an implement spec (`to-implement-spec` writes it, `go-work` carries it out); a visual style or a screen's design (`ui-design`, in `docs/design/`); a diff review (`diff-review`), a bug (`code-bugfix`), or a whole-codebase review (`architecture-review`); a personal preference such as reply language or tone (the user's global agent file).
 
 ## What belongs in AGENTS.md
 
-Every agent reads the whole file at the start of every task, so every line is paid for on every task. A line earns its place only when all of these hold:
+A line goes in only when all of these hold:
 
-- **An agent would get it wrong without it.** If the README, a manifest, or a quick read of the code says it, leave it out.
-- **It stays true for months.** Current bugs, sprint plans, and TODOs do not belong.
-- **It is concrete.** A command, a path, a name, a limit, or a prohibition. "Write clean code" is not.
-- **No tool already enforces it.** For a rule the formatter, linter, or type checker enforces, write the command, not the rule.
-- **It is about this repo.** A personal preference, such as reply language or tone, belongs in the user's global agent file.
-- **It is short.** An explanation longer than three lines goes into `docs/`, and the line links to it.
+- **An agent would get it wrong without it.** Leave out what the README, a manifest, or a quick read of the code says.
+- **It stays true for months**, unlike current bugs, sprint plans, and TODOs.
+- **It is concrete.** A command, a path, a name, a limit, or a prohibition, not "write clean code".
+- **No tool already enforces it.** For a rule a formatter, linter, type checker, test, CI check, or hook enforces, write the command ([principles/subtract-before-you-add.md](principles/subtract-before-you-add.md)).
+- **It is short.** Put an explanation longer than three lines in `docs/` and link it.
 
 | Part | Holds | Comes from |
 | --- | --- | --- |
-| Opening line | What this repo is, in one or two sentences. Only when the README does not open with that | The repo, confirmed by the user |
-| `### Commands` | Exact commands: setup, the check before commit, one test, run, and any other command agents need (codegen, migrate) | Manifests and CI, confirmed by the user |
-| `### Layout` | Paths whose role the name does not say: generated or vendored code and how to update it, entry points, where a kind of code goes | The tree, confirmed by the user |
+| Opening line | What this repo is, in one or two sentences, only when the README does not open with that | The repo |
+| `### Commands` | Exact commands: setup, check before commit, one test, run, and any other an agent needs (codegen, migrate) | Manifests and CI |
+| `### Layout` | Paths whose name does not say their role: generated or vendored code and how to update it, entry points, where a kind of code goes | The tree |
 | `### Gotchas` | Facts that surprise: a required service or env var, code that looks dead but is loaded at runtime, a test that needs the network | The user |
 | Built-in principles | Fixed text | `references/` |
 | `### Project rules` | Do, do-not, and ask-before rules for this repo | The user, and migration |
 
-Not in `AGENTS.md`: goals (`docs/polaris/`), features and their decisions (`docs/feature/`), implement specs (`docs/spec/`), project terms (`docs/GLOSSARY.md`), change history, plans, secrets, and anything a tool already reports.
+The user confirms every part drawn from the repo. Not in `AGENTS.md`: goals, features, implement specs, and project terms (they live in `docs/`), change history, plans, secrets, and anything a tool already reports.
 
 ## Built-in principles
 
@@ -61,82 +47,82 @@ Not in `AGENTS.md`: goals (`docs/polaris/`), features and their decisions (`docs
 | `### Cleanup` | [references/cleanup.md](references/cleanup.md) |
 | `### Architecture` | [references/architecture.md](references/architecture.md) |
 
-Each reference file is the text of its principle: copy everything below its `#` heading, unchanged, under the heading in `AGENTS.md`. Project status is the one with a value: write the status, its two fields from that row, then the table.
+Never write the files in `principles/` into `AGENTS.md`.
 
-Every full run brings each built-in principle to the current text of its reference:
+Copy each reference file below its `#` heading, unchanged, under its `AGENTS.md` heading. For Project status, write the status, its two fields from that row, then the table.
 
-- A missing built-in principle is added.
-- A built-in principle whose text differs is replaced with the reference text. The project status value stays as it is unless the user changes it.
-- A line under a built-in heading that the reference does not contain is a repo-specific rule. Move it to `### Project rules` once, and tell the user.
+Every full run syncs each built-in principle to its reference:
 
-`### Project rules` holds the rules the user states and the rules migration carries over. This skill never invents a rule and never rewrites one unless the user asks.
+- Add a missing one, and replace one whose text differs. Keep the project status value unless the user changes it.
+- Move a line under a built-in heading that its reference lacks to `### Project rules` once, and tell the user.
+
+`### Project rules` holds rules the user states and rules migration carries over. Never invent one, or rewrite one unless asked.
 
 ## Capture
 
-Most of what a user says holds only for the task at hand. A capture is for the rare statement that holds for every future task in this repo. As `AGENTS.md` fills in, more of those are already there, so a capture writes less and less.
-
-1. **Test it.** It holds for every future task here, not just this one, and it passes every test in [What belongs in AGENTS.md](#what-belongs-in-agentsmd). "以后都", "这个项目一律", "we never", and "always" are signals. When it is unclear whether the user means it for good or for now, ask once, with the line you would write: "Make this a project rule: <line>?"
-2. **Find its place** in `AGENTS.md`, which most harnesses have already loaded. A command goes under `### Commands`, a path under `### Layout`, a surprise under `### Gotchas`, a do, do-not, or ask-before rule under `### Project rules`, and a change of status under `### Project status`.
+1. **Test it** against [What belongs in AGENTS.md](#what-belongs-in-agentsmd): it must hold for every future task here. "以后都", "这个项目一律", "we never", and "always" are signals. If it may be meant for now only, ask once, with the line you would write: "Make this a project rule: <line>?"
+2. **Find its place:** the part of `AGENTS.md` the table above names, or `### Project status` for a change of status.
 3. **Check what is there.**
-   - Already said, in substance: write nothing. Say in one line which line covers it.
-   - It contradicts a line of `### Project rules`: show both, and ask which stands.
-   - It contradicts a built-in principle: ask whether this repo overrides it. A yes goes under `### Project rules`, naming the principle it overrides.
-   - It changes the project status: confirm it, because the status decides whether breaking changes and data migrations are allowed. Then write the status and its two fields from [references/statuses.md](references/statuses.md).
-4. **Write one line**, concrete and short, with the user's meaning in the file's voice. An explanation longer than three lines goes into `docs/`, and the line links to it.
-5. **Show it** with `git diff -- AGENTS.md`, and go back to the work the capture interrupted. Do not commit: the user reviews a rule before it is committed.
+   - Already said, in substance: write nothing, and name the line that covers it.
+   - It contradicts a `### Project rules` line: show both and ask which stands.
+   - It contradicts a built-in principle: ask whether this repo overrides it. A yes goes under `### Project rules`, naming the principle.
+   - It changes the project status: confirm it, then write the status and its two fields from [references/statuses.md](references/statuses.md).
+4. **Propose a check.** When a tool could check the rule (a lint rule, a test, a CI check, a hook), propose that check with the line or instead of it ([principles/encode-lessons.md](principles/encode-lessons.md)), naming the tool and its config file. Add it only when the user agrees; then the line is the command that runs it.
+5. **Write one line** with the user's meaning in the file's voice.
+6. **Show it** with `git diff -- AGENTS.md`, and go back to the interrupted work. Do not commit.
 
-Without `AGENTS.md`, a capture has no place to go. Ask whether to run the full setup now, with this rule as its first project rule.
+Without `AGENTS.md`, ask whether to run the full setup now, with this rule as its first project rule.
 
-A capture does not touch the built-in principles, the repo facts, or `CLAUDE.md`. Bringing those up to date is the full run's job.
+A capture never touches built-in principles, repo facts, or `CLAUDE.md`.
 
 ## Full run
 
 ### 1. Read
 
-Before asking anything, read what the repo already says:
+Before asking anything, read:
 
-- Agent instructions: `AGENTS.md`, a regular `CLAUDE.md`, `AGENT.md`, `.cursorrules`, `.cursor/rules/`, `.github/copilot-instructions.md`, and any other file the repo already uses as agent guidance.
+- Agent instructions: `AGENTS.md`, a regular `CLAUDE.md`, `AGENT.md`, `.cursorrules`, `.cursor/rules/`, `.github/copilot-instructions.md`, and any other agent guidance.
 - The opening of `README.md`, and `CONTRIBUTING.md`.
-- Manifests and task runners: `package.json` scripts, `Makefile`, `justfile`, `Cargo.toml`, `pyproject.toml`, `go.mod`, and their kin.
-- CI config. The check that gates a merge is the best candidate for the check before commit.
+- Manifests and task runners: `package.json` scripts, `Makefile`, `justfile`, `Cargo.toml`, `pyproject.toml`, `go.mod`.
+- CI config: the check that gates a merge is the best candidate for the check before commit.
 - The top two levels of the tree, generated-file markers, vendored directories, `.env.example`, compose files.
 - `git tag`, release config, and migrations: evidence for the project status.
 
 ### 2. Draft
 
-Draft every part of the file from that evidence. For each line, keep where it came from (a file and line), or mark it `ask`. Run the filter in "What belongs in AGENTS.md" on every candidate, existing lines included. An existing line whose evidence is gone, such as a script no longer in the manifest or a path that no longer exists, is `stale`.
+Draft every part from that evidence, citing each line's file and line or marking it `ask`. Run the filter in "What belongs in AGENTS.md" on every candidate, existing lines included. Mark an existing line whose evidence is gone (a script no longer in the manifest, a missing path) `stale`, and an existing rule a tool already enforces `enforced`, naming the tool and its config line.
 
 ### 3. Ask
 
-Talk to the user before writing. Ask only what the repo cannot answer. Attach your best guess and its evidence to every question, so the user can say yes, correct it, or skip it.
+Ask only what the repo cannot answer, with your best guess and its evidence.
 
-Ask in this order, and leave out every question that has nothing to ask:
+Ask in this order, skipping any with nothing to ask:
 
-1. **Status.** On a new file: `startup`, `release-solo`, or `release`. Give one line on what each allows, and your guess from tags, releases, and migrations. On an existing file, ask only when the evidence disagrees with the stored status.
-2. **Check before commit.** When manifests and CI name several checks or none: which one an agent runs before each commit, and how to run a single test.
-3. **Conflicts.** For each migrated rule that contradicts a built-in principle: keep the repo's rule, take the built-in, or drop it.
-4. **Stale lines and loose sections.** For each `stale` line: drop, keep, or correct. For each other section that holds commands, layout, or rules, such as `## Development` or `## Testing`: fold it into `## Repo` or `## Principles`, or leave it.
+1. **Status.** On a new file: `startup`, `release-solo`, or `release`, with one line on what each allows. On an existing file, ask only when the evidence disagrees with the stored status.
+2. **Check before commit.** When manifests and CI name several checks or none: which one an agent runs before each commit, and how to run one test.
+3. **Conflicts.** Each migrated rule that contradicts a built-in principle: keep it, take the built-in, or drop it.
+4. **Stale lines and loose sections.** Each `stale` line: drop, keep, or correct. Each `enforced` line: drop it (keeping the tool's command under `### Commands`) or keep it. Each other section with commands, layout, or rules, such as `## Development`: fold it into `## Repo` or `## Principles`, or leave it.
 5. **Boundaries.** What an agent must never touch, or must ask before doing. Offer what you found: generated or vendored paths, migrations, lockfiles, deploy scripts, production config.
-6. **Gotchas.** What a new contributor, human or agent, usually gets wrong here. Offer what you found. Only the user can fully answer this one.
+6. **Gotchas.** What a new contributor usually gets wrong here.
 7. **Anything else** every agent here should know. Ask once, last.
 
 How to ask:
 
-- At most four questions in a round. When the agent has a structured question tool, use it, with your guess as the first option. Otherwise ask a numbered list in chat.
-- Run a second round only for what the answers raised, then write. Never run more than three rounds.
-- An answer passes the same filter. When one fails it, say which test it fails and where it belongs instead, and ask once whether to write it anyway.
-- Do not ask the user to restate what the repo already says, and do not ask them to approve the built-in principles.
-- On a re-run where nothing is `ask`, `stale`, or in conflict, ask only question 7. When the user's message already says what to change, skip this step.
+- At most four questions a round, through the structured question tool when there is one, your guess first. Otherwise a numbered list in chat.
+- Run another round only for what the answers raised. Never more than three rounds.
+- Filter answers too. For one that fails, say which test and where it belongs, and ask once whether to write it anyway.
+- Never ask the user to restate the repo or approve the built-in principles.
+- On a re-run with nothing `ask`, `stale`, `enforced`, or in conflict, ask only question 7. Skip this step when the user's message already says what to change.
 
-Until the user answers question 3, a conflicting repo rule goes to `### Project rules`. An unanswered status question leaves a new file at `startup`.
+Until question 3 is answered, a conflicting repo rule goes to `### Project rules`. An unanswered status leaves a new file at `startup`.
 
 ### 4. Write
 
-Use the names `AGENTS.md` and `CLAUDE.md`. If the same name exists in another case, rename it to that spelling before writing. `AGENT.md` is not this file. When `AGENTS.md` is missing and `AGENT.md` exists, rename `AGENT.md` to `AGENTS.md`.
+Use the names `AGENTS.md` and `CLAUDE.md`, renaming one in another case before writing. When `AGENTS.md` is missing and `AGENT.md` exists, rename `AGENT.md` to `AGENTS.md`.
 
-**Migrate.** Carry each current rule from the agent instructions read in step 1 into `AGENTS.md` once: a fact into `## Repo`, a rule into the built-in principle it duplicates or into `### Project rules`. Do not rewrite bodies under `docs/`. Do not migrate product data.
+**Migrate.** Carry each current rule from the step 1 agent instructions into `AGENTS.md` once: a fact into `## Repo`, a rule into the built-in principle it duplicates or into `### Project rules`. Do not rewrite bodies under `docs/` or migrate product data.
 
-`## Project status`, `## Status rules`, and `## Work` are the old shape of the principles. When one is present, fold it into `## Principles` and remove the old heading. Leave every other section outside `## Repo` and `## Principles` as it is, unless the user chose to fold it in.
+Fold an old-shape `## Project status`, `## Status rules`, or `## Work` into `## Principles` and remove the old heading. Leave every other section as it is unless the user chose to fold it in.
 
 **Shape.** `AGENTS.md` after a run:
 
@@ -195,27 +181,27 @@ Use the names `AGENTS.md` and `CLAUDE.md`. If the same name exists in another ca
 - <each rule the user stated or migration carried over>
 ```
 
-Leave out the opening line, a row, a subsection, or the whole `## Repo` when it has nothing that passes the filter. Every built-in principle is always present.
+Leave out the opening line, a row, a subsection, or the whole `## Repo` when nothing in it passes the filter. Every built-in principle is always present.
 
-Also create `docs/feature/` when missing, and add `.scratch/` to `.gitignore` when it is not ignored yet (`git check-ignore -q .scratch/x || echo '.scratch/' >> .gitignore`).
+Create `docs/feature/` when missing, and add `.scratch/` to `.gitignore` when not ignored yet (`git check-ignore -q .scratch/x || echo '.scratch/' >> .gitignore`), for the files skills read back later ([references/scratch.md](references/scratch.md)).
 
-**Update in place.** `AGENTS.md` states each fact and rule as it stands now. Replace text that is no longer true. Do not append how a rule changed, and do not add a second file for the same principle.
+**Update in place.** Replace text that is no longer true. Do not append how a rule changed, and do not add a second file for the same principle.
 
 ### 5. Link
 
-After `AGENTS.md` is in place, make `CLAUDE.md` a relative symlink to `AGENTS.md`. If `CLAUDE.md` is already that symlink, leave it. If it is a symlink elsewhere, replace the link. If it is a regular file, its rules belong in `AGENTS.md` first; then replace the file with the symlink. Tell the user what moved.
+Make `CLAUDE.md` a relative symlink to `AGENTS.md`, replacing a link that points elsewhere. If it is a regular file, move its rules into `AGENTS.md` first, then replace it, and tell the user what moved.
 
 ```bash
 git mv agents.md AGENTS.md      # case-only rename of a tracked file; untracked: mv through a temporary name
 ln -sfn AGENTS.md CLAUDE.md     # relative target, replaces an old link
 readlink CLAUDE.md              # prints AGENTS.md
-git ls-files -s CLAUDE.md       # mode 120000 once staged means git stores a symlink
+git ls-files -s CLAUDE.md       # mode 120000 once staged: git stores a symlink
 ```
 
-On Windows, git writes a symlink only with `core.symlinks=true` and symlink permission. Without them `CLAUDE.md` becomes a text file holding `AGENTS.md`. Say so instead of claiming the link exists.
+On Windows without `core.symlinks=true` and symlink permission, `CLAUDE.md` becomes a text file holding `AGENTS.md`: say so, do not claim the link.
 
 ### 6. Finish
 
-Show what changed: `git diff -- AGENTS.md .gitignore`, or the whole file when it is new. Name each principle added, replaced, or moved to `### Project rules`. List the lines written from evidence that no question covered, so the user can strike them. Confirm that `CLAUDE.md` points at `AGENTS.md`.
+Show `git diff -- AGENTS.md .gitignore`, or the whole file when it is new. Name each principle added, replaced, or moved to `### Project rules`. List the lines written from evidence no question covered, so the user can strike them. Confirm that `CLAUDE.md` points at `AGENTS.md`.
 
-Do not commit, push, or migrate data. A change to the repo's rules is reviewed by the user before it is committed; the Commits principle governs the work that follows, not this run.
+Do not commit, push, or migrate data. The Commits principle governs the work that follows, not this run.

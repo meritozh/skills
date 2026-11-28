@@ -1,0 +1,5 @@
+interface:
+  display_name: "UI Design"
+  short_description: "Design, polish, or review a user interface"
+policy:
+  allow_implicit_invocation: true

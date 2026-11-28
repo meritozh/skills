@@ -1,67 +1,17 @@
 #!/usr/bin/env node
 
 import { spawnSync } from 'node:child_process';
-import {
-  copyFileSync,
-  cpSync,
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  rmSync,
-  statSync,
-  writeFileSync,
-} from 'node:fs';
-import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const SKILLS_PACKAGE = 'skills@latest';
-export const LOCK_FILE = 'sources.lock.json';
 export const CATALOG_FILE = 'catalog.json';
 export const README_FILE = 'README.md';
+export const SKILLS_DIR = 'skills';
 export const SHARED_DIR = 'shared';
-export const LOCK_VERSION = 1;
 export const README_INDEX_START = '<!-- skills-index:start -->';
 export const README_INDEX_END = '<!-- skills-index:end -->';
-
-const SKIP_WALK_DIRS = new Set([
-  '.git',
-  '.cache',
-  'node_modules',
-  'dist',
-  'build',
-  '__pycache__',
-]);
-
-const ROOT_SKILL_COMPANIONS = new Set(['scripts', 'references', 'agents']);
-const ROOT_SKILL_FILES = new Set(['SKILL.md', 'LICENSE', 'VERSION', 'CHEATSHEET.md']);
-const ROOT_ASSET_SKIP = new Set(['images', 'demos', 'showcase', 'illustrations']);
-
-const ROOT_SKILL_SKIP = new Set([
-  '.git',
-  '.github',
-  '.gitignore',
-  '.gitattributes',
-  '.claude',
-  '.claude-plugin',
-  '.agents',
-  '.well-known',
-  '.husky',
-  '.changeset',
-  'node_modules',
-  'dist',
-  'build',
-  'package.json',
-  'package-lock.json',
-  'pnpm-lock.yaml',
-  'vercel.json',
-  'README.md',
-  'AGENTS.md',
-  'CLAUDE.md',
-  'CHANGELOG.md',
-  'index.html',
-  'index.md',
-]);
 
 export function repoRootFromHere(here = fileURLToPath(import.meta.url)) {
   return resolve(dirname(here), '..');
@@ -83,10 +33,6 @@ function unquote(value) {
     return trimmed.slice(1, -1);
   }
   return trimmed;
-}
-
-export function parseSkillName(skillMdContent, fallback) {
-  return parseFrontmatter(skillMdContent).name ?? fallback;
 }
 
 function unescapeYamlDoubleQuoted(value) {
@@ -144,156 +90,41 @@ export function parseFrontmatter(skillMdContent) {
   return { name, description };
 }
 
-function posixJoin(...parts) {
-  return parts.join('/').replace(/\\/g, '/').replace(/\/+/g, '/');
-}
-
-function discoveryScore(skillPath) {
-  if (skillPath === 'SKILL.md') return 2;
-  if (skillPath.startsWith('skills/')) return 3;
-  if (skillPath.startsWith('plugins/')) return 0;
-  return 1;
-}
-
-export function discoverSkills(root, { maxDepth = 5 } = {}) {
-  const best = new Map();
-
-  function consider(skill) {
-    const previous = best.get(skill.name);
-    if (!previous || discoveryScore(skill.skillPath) > discoveryScore(previous.skillPath)) {
-      best.set(skill.name, skill);
-    }
-  }
-
-  function walk(dir, depth) {
-    if (depth > maxDepth) return;
-    let entries;
-    try {
-      entries = readdirSync(dir, { withFileTypes: true });
-    } catch {
-      return;
-    }
-
-    const skillMd = join(dir, 'SKILL.md');
-    if (existsSync(skillMd) && statSync(skillMd).isFile()) {
-      const fallback = normalizeSkillName(dir.split(sep).pop() || 'skill');
-      const name = parseSkillName(readFileSync(skillMd, 'utf8'), fallback);
-      consider({
-        name,
-        dir,
-        skillPath: posixJoin(relative(root, skillMd).split(sep).join('/')),
-      });
-    }
-
-    for (const entry of entries) {
-      if (!entry.isDirectory() || SKIP_WALK_DIRS.has(entry.name)) continue;
-      walk(join(dir, entry.name), depth + 1);
-    }
-  }
-
-  walk(root, 0);
-  return [...best.values()].sort((a, b) => a.name.localeCompare(b.name));
-}
-
-export function loadJson(path) {
-  return JSON.parse(readFileSync(path, 'utf8'));
-}
-
 export function loadCatalog(catalogPath) {
   if (!existsSync(catalogPath)) {
     throw new Error(`Missing ${CATALOG_FILE} at ${catalogPath}`);
   }
-  return loadJson(catalogPath);
-}
-
-export function emptyLock() {
-  return { version: LOCK_VERSION, skills: {} };
-}
-
-export function loadLock(lockPath) {
-  if (!existsSync(lockPath)) return emptyLock();
-  const parsed = loadJson(lockPath);
-  if (typeof parsed.version !== 'number' || !parsed.skills || typeof parsed.skills !== 'object') {
-    return emptyLock();
-  }
-  return parsed;
-}
-
-export function writeLock(lockPath, lock) {
-  const skills = {};
-  for (const name of Object.keys(lock.skills).sort()) {
-    skills[name] = lock.skills[name];
-  }
-  writeFileSync(lockPath, JSON.stringify({ version: LOCK_VERSION, skills }, null, 2) + '\n');
-}
-
-export function isLocalSource(source) {
-  return source === '.' || source.startsWith('./') || source.startsWith('../') || isAbsolute(source);
-}
-
-export function remoteSources(catalog) {
-  return catalog.sources.filter((entry) => !isLocalSource(entry.source));
-}
-
-export function localSources(catalog) {
-  return catalog.sources.filter((entry) => isLocalSource(entry.source));
+  return JSON.parse(readFileSync(catalogPath, 'utf8'));
 }
 
 export function validateCatalog(catalog) {
-  const errors = [];
   if (!catalog || typeof catalog !== 'object') {
     return ['catalog must be an object'];
   }
+  const errors = [];
   if (catalog.global !== true) {
-    errors.push('global must be true (v1 only installs from this repo after vendoring)');
+    errors.push('global must be true');
   }
-  if (!Array.isArray(catalog.agents) || catalog.agents.some((a) => typeof a !== 'string' || !a)) {
+  if (
+    !Array.isArray(catalog.agents) ||
+    catalog.agents.length === 0 ||
+    catalog.agents.some((a) => typeof a !== 'string' || !a)
+  ) {
     errors.push('agents must be a non-empty array of strings');
-  } else if (catalog.agents.length === 0) {
-    errors.push('agents must be a non-empty array of strings');
   }
-  if (!Array.isArray(catalog.sources) || catalog.sources.length === 0) {
-    errors.push('sources must be a non-empty array');
-    return errors;
+  if (catalog.sources !== undefined) {
+    errors.push('sources is not supported: every skill in skills/ is part of the collection');
   }
-
-  const claimed = new Map();
-  for (const [index, entry] of catalog.sources.entries()) {
-    const prefix = `sources[${index}]`;
-    if (!entry || typeof entry !== 'object') {
-      errors.push(`${prefix} must be an object`);
-      continue;
-    }
-    if (typeof entry.source !== 'string' || !entry.source.trim()) {
-      errors.push(`${prefix}.source is required`);
-    }
-    if (!Array.isArray(entry.skills) || entry.skills.length === 0) {
-      errors.push(`${prefix}.skills must be a non-empty array`);
-      continue;
-    }
-    if (entry.skills.some((name) => typeof name !== 'string' || !name.trim())) {
-      errors.push(`${prefix}.skills must contain only non-empty strings`);
-      continue;
-    }
-    if (entry.skills.includes('*') && entry.skills.length > 1) {
-      errors.push(`${prefix}.skills cannot mix "*" with other names`);
-    }
-    if (entry.skills.includes('*')) continue;
-    for (const raw of entry.skills) {
-      const name = normalizeSkillName(raw);
-      const previous = claimed.get(name);
-      if (previous && previous !== entry.source) {
-        errors.push(`skill "${name}" is claimed by both ${previous} and ${entry.source}`);
-      } else {
-        claimed.set(name, entry.source);
-      }
-    }
-  }
-
   if (catalog.notGrouped !== undefined && catalog.notGrouped !== 'top' && catalog.notGrouped !== 'bottom') {
     errors.push('notGrouped must be "top" or "bottom"');
   }
-  errors.push(...validateGroupings(catalog, claimed));
+  if (
+    catalog.notSkills !== undefined &&
+    (!Array.isArray(catalog.notSkills) || catalog.notSkills.some((n) => typeof n !== 'string' || !n))
+  ) {
+    errors.push('notSkills must be an array of names that skill text may mention as /name without being a skill');
+  }
+  errors.push(...validateGroupings(catalog));
   errors.push(...validateShared(catalog));
   return errors;
 }
@@ -339,7 +170,7 @@ export function validateShared(catalog) {
 
 // Each catalog.shared entry copies shared/<path> to skills/<skill>/<path>.
 // Installed skills stay self-contained; the repo keeps one source.
-export function planShared({ catalog, vendored, skillsDir, sharedDir }) {
+export function planShared({ catalog, skillsDir, sharedDir }) {
   const items = [];
   const errors = [];
   for (const entry of catalog.shared ?? []) {
@@ -352,12 +183,8 @@ export function planShared({ catalog, vendored, skillsDir, sharedDir }) {
     const content = readFileSync(from);
     for (const raw of entry.skills) {
       const skill = normalizeSkillName(raw);
-      if (vendored.has(skill)) {
-        errors.push(`${SHARED_DIR}/${entry.path} cannot go into vendored skill "${skill}"`);
-        continue;
-      }
       if (!existsSync(join(skillsDir, skill, 'SKILL.md'))) {
-        errors.push(`${SHARED_DIR}/${entry.path} names "${skill}", which is not a skill in skills/`);
+        errors.push(`${SHARED_DIR}/${entry.path} names "${skill}", which is not a skill in ${SKILLS_DIR}/`);
         continue;
       }
       const to = join(skillsDir, skill, ...parts);
@@ -378,15 +205,6 @@ export function applyShared(items) {
   }
 }
 
-export function sharedProblems(report) {
-  return [
-    ...(report.sharedErrors ?? []),
-    ...(report.shared ?? [])
-      .filter((item) => item.state !== 'ok')
-      .map((item) => `skills/${item.skill}/${item.path} ${item.state} from ${SHARED_DIR}/${item.path}`),
-  ];
-}
-
 const GROUP_NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export function titleCaseName(name) {
@@ -396,17 +214,13 @@ export function titleCaseName(name) {
     .join(' ');
 }
 
-export function validateGroupings(catalog, claimed = new Map()) {
-  const errors = [];
-  if (catalog.groupings === undefined) return errors;
-  if (!Array.isArray(catalog.groupings)) {
-    errors.push('groupings must be an array');
-    return errors;
-  }
+export function validateGroupings(catalog) {
+  if (catalog.groupings === undefined) return [];
+  if (!Array.isArray(catalog.groupings)) return ['groupings must be an array'];
 
+  const errors = [];
   const groupNames = new Set();
   const groupedSkills = new Map();
-  const hasStarSource = (catalog.sources ?? []).some((entry) => entry.skills?.includes('*'));
 
   for (const [index, group] of catalog.groupings.entries()) {
     const prefix = `groupings[${index}]`;
@@ -450,9 +264,6 @@ export function validateGroupings(catalog, claimed = new Map()) {
       } else {
         groupedSkills.set(name, group.name);
       }
-      if (!hasStarSource && claimed.size > 0 && !claimed.has(name)) {
-        errors.push(`skill "${name}" in "${group.name}" is not listed in any source`);
-      }
     }
   }
   return errors;
@@ -465,7 +276,7 @@ export function groupingMembershipErrors(catalog, knownNames) {
     for (const raw of group.skills ?? []) {
       const name = normalizeSkillName(raw);
       if (!known.has(name)) {
-        errors.push(`grouping "${group.name}" lists "${name}", which is not in skills/`);
+        errors.push(`grouping "${group.name}" lists "${name}", which is not in ${SKILLS_DIR}/`);
       }
     }
   }
@@ -478,7 +289,7 @@ export function renderMarketplaceJson(catalog) {
     plugins: (catalog.groupings ?? []).map((group) => ({
       name: group.name,
       source: './',
-      skills: group.skills.map((skill) => `./skills/${normalizeSkillName(skill)}`),
+      skills: group.skills.map((skill) => `./${SKILLS_DIR}/${normalizeSkillName(skill)}`),
     })),
   };
 }
@@ -506,50 +317,23 @@ export function writeGeneratedConfigs(root, catalog, knownNames) {
   writeFileSync(join(root, 'skills.sh.json'), JSON.stringify(renderSkillsShJson(catalog), null, 2) + '\n');
 }
 
-export function claimedRemoteNames(catalog) {
-  const names = new Map();
-  for (const entry of remoteSources(catalog)) {
-    if (entry.skills.includes('*')) continue;
-    for (const raw of entry.skills) {
-      names.set(normalizeSkillName(raw), entry.source);
-    }
-  }
-  return names;
-}
-
-export function firstPartyNamesOnDisk(skillsDir, lock) {
-  return listSkills(skillsDir, lock).firstParty.map((skill) => skill.name);
-}
-
-export function listSkills(skillsDir, lock) {
-  const firstParty = [];
-  const vendored = [];
-  if (!existsSync(skillsDir)) return { firstParty, vendored };
-
+// Every directory in skills/ with a SKILL.md is in the collection.
+// A skill whose frontmatter name differs from its directory is marked name-mismatch.
+export function listSkills(skillsDir) {
+  const skills = [];
+  if (!existsSync(skillsDir)) return skills;
   for (const entry of readdirSync(skillsDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
     const skillMd = join(skillsDir, entry.name, 'SKILL.md');
     if (!existsSync(skillMd)) continue;
     const parsed = parseFrontmatter(readFileSync(skillMd, 'utf8'));
-    const name = parsed.name || normalizeSkillName(entry.name);
-    const item = {
-      name,
+    skills.push({
+      name: entry.name,
       description: parsed.description,
-      source: lock.skills[name]?.source ?? '.',
-    };
-    if (lock.skills[name]) vendored.push(item);
-    else firstParty.push(item);
+      state: parsed.name === entry.name ? 'ok' : 'name-mismatch',
+    });
   }
-
-  firstParty.sort((a, b) => a.name.localeCompare(b.name));
-  vendored.sort((a, b) => a.name.localeCompare(b.name) || a.source.localeCompare(b.source));
-  return { firstParty, vendored };
-}
-
-export function formatSourceCell(source) {
-  if (source === '.' || isLocalSource(source)) return '`.`';
-  if (/^[^/]+\/[^/]+$/.test(source)) return `[${source}](https://github.com/${source})`;
-  return source;
+  return skills.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export function escapeTableCell(text) {
@@ -559,41 +343,35 @@ export function escapeTableCell(text) {
     .trim();
 }
 
-export function renderSkillTable(items) {
-  if (items.length === 0) return '_None._';
-  const rows = [
-    '| Skill | Source | Description |',
-    '| --- | --- | --- |',
-    ...items.map((item) => {
-      const skill = `[${item.name}](skills/${item.name}/SKILL.md)`;
-      return `| ${skill} | ${formatSourceCell(item.source)} | ${escapeTableCell(item.description)} |`;
-    }),
-  ];
-  return rows.join('\n');
-}
-
-export function renderSkillsIndex(lists) {
+export function renderSkillsIndex(skills) {
+  const table =
+    skills.length === 0
+      ? '_None._'
+      : [
+          '| Skill | Description |',
+          '| --- | --- |',
+          ...skills.map(
+            (skill) =>
+              `| [${skill.name}](${SKILLS_DIR}/${skill.name}/SKILL.md) | ${escapeTableCell(skill.description)} |`
+          ),
+        ].join('\n');
   return [
     README_INDEX_START,
     '',
-    '## First-party',
+    '## Skills',
     '',
-    renderSkillTable(lists.firstParty),
+    table,
     '',
-    '## Vendored',
-    '',
-    renderSkillTable(lists.vendored),
-    '',
-    '_Generated by `node scripts/cli.mjs sync`. Do not edit these tables by hand._',
+    '_Generated by `node scripts/cli.mjs sync`. Do not edit this table by hand._',
     '',
     README_INDEX_END,
   ].join('\n');
 }
 
-export function updateReadme(readmePath, lists) {
+export function updateReadme(readmePath, skills) {
   if (!existsSync(readmePath)) return false;
   const current = readFileSync(readmePath, 'utf8');
-  const block = renderSkillsIndex(lists);
+  const block = renderSkillsIndex(skills);
   const start = current.indexOf(README_INDEX_START);
   const end = current.indexOf(README_INDEX_END);
   let next;
@@ -612,32 +390,12 @@ export function updateReadme(readmePath, lists) {
   return true;
 }
 
-export function resolveGitUrl(source) {
-  if (
-    source.startsWith('git@') ||
-    source.startsWith('ssh://') ||
-    source.startsWith('http://') ||
-    source.startsWith('https://')
-  ) {
-    return source;
-  }
-  if (/^[^/]+\/[^/]+$/.test(source)) {
-    return `https://github.com/${source}.git`;
-  }
-  throw new Error(`Unrecognized source: ${source}`);
-}
-
-export function sanitizeSource(source) {
-  return source.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '');
-}
-
 export function defaultRun(cmd, args, opts = {}) {
-  const { env: extraEnv, timeout = 180_000, ...rest } = opts;
+  const { timeout = 180_000, ...rest } = opts;
   const result = spawnSync(cmd, args, {
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
     timeout,
-    env: { ...process.env, GIT_TERMINAL_PROMPT: '0', ...extraEnv },
     ...rest,
   });
   if (result.status !== 0) {
@@ -647,293 +405,121 @@ export function defaultRun(cmd, args, opts = {}) {
   return result.stdout;
 }
 
-export function skillSparsePaths(treeFiles) {
-  const paths = new Set();
-  for (const file of treeFiles) {
-    if (file !== 'SKILL.md' && !file.endsWith('/SKILL.md')) continue;
-    if (file.startsWith('plugins/')) continue;
-    if (file === 'SKILL.md') {
-      for (const name of ROOT_SKILL_FILES) paths.add(name);
-      for (const companion of ROOT_SKILL_COMPANIONS) paths.add(companion);
+export const DESCRIPTION_MAX = 1024;
+
+function listFiles(dir) {
+  const files = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) files.push(...listFiles(path));
+    else files.push(path);
+  }
+  return files;
+}
+
+function withoutFences(text) {
+  const out = [];
+  let fence = null;
+  for (const line of text.split(/\r?\n/)) {
+    const marker = /^\s*(`{3,}|~{3,})/.exec(line)?.[1];
+    if (fence) {
+      if (marker && marker[0] === fence[0] && marker.length >= fence.length) fence = null;
+      out.push('');
       continue;
     }
-    paths.add(file.slice(0, -'/SKILL.md'.length));
-  }
-  for (const file of treeFiles) {
-    const match = file.match(/^assets\/([^/]+)/);
-    if (match && !ROOT_ASSET_SKIP.has(match[1])) paths.add(`assets/${match[1]}`);
-  }
-  for (const license of ['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'COPYING']) {
-    if (treeFiles.includes(license)) paths.add(license);
-  }
-  return [...paths];
-}
-
-function isUsableGitRepo(dest, run) {
-  try {
-    run('git', ['-C', dest, 'rev-parse', 'HEAD']);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function applySparsePaths(dest, run) {
-  const treeFiles = run('git', ['-C', dest, 'ls-tree', '-r', '--name-only', 'HEAD'])
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean);
-  const paths = skillSparsePaths(treeFiles);
-  if (paths.length === 0) return;
-  run('git', ['-C', dest, 'sparse-checkout', 'set', '--skip-checks', ...paths]);
-}
-
-function cloneSparse(url, dest, run) {
-  let lastError;
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      if (existsSync(dest)) rmSync(dest, { recursive: true, force: true });
-      run('git', ['clone', '--depth', '1', '--filter=blob:none', '--sparse', url, dest]);
-      applySparsePaths(dest, run);
-      return;
-    } catch (error) {
-      lastError = error;
-    }
-  }
-  throw lastError;
-}
-
-export function fetchGitSource(source, cacheDir, run = defaultRun) {
-  const url = resolveGitUrl(source);
-  const dest = join(cacheDir, sanitizeSource(source));
-  mkdirSync(cacheDir, { recursive: true });
-  if (isUsableGitRepo(dest, run)) {
-    try {
-      run('git', ['-C', dest, 'fetch', '--depth', '1', 'origin']);
-      run('git', ['-C', dest, 'reset', '--hard', 'FETCH_HEAD']);
-    } catch {
-      // Keep the last successful checkout when the network drops.
-    }
-  } else {
-    cloneSparse(url, dest, run);
-  }
-  const commit = run('git', ['-C', dest, 'rev-parse', 'HEAD']).trim();
-  return { path: dest, commit };
-}
-
-function isInside(root, candidate) {
-  const rel = relative(root, candidate);
-  return rel === '' || (!rel.startsWith('..') && !isAbsolute(rel));
-}
-
-function copySkillAssets(fromDir, toDir) {
-  mkdirSync(toDir, { recursive: true });
-  for (const entry of readdirSync(fromDir, { withFileTypes: true })) {
-    if (ROOT_ASSET_SKIP.has(entry.name)) continue;
-    cpSync(join(fromDir, entry.name), join(toDir, entry.name), { recursive: true });
-  }
-}
-
-export function copySkill(fromDir, toDir, repoRoot) {
-  rmSync(toDir, { recursive: true, force: true });
-  mkdirSync(dirname(toDir), { recursive: true });
-
-  const rootSkill = resolve(fromDir) === resolve(repoRoot);
-  if (!rootSkill) {
-    cpSync(fromDir, toDir, {
-      recursive: true,
-      filter: (src) => {
-        const base = src.split(sep).pop();
-        return base !== '.git';
-      },
-    });
-    return;
-  }
-
-  mkdirSync(toDir, { recursive: true });
-  for (const entry of readdirSync(fromDir, { withFileTypes: true })) {
-    if (ROOT_SKILL_SKIP.has(entry.name)) continue;
-    const src = join(fromDir, entry.name);
-    if (entry.isDirectory() && entry.name === 'assets') {
-      copySkillAssets(src, join(toDir, 'assets'));
+    if (marker) {
+      fence = marker;
+      out.push('');
       continue;
     }
-    if (entry.isDirectory() && !ROOT_SKILL_COMPANIONS.has(entry.name)) continue;
-    if (entry.isFile() && !ROOT_SKILL_FILES.has(entry.name)) continue;
-    cpSync(src, join(toDir, entry.name), {
-      recursive: true,
-      filter: (file) => file.split(sep).pop() !== '.git',
-    });
+    out.push(line.replace(/`[^`]*`/g, ''));
   }
+  return out.join('\n');
 }
 
-export function copyUpstreamLicense(repoRoot, destDir) {
-  const licenseNames = ['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'COPYING'];
-  const found = licenseNames.find((name) => existsSync(join(repoRoot, name)));
-  if (!found) return null;
-  mkdirSync(destDir, { recursive: true });
-  const dest = join(destDir, 'LICENSE');
-  cpSync(join(repoRoot, found), dest);
-  return dest;
-}
-
-export function matchRequestedSkills(requested, discovered) {
-  const byName = new Map(discovered.map((skill) => [skill.name, skill]));
-  if (requested.length === 1 && requested[0] === '*') {
-    return { matched: discovered.slice(), missing: [] };
-  }
-  const matched = [];
-  const missing = [];
-  for (const raw of requested) {
-    const name = normalizeSkillName(raw);
-    const skill = byName.get(name);
-    if (skill) matched.push(skill);
-    else missing.push(name);
-  }
-  return { matched, missing };
-}
-
-export function planSync({ catalog, lock, skillsDir, fetched }) {
-  const errors = validateCatalog(catalog);
-  if (errors.length) {
-    return { copy: [], remove: [], licenses: [], errors };
-  }
-
-  const copy = [];
-  const licenses = [];
-  const nextRemoteNames = new Set();
-
-  for (const entry of remoteSources(catalog)) {
-    const fetchedSource = fetched[entry.source];
-    if (!fetchedSource) {
-      errors.push(`source ${entry.source} was not fetched`);
-      continue;
+// Lints each skill's text: the description fits the budget and is YAML-safe,
+// every relative Markdown link resolves, and every `/name`, `$name`, or
+// "`name` skill" mention names a skill in skills/ (or catalog.notSkills), and
+// every principles/*.md copy is linked from the skill's own text.
+export function lintSkills({ catalog, root }) {
+  const skillsDir = join(root, SKILLS_DIR);
+  const skills = listSkills(skillsDir);
+  const known = new Set([...skills.map((skill) => skill.name), ...(catalog.notSkills ?? [])]);
+  const problems = [];
+  for (const { name, description } of skills) {
+    const dir = join(skillsDir, name);
+    const skillMd = readFileSync(join(dir, 'SKILL.md'), 'utf8');
+    const raw = /^description: (.*)$/m.exec(skillMd)?.[1] ?? '';
+    if (!description) problems.push(`${SKILLS_DIR}/${name}/SKILL.md: description is empty`);
+    if (description.length > DESCRIPTION_MAX) {
+      problems.push(`${SKILLS_DIR}/${name}/SKILL.md: description is ${description.length} characters, over ${DESCRIPTION_MAX}`);
     }
-    const { matched, missing } = matchRequestedSkills(entry.skills, fetchedSource.skills);
-    for (const name of missing) {
-      errors.push(`${entry.source} has no skill named "${name}"`);
+    if (!/^(["']).*\1$/.test(raw) && /: | #/.test(raw)) {
+      problems.push(`${SKILLS_DIR}/${name}/SKILL.md: description holds ": " or " #" and must be quoted`);
     }
-    for (const skill of matched) {
-      nextRemoteNames.add(skill.name);
-      const dest = join(skillsDir, skill.name);
-      const existingFirstParty = existsSync(dest) && !lock.skills[skill.name];
-      if (existingFirstParty) {
-        errors.push(
-          `refusing to overwrite first-party skill "${skill.name}" with ${entry.source}`
-        );
-        continue;
+    for (const file of listFiles(dir).filter((path) => path.endsWith('.md'))) {
+      const rel = file.slice(root.length + 1);
+      const text = readFileSync(file, 'utf8');
+      for (const [, target] of withoutFences(text).matchAll(/\]\(([^)\s]+)\)/g)) {
+        if (/^[a-z]+:/i.test(target) || target.startsWith('#') || target.includes('<')) continue;
+        const path = decodeURIComponent(target.split('#')[0]);
+        if (!existsSync(resolve(dirname(file), path))) problems.push(`${rel}: link ${target} does not resolve`);
       }
-      copy.push({
-        name: skill.name,
-        from: skill.dir,
-        to: dest,
-        source: entry.source,
-        skillPath: skill.skillPath,
-        commit: fetchedSource.commit,
-        repoRoot: fetchedSource.path,
-      });
+      const mentions = [
+        ...text.matchAll(/`[/$]([a-z][a-z0-9-]*)[`\s]/g),
+        ...text.matchAll(/`([a-z][a-z0-9-]*)` skill\b/g),
+      ];
+      for (const [, mention] of mentions) {
+        if (!known.has(mention)) problems.push(`${rel}: names a skill "${mention}" that is not in ${SKILLS_DIR}/`);
+      }
     }
-    licenses.push({
-      source: entry.source,
-      repoRoot: fetchedSource.path,
-    });
+    const principles = join(dir, 'principles');
+    if (existsSync(principles)) {
+      const texts = listFiles(dir)
+        .filter((path) => path.endsWith('.md') && !path.startsWith(principles))
+        .map((path) => readFileSync(path, 'utf8'))
+        .join('\n');
+      for (const file of readdirSync(principles).filter((f) => f.endsWith('.md'))) {
+        if (!texts.includes(`principles/${file}`)) {
+          problems.push(`${SKILLS_DIR}/${name}/principles/${file}: no file of the skill links it; link it where it applies, or drop the skill from its shared entry`);
+        }
+      }
+    }
   }
-
-  if (errors.length) {
-    return { copy: [], remove: [], licenses: [], errors };
-  }
-
-  const remove = [];
-  for (const [name, entry] of Object.entries(lock.skills)) {
-    if (nextRemoteNames.has(name)) continue;
-    remove.push({
-      name,
-      dir: join(skillsDir, name),
-      source: entry.source,
-    });
-  }
-
-  return { copy, remove, licenses, errors };
+  return [...new Set(problems)];
 }
 
-export function applySync(plan, { skillsDir, thirdPartyDir, lockPath, lock }) {
-  mkdirSync(skillsDir, { recursive: true });
-  mkdirSync(thirdPartyDir, { recursive: true });
-
-  for (const item of plan.remove) {
-    if (existsSync(item.dir) && isInside(skillsDir, item.dir)) {
-      rmSync(item.dir, { recursive: true, force: true });
-    }
-    delete lock.skills[item.name];
-  }
-
-  for (const item of plan.copy) {
-    copySkill(item.from, item.to, item.repoRoot);
-    lock.skills[item.name] = {
-      source: item.source,
-      skillPath: item.skillPath,
-      commit: item.commit,
-    };
-  }
-
-  for (const item of plan.licenses) {
-    copyUpstreamLicense(item.repoRoot, join(thirdPartyDir, sanitizeSource(item.source)));
-  }
-
-  writeLock(lockPath, lock);
-  return lock;
-}
-
-export function statusReport({ catalog, lock, skillsDir, sharedDir = join(dirname(skillsDir), SHARED_DIR) }) {
-  const remote = [];
-  const seen = new Set();
-
-  for (const entry of remoteSources(catalog)) {
-    const requested =
-      entry.skills.length === 1 && entry.skills[0] === '*'
-        ? Object.entries(lock.skills)
-            .filter(([, meta]) => meta.source === entry.source)
-            .map(([name]) => name)
-        : entry.skills.map(normalizeSkillName);
-    for (const name of requested) {
-      seen.add(name);
-      const onDisk = existsSync(join(skillsDir, name, 'SKILL.md'));
-      const locked = lock.skills[name];
-      let state = 'ok';
-      if (!onDisk) state = 'missing';
-      else if (!locked) state = 'untracked';
-      else if (locked.source !== entry.source) state = 'source-mismatch';
-      remote.push({
-        name,
-        source: entry.source,
-        state,
-        commit: locked?.commit ?? null,
-      });
-    }
-  }
-
-  const firstParty = firstPartyNamesOnDisk(skillsDir, lock).map((name) => ({
-    name,
-    state: 'ok',
-  }));
-
-  const stale = Object.keys(lock.skills)
-    .filter((name) => !seen.has(name))
-    .sort()
-    .map((name) => ({
-      name,
-      source: lock.skills[name].source,
-      state: 'stale',
-    }));
-
+export function statusReport({ catalog, root }) {
+  const skills = listSkills(join(root, SKILLS_DIR));
   const shared = planShared({
     catalog,
-    vendored: new Set(Object.keys(lock.skills)),
-    skillsDir,
-    sharedDir,
+    skillsDir: join(root, SKILLS_DIR),
+    sharedDir: join(root, SHARED_DIR),
   });
+  return {
+    skills,
+    groupingErrors: groupingMembershipErrors(
+      catalog,
+      skills.map((skill) => skill.name)
+    ),
+    shared: shared.items,
+    sharedErrors: shared.errors,
+    lint: lintSkills({ catalog, root }),
+  };
+}
 
-  return { remote, firstParty, stale, shared: shared.items, sharedErrors: shared.errors };
+export function statusProblems(report) {
+  return [
+    ...report.skills
+      .filter((skill) => skill.state !== 'ok')
+      .map((skill) => `${SKILLS_DIR}/${skill.name}/SKILL.md ${skill.state}: frontmatter name must match the directory`),
+    ...report.groupingErrors,
+    ...report.sharedErrors,
+    ...report.shared
+      .filter((item) => item.state !== 'ok')
+      .map((item) => `${SKILLS_DIR}/${item.skill}/${item.path} ${item.state} from ${SHARED_DIR}/${item.path}`),
+    ...(report.lint ?? []),
+  ];
 }
 
 export function buildInstallCommand(catalog, repoRoot) {
@@ -947,176 +533,101 @@ export function buildInstallCommand(catalog, repoRoot) {
 }
 
 export function formatStatus(report) {
-  const lines = [];
-  lines.push('Vendored');
-  if (report.remote.length === 0) lines.push('  (none)');
-  for (const item of report.remote) {
-    const commit = item.commit ? ` ${item.commit.slice(0, 7)}` : '';
-    lines.push(`  ${item.state.padEnd(16)} ${item.name}  ${item.source}${commit}`);
+  const lines = ['Skills'];
+  if (report.skills.length === 0) lines.push('  (none)');
+  for (const skill of report.skills) {
+    lines.push(`  ${skill.state.padEnd(16)} ${skill.name}`);
   }
-  lines.push('First-party');
-  if (report.firstParty.length === 0) lines.push('  (none)');
-  for (const item of report.firstParty) {
-    lines.push(`  ${item.state.padEnd(16)} ${item.name}`);
+  for (const message of report.groupingErrors) {
+    lines.push(`  ${'error'.padEnd(16)} ${message}`);
   }
-  if (report.stale.length) {
-    lines.push('Stale lock entries (removed from catalog; next sync deletes them)');
-    for (const item of report.stale) {
-      lines.push(`  ${item.state.padEnd(16)} ${item.name}  ${item.source}`);
-    }
-  }
-  const shared = report.shared ?? [];
-  const sharedErrors = report.sharedErrors ?? [];
-  if (shared.length || sharedErrors.length) {
-    lines.push(`Shared files (edit ${SHARED_DIR}/, then run sync --local)`);
-    for (const item of shared) {
+  if (report.shared.length || report.sharedErrors.length) {
+    lines.push(`Shared files (edit ${SHARED_DIR}/, then run sync)`);
+    for (const item of report.shared) {
       lines.push(`  ${item.state.padEnd(16)} ${item.skill}/${item.path}`);
     }
-    for (const message of sharedErrors) {
+    for (const message of report.sharedErrors) {
       lines.push(`  ${'error'.padEnd(16)} ${message}`);
     }
   }
-  return lines.join('\n');
-}
-
-export function formatPlan(plan) {
-  const lines = [];
-  for (const item of plan.copy) {
-    lines.push(`copy  ${item.name}  <-  ${item.source}  ${item.skillPath}  ${item.commit.slice(0, 7)}`);
-  }
-  for (const item of plan.remove) {
-    lines.push(`rm    ${item.name}  (was ${item.source})`);
-  }
-  for (const item of plan.shared ?? []) {
-    if (item.state === 'ok') continue;
-    lines.push(`share ${item.skill}/${item.path}  <-  ${SHARED_DIR}/${item.path}  (${item.state})`);
-  }
-  if (lines.length === 0) {
-    lines.push('nothing to do');
+  if (report.lint?.length) {
+    lines.push('Lint');
+    for (const message of report.lint) lines.push(`  ${'error'.padEnd(16)} ${message}`);
   }
   return lines.join('\n');
 }
 
-// local: skip the remotes; only copy shared files and regenerate README and configs.
-export async function runSync(
-  root,
-  { dryRun = false, local = false, fetchSource = fetchGitSource, log = console.log } = {}
-) {
-  const catalog = loadCatalog(join(root, CATALOG_FILE));
-  const lock = loadLock(join(root, LOCK_FILE));
-  const errors = validateCatalog(catalog);
-  if (errors.length) {
-    throw new Error(errors.join('\n'));
-  }
-  const skillsDir = join(root, 'skills');
-
-  let plan = { copy: [], remove: [], licenses: [], errors: [] };
-  if (!local) {
-    const cacheDir = join(root, '.cache', 'sources');
-    const fetched = {};
-    for (const entry of remoteSources(catalog)) {
-      log(`fetch ${entry.source}`);
-      const result = fetchSource(entry.source, cacheDir);
-      fetched[entry.source] = {
-        ...result,
-        skills: discoverSkills(result.path),
-      };
-    }
-
-    plan = planSync({ catalog, lock, skillsDir, fetched });
-    if (plan.errors.length) {
-      throw new Error(plan.errors.join('\n'));
-    }
-  }
-
-  const shared = planShared({
-    catalog,
-    vendored: new Set([...Object.keys(lock.skills), ...plan.copy.map((item) => item.name)]),
-    skillsDir,
-    sharedDir: join(root, SHARED_DIR),
-  });
-  if (shared.errors.length) {
-    throw new Error(shared.errors.join('\n'));
-  }
-  plan.shared = shared.items;
-
-  log(formatPlan(plan));
-  if (dryRun) return plan;
-
-  if (!local) {
-    applySync(plan, {
-      skillsDir,
-      thirdPartyDir: join(root, 'third_party'),
-      lockPath: join(root, LOCK_FILE),
-      lock,
-    });
-  }
-  applyShared(plan.shared);
-  const listed = listSkills(join(root, 'skills'), lock);
-  updateReadme(join(root, README_FILE), listed);
-  writeGeneratedConfigs(
-    root,
-    catalog,
-    [...listed.firstParty, ...listed.vendored].map((skill) => skill.name)
-  );
-  return plan;
-}
-
-export function runStatus(root, { log = console.log } = {}) {
+function loadValidCatalog(root) {
   const catalog = loadCatalog(join(root, CATALOG_FILE));
   const errors = validateCatalog(catalog);
   if (errors.length) throw new Error(errors.join('\n'));
-  const report = statusReport({
+  return catalog;
+}
+
+// Copies shared files into the skills that list them, then regenerates the README index and group configs.
+export function runSync(root, { dryRun = false, log = console.log } = {}) {
+  const catalog = loadValidCatalog(root);
+  const skillsDir = join(root, SKILLS_DIR);
+  const shared = planShared({ catalog, skillsDir, sharedDir: join(root, SHARED_DIR) });
+  if (shared.errors.length) throw new Error(shared.errors.join('\n'));
+
+  const pending = shared.items.filter((item) => item.state !== 'ok');
+  for (const item of pending) {
+    log(`share ${item.skill}/${item.path}  <-  ${SHARED_DIR}/${item.path}  (${item.state})`);
+  }
+  if (pending.length === 0) log('shared files up to date');
+  if (dryRun) return shared.items;
+
+  applyShared(pending);
+  const skills = listSkills(skillsDir);
+  updateReadme(join(root, README_FILE), skills);
+  writeGeneratedConfigs(
+    root,
     catalog,
-    lock: loadLock(join(root, LOCK_FILE)),
-    skillsDir: join(root, 'skills'),
-  });
+    skills.map((skill) => skill.name)
+  );
+  return shared.items;
+}
+
+export function runStatus(root, { log = console.log } = {}) {
+  const report = statusReport({ catalog: loadValidCatalog(root), root });
   log(formatStatus(report));
   return report;
 }
 
 export function runInstall(root, { dryRun = false, run = defaultRun, log = console.log } = {}) {
-  const catalog = loadCatalog(join(root, CATALOG_FILE));
-  const errors = validateCatalog(catalog);
-  if (errors.length) throw new Error(errors.join('\n'));
-  const problems = sharedProblems(
-    statusReport({ catalog, lock: loadLock(join(root, LOCK_FILE)), skillsDir: join(root, 'skills') })
-  );
+  const catalog = loadValidCatalog(root);
+  const problems = statusProblems(statusReport({ catalog, root }));
   if (problems.length) {
-    throw new Error(`${problems.join('\n')}\nRun node scripts/cli.mjs sync --local before install.`);
+    throw new Error(`${problems.join('\n')}\nFix these, then run node scripts/cli.mjs sync before install.`);
   }
   const { cmd, args } = buildInstallCommand(catalog, root);
-  const printable = [cmd, ...args].join(' ');
-  log(printable);
+  log([cmd, ...args].join(' '));
   if (dryRun) return { cmd, args };
   run(cmd, args, { cwd: root });
   return { cmd, args };
 }
 
 function printHelp(log = console.log) {
-  log(`Usage: node scripts/cli.mjs <command> [--dry-run] [--local]
+  log(`Usage: node scripts/cli.mjs <command> [--dry-run]
 
 Commands:
-  sync      Fetch remotes listed in catalog.json into skills/, copy shared/
-            files into the skills that list them, regenerate README and configs.
-            --local skips the remotes.
-  update    Same as sync
-  status    Compare catalog.json, sources.lock.json, shared/, and skills/
+  sync      Copy shared/ files into the skills that list them, then regenerate
+            the README index, .claude-plugin/marketplace.json, and skills.sh.json
+  status    Check skills/, catalog.json groupings, and shared/ copies
   install   Install this repo's skills globally via npx skills
 `);
 }
 
-export async function main(argv = process.argv.slice(2), opts = {}) {
+export function main(argv = process.argv.slice(2), opts = {}) {
   const root = opts.root ?? repoRootFromHere();
   const command = argv.find((arg) => !arg.startsWith('-')) ?? 'help';
   const dryRun = argv.includes('--dry-run');
-  const local = argv.includes('--local');
   const log = opts.log ?? console.log;
 
   switch (command) {
     case 'sync':
-    case 'update':
-      await runSync(root, { dryRun, local, fetchSource: opts.fetchSource, log });
+      runSync(root, { dryRun, log });
       return;
     case 'status':
       runStatus(root, { log });
@@ -1136,8 +647,10 @@ export async function main(argv = process.argv.slice(2), opts = {}) {
 
 const invoked = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (invoked) {
-  main().catch((error) => {
+  try {
+    main();
+  } catch (error) {
     console.error(error.message);
     process.exitCode = 1;
-  });
+  }
 }
