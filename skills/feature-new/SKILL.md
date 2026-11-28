@@ -13,7 +13,7 @@ The feature doc is the record of the work. It is written early as a `draft` with
 
 ## Procedure
 
-1. **Research today.** Before asking anything, find what the project says it is, what already does something like this, and the code the feature will meet. For a wide search, use subagents when the harness has them. Each brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`; keep only their conclusions, with file:line, in this thread. Every claim cites its file and line ([principles/show-the-evidence.md](principles/show-the-evidence.md)).
+1. **Research today.** Before asking anything, find what the project says it is, what already does something like this, and the code the feature will meet. For a wide search, use subagents when the harness has them, on the facts row of [references/models.md](references/models.md). Each brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`; keep only their conclusions, with file:line, in this thread. Every claim cites its file and line ([principles/show-the-evidence.md](principles/show-the-evidence.md)).
 
    ```bash
    head -20 AGENTS.md README.md
@@ -44,7 +44,7 @@ The feature doc is the record of the work. It is written early as a `draft` with
    - For each `Meets` line, change the line of the other feature doc that this feature makes untrue.
    - When the feature is a line in a goal's `## Features`, replace the line's sentence with a link to the doc, keeping its number, Part, and After.
 
-Do not write `docs/spec/`. The next step is `to-implement-spec`, and `batman` on the doc first when a fresh-eyed attack is wanted.
+Do not write `docs/spec/`. The next step is `to-implement-spec`, and `batman` on the doc first when a fresh-eyed attack is wanted. A feature with a user interface and no `docs/design/<slug>.md` goes through `ui-design` before the spec.
 
 ## Questions
 

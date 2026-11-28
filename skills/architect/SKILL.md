@@ -52,7 +52,7 @@ Write the picked shape as code before any behavior: the files, the types, the si
 
 ## 5. Stay in the loop
 
-Fill the skeleton in, yourself or through subagents, and check each piece against the shape as it lands. Each subagent brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.` Subagents that run at once each get their own files or worktree, as [principles/separate-shared-state.md](principles/separate-shared-state.md) says. Tests drive the interface the skeleton defines, as [principles/test-behavior.md](principles/test-behavior.md) says.
+Fill the skeleton in, yourself or through subagents on the code row of [references/models.md](references/models.md), and check each piece against the shape as it lands. Each subagent brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.` Subagents that run at once each get their own files or worktree, as [principles/separate-shared-state.md](principles/separate-shared-state.md) says. Tests drive the interface the skeleton defines, as [principles/test-behavior.md](principles/test-behavior.md) says.
 
 - **A signature has to change.** Decide whether the sketch was wrong or the implementation is taking a shortcut. Fix the one that is wrong, and say which.
 - **A workaround appears:** a flag threaded through layers to reach one consumer, a special case for one caller, a second copy of a fact, a callback that reaches back up a layer, a cast to get past a type. The first one is a note. The second of the same kind means the shape is wrong.

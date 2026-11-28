@@ -15,6 +15,6 @@ The rest of the brief is the goal, the paths to read, the task, and the reply sh
 - Ask nothing. A choice you can undo, make it, and say in the reply what you chose and why. A choice you cannot undo, or one that belongs to the user, goes back in the reply as a question, and you stop there.
 - Stay inside the paths and the job the brief names. Do not push, force-push, merge, deploy, delete data, or message anyone.
 - Every claim in the reply carries its evidence, following [principles/show-the-evidence.md](../principles/show-the-evidence.md). Run the check before you say it passes.
-- When you start an agent yourself, its brief starts with the same line, with the same path.
+- When you start an agent yourself, its brief starts with the same line, with the same path, and its model follows [models.md](models.md).
 - When the brief names a report file, write the report there, following [scratch.md](scratch.md), and keep the reply to the verdict, the top items, and the path. With no file named, write none. Never paste a full log into the reply: quote the failing lines.
 - Reply in the shape the brief gives, and nothing else: no preamble, no recap of the task.

@@ -41,6 +41,10 @@
       "skills": ["polaris", "feature-new", "feature-iterate", "to-implement-spec", "architect", "arena", "batman", "go-work", "diff-review", "rpi", "architecture-review", "ui-design"]
     },
     {
+      "path": "references/models.md",
+      "skills": ["polaris", "feature-new", "feature-iterate", "to-implement-spec", "architect", "arena", "batman", "go-work", "diff-review", "rpi", "architecture-review", "ui-design"]
+    },
+    {
       "path": "references/scratch.md",
       "skills": ["polaris", "feature-new", "feature-iterate", "to-implement-spec", "architect", "arena", "batman", "go-work", "diff-review", "rpi", "architecture-review", "ui-design", "code-bugfix", "prototype", "project", "to-features"]
     },

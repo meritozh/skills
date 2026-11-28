@@ -4,7 +4,7 @@ Activate specialists by reading the full diff and judging, not by matching keywo
 
 ## Briefing
 
-With an agent facility, launch every activated specialist in parallel; without one, run the passes one after another here.
+With an agent facility, launch every activated specialist in parallel, on the judgment row of [models.md](models.md); without one, run the passes one after another here.
 
 Every brief (specialist, skeptic, or adversarial angle) follows [principles/guard-the-context.md](../principles/guard-the-context.md):
 

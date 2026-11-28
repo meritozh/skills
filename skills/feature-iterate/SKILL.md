@@ -13,7 +13,7 @@ The feature doc is the record of the work. It is updated in place, as a `draft` 
 
 ## Procedure
 
-1. **Research today.** Before asking anything, find the feature's doc and code, and what depends on them. For a wide search, use subagents when the harness has them. Each brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`; keep only their conclusions, with file:line, in this thread. Every claim cites its file and line ([principles/show-the-evidence.md](principles/show-the-evidence.md)).
+1. **Research today.** Before asking anything, find the feature's doc and code, and what depends on them. For a wide search, use subagents when the harness has them, on the facts row of [references/models.md](references/models.md). Each brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`; keep only their conclusions, with file:line, in this thread. Every claim cites its file and line ([principles/show-the-evidence.md](principles/show-the-evidence.md)).
 
    ```bash
    ls docs/feature/ docs/spec/
@@ -46,7 +46,7 @@ The feature doc is the record of the work. It is updated in place, as a `draft` 
    - When the change is a line in a goal's `## Features`, link the line to the doc and keep its sentence after the link, with its number, Part, and After.
    - When the slug no longer names the feature, rename the doc and its open spec with `git mv`, and update every link. When the spec has landed steps, rename after the feature ships instead: those commits name the old slug.
 
-Do not write `docs/spec/`. The next step is `to-implement-spec`, which brings the spec in line with the changed doc, and `batman` on the doc first when a fresh-eyed attack is wanted.
+Do not write `docs/spec/`. The next step is `to-implement-spec`, which brings the spec in line with the changed doc, and `batman` on the doc first when a fresh-eyed attack is wanted. A change to what a user sees on a screen updates `docs/design/<slug>.md` through `ui-design` before the spec.
 
 ## Questions
 
