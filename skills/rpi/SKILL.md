@@ -1,6 +1,6 @@
 ---
 name: rpi
-description: "Run one piece of work from the first conversation to the PR in T3 Code, with astra (the Codex astra model, through delegate_task) as the fresh-eyed reviewer and builder. Three phases, one doc each: target and route (polaris, for work bigger than one feature), behavior and approach (feature-new or feature-iterate), and the implement spec (to-implement-spec), where a clear technical change such as a dependency upgrade starts. astra battles each doc with batman, builds with go-work, and reviews with diff-review. Every doc goes through technical-writing. The flow loops: an objection, a blocked step, or a finding sends the work back to the doc that must change. The user confirms every move between stages, and every choice, through the question tool. Tangents go to note. Use when the user runs /rpi in T3 Code. Not outside T3 Code, for a bug (code-bugfix), or for a small reversible change."
+description: "Run one piece of work from the first conversation to the PR in T3 Code, with astra (the Codex astra model, via delegate_task) as fresh-eyed reviewer and builder. Three phases, one doc each: target and route (polaris, for work bigger than one feature), behavior and approach (feature-new or feature-iterate), and the implement spec (to-implement-spec), where a clear technical change such as a dependency upgrade starts. A UI feature gets its look from ui-design before the spec and a visual check after the build; a question only a run settles goes to prototype. astra battles each doc with batman, builds with go-work, and reviews with diff-review. Every doc goes through technical-writing. The flow loops: an objection, a blocked step, or a finding sends the work back to the doc that must change. The user confirms every move and every choice through the question tool. Side ideas go to note. Use when the user runs /rpi in T3 Code. Not outside T3 Code, for a bug (code-bugfix), or for a small reversible change."
 disable-model-invocation: true
 ---
 
@@ -18,14 +18,15 @@ Each phase writes one doc, which holds its settled answers and open questions. T
 | --- | --- | --- | --- | --- |
 | 1. Target and route | What will be true, the signal, the route and its parts | `polaris`, then `to-features` | `docs/polaris/<slug>.md` | `active`, with `## Features` |
 | 2. Behavior and approach | What a user meets when it ships, and the approach chosen | `feature-new` or `feature-iterate` | `docs/feature/<slug>.md` | `decided` |
+| Design, for a feature with a user interface | The visual direction its screens follow | `ui-design` | `docs/design/<slug>.md` | confirmed by the user |
 | 3. Implement spec | The modules, interfaces, data, and steps that build it | `to-implement-spec` | `docs/spec/<slug>.md` | written |
 
-[Route](#route) picks the phase to start at. astra battles each phase's doc before the next phase starts.
+[Route](#route) picks the phase to start at. astra battles each phase's doc before the next phase starts. The design doc is not battled: ui-design's own reviewer checks it, and the [visual check](#visual-check) checks the result.
 
 ## Roles
 
 - **The conductor** (this session) talks with the user, writes the docs with the phase skills, and defends in a battle. It keeps the conclusions astra reports, checked against git, and never reads code diffs or build logs ([principles/guard-the-context.md](principles/guard-the-context.md)).
-- **astra** is a T3 Code child agent on the Codex provider's astra model. It does four jobs: prosecute a doc (batman), build a spec (go-work), review the result (diff-review), and fix accepted findings. Each job is a new `delegate_task`. Its brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`, then holds paths and the job, and nothing of this conversation, not even its intent.
+- **astra** is a T3 Code child agent on the Codex provider's astra model. It does five jobs: prosecute a doc (batman), build a spec (go-work), check the built screens (ui-design), review the result (diff-review), and fix accepted findings. An agent a stage skill in this session would start, such as ui-design's concept agents and reviewer, also runs as an astra job, with that skill's brief. Each job is a new `delegate_task`. Its brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`, then holds paths and the job, and nothing of this conversation, not even its intent.
 - **The user** answers the deciding skills' questions, rules on every objection and finding, and confirms every move between stages.
 
 ## Stage skills
@@ -37,7 +38,7 @@ Each phase writes one doc, which holds its settled answers and open questions. T
 
 The run moves from one stage to another, forward or back, only on the user's answer. At the end of every stage, ask one question with the header `Next`, naming the stage that finished and its result (the doc and its Status, the battle verdict, the build or review report). The options are the recommended next stage first, the strongest other move (a back edge, another feature line, another stage), and `Stop`.
 
-Checkpoints fall at: where to start, the size of the work, each doc becoming `active` or `decided` (→ battle), each battle's verdict (→ the next phase, or a back edge), each feature line to take, the build gate, the end of the build (→ review, or a back edge when a step blocked), each review (→ fix, or the PR gate), the PR gate, and after the PR (→ the next feature line).
+Checkpoints fall at: where to start, the size of the work, each doc becoming `active` or `decided` (→ battle), each battle's verdict (→ the next phase, design, or a back edge), the design doc confirmed (→ the spec), each feature line to take, the build gate, the end of the build (→ the visual check or review, or a back edge when a step blocked), each visual check and each review (→ fix, or the next stage), the PR gate, and after the PR (→ the next feature line).
 
 A checkpoint that carries a ruling or a gate asks them in the same call. Nothing moves on a recommendation alone: even the only reasonable next stage waits for the user's pick.
 
@@ -61,10 +62,11 @@ A checkpoint that carries a ruling or a gate asks them in the same call. Nothing
    | A goal or feature doc with `Status: draft` | its skill, to settle its open questions |
    | An active goal with no `## Features` | `to-features` |
    | An active goal with a feature line not yet decided | that line's `feature-new` or `feature-iterate` |
+   | A feature doc `decided` whose feature has a user interface, and no `docs/design/<slug>.md` | [design](#design) |
    | A feature doc `decided`, no open spec | `to-implement-spec` |
    | An open spec with no landed step | battle the spec, unless the ledger says it holds at the spec's current hash |
    | An open spec with some steps landed | the build gate, which resumes `go-work` |
-   | A spec archived by commits not yet reviewed | review |
+   | A spec archived by commits not yet reviewed | the visual check when the feature has a user interface and the ledger shows none, else review |
 
    Recommend the row that fits. Then read the ledger, `.scratch/rpi/<slug>/state.md` (`ls .scratch/rpi`), for verdicts, rulings, and accepted risks; where it disagrees with the repo, the repo wins.
 
@@ -85,12 +87,15 @@ Recommend a size, with the reason. A goal whose route turns out to be one part b
                                                                                  ▼
 2 behavior, approach  feature-new | feature-iterate ──► ⚔ feature ──────────────┐
                                                                                  ▼
+  design (UI only)    ui-design: direction ──► docs/design/<slug>.md ────────────┐
+                                                                                 ▼
 3 implement spec      to-implement-spec ◄── a clear technical change starts here
                       ──► ⚔ spec ──► [build gate]
-                      ──► astra go-work ──► astra diff-review ⇄ astra fix ──► [PR gate] ──► pr
+                      ──► astra go-work ──► astra visual check ⇄ astra fix (UI only)
+                      ──► astra diff-review ⇄ astra fix ──► [PR gate] ──► pr
 ```
 
-`⚔` is a [battle](#battle). Each arrow is a [checkpoint](#checkpoints). [Back edges](#back-edges) say where each failure goes.
+`⚔` is a [battle](#battle). Each arrow is a [checkpoint](#checkpoints). [Back edges](#back-edges) say where each failure goes. A [prototype](#prototype) can interrupt any question in phases 2 and 3. A technical change (`Feature: none`) and a feature with no user interface skip design and the visual check.
 
 Take a goal's feature lines one at a time, in `After` order, each from its feature skill to its PR. After a PR, the checkpoint offers the next line, recommended when nothing blocks it.
 
@@ -107,7 +112,23 @@ Run `batman` with astra as the prosecutor:
 
 A battle after a doc changed attacks only the changed lines: the brief names them with their line numbers, and lists the objections already refuted or overruled, which it must not raise again. A third battle of one doc that still finds new blockers means the doc needs rework: write down the premise it keeps failing on ([principles/attack-the-premise.md](principles/attack-the-premise.md)), and go back to the skill that wrote it with that premise.
 
-## Back edges
+## Prototype
+
+When a stage skill's question in phase 2 or 3 is one only a run can settle, such as whether a state model holds up or which interaction structure lets a user finish the task ([references/asking.md](references/asking.md)), its question offers `Prototype it` after the recommended answer. On that pick:
+
+1. Run `prototype` in this session on that one question. The user drives the prototype; astra cannot judge it for them. A question about how a screen looks is design, not a prototype.
+2. Back on the work branch, put the verdict into the open question as the source of its options, citing the `prototype/<slug>` branch, and ask the question again.
+
+## Design
+
+For a feature whose doc names a screen, a page, or a component the user sees, after the feature battle holds:
+
+1. Run `ui-design` in this session, with the feature's slug as its task name and the feature doc as its brief. It settles the direction only: step 1 of its light path, or its side-by-side comparison when the user wants to compare directions, shown with `html_preview`. It writes no product code here.
+2. It writes `docs/design/<slug>.md`, and `docs/design/DESIGN.md` when the project's design spec changes, then runs `technical-writing` on them.
+3. The checkpoint shows the direction and goes on to `to-implement-spec`, whose UI steps name the design's tokens and components.
+
+A feature-iterate that changes what a user sees runs this stage again on the changed screens.
+
 
 When a stage fails, the checkpoint recommends going back to the doc that must change. Every doc after it is stale: re-check it in order before going forward.
 
@@ -122,6 +143,10 @@ When a stage fails, the checkpoint recommends going back to the doc that must ch
 | The spec cannot deliver a feature line as decided | the feature doc first (batman's rule), then `to-implement-spec` | ⚔ feature on the changed lines; ⚔ spec |
 | `go-work` blocked: the step cannot be done as written | `to-implement-spec`; landed steps stay | ⚔ spec on the changed steps; build gate |
 | `go-work` blocked: the feature is wrong | `feature-iterate` | ⚔ feature; `to-implement-spec`; ⚔ spec; build gate |
+| A visual finding: the screen misses `docs/design/<slug>.md` | [astra fix](#visual-check) | the visual check on the changed screens |
+| A visual finding: the direction is wrong | [design](#design) | `to-implement-spec` for the changed UI steps; build gate |
+| A visual or walkthrough finding: the behavior is wrong | `feature-iterate` | the whole chain from ⚔ feature |
+| A prototype verdict contradicts a `decided` feature doc | `feature-iterate` | ⚔ feature; and on from there |
 | A review finding: the code misses the docs | [astra fix](#review) | review the new diff |
 | A review finding: the docs are wrong | `feature-iterate`, which takes a new spec for the change | the whole chain from ⚔ feature |
 
@@ -138,7 +163,7 @@ The build starts when the spec battle holds (`holds` or `holds after fixes`, no 
 Then ask one question, `Build`: `Commit the docs and build (Recommended)`, `Change a doc first`, `Stop`. On build:
 
 1. On the default branch, `git switch -c <slug>`.
-2. Commit the goal, the feature doc, the spec, `docs/GLOSSARY.md`, and `docs/NOTES.md`, whichever changed, as one docs commit. Stage only those paths. Record `start=$(git rev-parse HEAD)`.
+2. Commit the goal, the feature doc, the design docs under `docs/design/`, the spec, `docs/GLOSSARY.md`, and `docs/NOTES.md`, whichever changed, as one docs commit. Stage only those paths. Record `start=$(git rev-parse HEAD)`.
 3. `delegate_task` to astra, `role: "implementation"`, `isolation: "shared"`, `title: "go-work: <slug>"`:
 
    ```text
@@ -152,6 +177,33 @@ Then ask one question, `Build`: `Commit the docs and build (Recommended)`, `Chan
    ```
 
 4. Check the report against git ([principles/prove-it-works.md](principles/prove-it-works.md)): `git log --format='%h %s %(trailers:key=Spec-Step,valueonly)' <start>..HEAD`, and whether the spec moved to `docs/spec/archived/`. A blocked step goes to [Back edges](#back-edges).
+
+## Visual check
+
+For a feature with a user interface, after the build and before the review, so the review covers the visual fixes too:
+
+1. `delegate_task` to astra, `role: "review"`, `isolation: "shared"`, `title: "ui-design check: <slug>"`:
+
+   ```text
+   Read <absolute path of this skill's directory>/references/worker.md before anything else.
+
+   $ui-design review only (references/task-review.md) the screens docs/feature/<slug>.md describes, as built at HEAD, against docs/design/<slug>.md and docs/design/DESIGN.md. Take screenshots with its shoot.mjs into .scratch/ui-design/<slug>/shots. Dispatch its visual review with the new-interface standard and a score, and its UX walkthrough when the feature has a main flow, each to an agent with no history of this work that can see images. Write the report to .scratch/ui-design/<slug>/check-<n>.md.
+
+   Reply with the score, whether both reviews ran independently, one line per finding (#<n> [redo | fix] <screen>: <what is wrong>), and the report path.
+   ```
+
+2. Send the findings, then ask one question per finding: **fix** (the screen misses the design), **accept** (the user carries it), **change the design** ([design](#design)), or **change the docs** (`feature-iterate`), recommended first. A `redo` finding recommends change the design. A report that says a review did not run independently says so at the checkpoint; this session does not stand in for it.
+3. **Fix.** A new `delegate_task` to astra, `role: "implementation"`, `isolation: "shared"`:
+
+   ```text
+   Read <absolute path of this skill's directory>/references/worker.md before anything else.
+
+   $ui-design fix findings <numbers> of .scratch/ui-design/<slug>/check-<n>.md in this checkout, following docs/design/<slug>.md and the project's existing tokens and components. Screenshot each changed screen again and look at it. One commit per finding class, an imperative subject under 72 characters. Do not edit docs/.
+
+   Reply with one line per finding: fixed <hash> | could not: <why>, then the project's type check and lint and their exit codes.
+   ```
+
+4. Check the changed screens again with a new astra job, saying which round it is. Two rounds at most; then the checkpoint offers accepting what is left, or going back to design.
 
 ## Review
 
@@ -182,7 +234,7 @@ Then ask one question, `Build`: `Commit the docs and build (Recommended)`, `Chan
 
 ## PR gate
 
-When the review is clean or every finding is ruled, send `git log --oneline <start>..HEAD`, the review verdict, and the risks the user accepted. Then ask one question, `PR`: `Write, push, and open it (Recommended)`, `Write it only`, `Stop`. Run `pr`, which calls `show-me` for the Summary. Push and open only on the first answer. Never force-push or merge.
+When the review is clean or every finding is ruled, send `git log --oneline <start>..HEAD`, the visual check's score, the review verdict, and the risks the user accepted. Then ask one question, `PR`: `Write, push, and open it (Recommended)`, `Write it only`, `Stop`. Run `pr`, which calls `show-me` for the Summary. Push and open only on the first answer. Never force-push or merge.
 
 ## Ledger
 
@@ -194,6 +246,8 @@ goal     docs/polaris/<slug>.md   ⚔ holds after fixes
 feature  docs/feature/<slug>.md   ⚔ holds @ <short hash>
 spec     docs/spec/<slug>.md      ⚔ back to /to-implement-spec: 2 hand-offs
 build    not started | <start>..HEAD, 4/6 steps | blocked at step 3: <why>
+design   docs/design/<slug>.md      confirmed
+visual   round 1: 7/10, 3 findings | clean
 review   round 1: 1 high, 2 medium | clean
 next     <the stage that runs next>
 ```

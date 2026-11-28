@@ -46,7 +46,7 @@ The feature doc is the record of the work. It is updated in place, as a `draft` 
    - When the change is a line in a goal's `## Features`, link the line to the doc and keep its sentence after the link, with its number, Part, and After.
    - When the slug no longer names the feature, rename the doc and its open spec with `git mv`, and update every link. When the spec has landed steps, rename after the feature ships instead: those commits name the old slug.
 
-Do not write `docs/spec/`. The next step is `to-implement-spec`, which brings the spec in line with the changed doc, and `batman` on the doc first when a fresh-eyed attack is wanted.
+Do not write `docs/spec/`. The next step is `to-implement-spec`, which brings the spec in line with the changed doc, and `batman` on the doc first when a fresh-eyed attack is wanted. A change to what a user sees on a screen updates `docs/design/<slug>.md` through `ui-design` before the spec.
 
 ## Questions
 

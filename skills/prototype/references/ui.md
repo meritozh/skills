@@ -2,7 +2,7 @@
 
 Build **several radically different UI variants** on one route, switched from a floating bottom bar. The user flips between them in the browser, picks one or takes parts of several, and the rest is thrown away.
 
-When the question is about logic or state rather than looks, this is the wrong branch. Use [logic.md](logic.md).
+The variants differ in structure and interaction: what is on the screen, where it sits, and how the user gets the task done. They share the product's current look. When the question is how it should look (a visual direction, type, color, imagery), that is the `ui-design` skill. When the question is about logic or state, this is the wrong branch. Use [logic.md](logic.md).
 
 ## Two sub-shapes, and A is strongly preferred
 
