@@ -63,11 +63,11 @@ A checkpoint that carries a ruling or a gate asks them in the same call. Nothing
    | An active goal with no `## Features` | `to-features` |
    | An active goal with a feature line not yet decided | that line's `feature-new` or `feature-iterate` |
    | A feature doc `decided` whose feature has a user interface, and no `docs/design/<slug>.md` | [design](#design) |
-| The same, with a design doc last committed before the feature doc (`git log -1 --format=%ct -- <path>`) | [design](#design) when the user says the change reaches the screens, else the next row |
+| The same, with a design doc, and the ledger's `design` line names a feature hash other than `git hash-object docs/feature/<slug>.md`, or there is no ledger | [design](#design) when the user says the change reaches the screens, else the next row |
    | A feature doc `decided`, no open spec | `to-implement-spec` |
    | An open spec with no landed step | battle the spec, unless the ledger says it holds at the spec's current hash |
    | An open spec with some steps landed | the build gate, which resumes `go-work` |
-   | A spec archived by commits not yet reviewed | the visual check when the feature has a user interface and the ledger's `visual` line names no commit of this build, else review |
+   | A spec archived by commits not yet reviewed | the visual check when the feature has a user interface and the ledger's `visual` line names no commit of this build, clean or not, else review |
 
    Recommend the row that fits. Then read the ledger, `.scratch/rpi/<slug>/state.md` (`ls .scratch/rpi`), for verdicts, rulings, and accepted risks; where it disagrees with the repo, the repo wins.
 
@@ -248,13 +248,13 @@ goal     docs/polaris/<slug>.md   ⚔ holds after fixes
 feature  docs/feature/<slug>.md   ⚔ holds @ <short hash>
 spec     docs/spec/<slug>.md      ⚔ back to /to-implement-spec: 2 hand-offs
 build    not started | <start>..HEAD, 4/6 steps | blocked at step 3: <why>
-design   docs/design/<slug>.md      confirmed
-visual   round 1 @ <short hash>: 7/10, 3 findings | clean
+design   docs/design/<slug>.md      confirmed @ feature <short hash>
+visual   @ <short hash> round 1: 7/10, 3 findings | clean
 review   round 1: 1 high, 2 medium | clean
 next     <the stage that runs next>
 ```
 
-Leave out a line that does not apply yet. `.scratch/rpi/<slug>/` takes the slug of the run's first doc. Delete `.scratch/rpi/<slug>/` when no feature line of the goal is left. diff-review deletes its own directory once the branch merges.
+The `design` line names `git hash-object docs/feature/<slug>.md` at the moment the user confirmed the design, which also works on an uncommitted doc. The `visual` line names the `HEAD` of its last round, clean or not. Leave out a line that does not apply yet. `.scratch/rpi/<slug>/` takes the slug of the run's first doc. Delete `.scratch/rpi/<slug>/` when no feature line of the goal is left. diff-review deletes its own directory once the branch merges.
 
 ## Rules
 
