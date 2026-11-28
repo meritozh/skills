@@ -27,7 +27,9 @@ Keep the coordinator's context small ([principles/guard-the-context.md](principl
 
 Pick one at the start for every step:
 
-- **Fork:** a subagent that inherits this conversation. Use it when the harness has one and this conversation is short.
+Every runner is on the code row of [references/models.md](references/models.md).
+
+- **Fork:** a subagent that inherits this conversation. Use it when the harness has one, this conversation is short, and this session already runs that row's model.
 - **Fresh subagent:** otherwise, when the harness has subagents.
 - **Inline:** when the harness has no subagents, or the spec has one step. Follow the brief below yourself, reading only the lines you need. When the context grows long (the harness warns, or earlier turns were summarized), finish the current step, stop, and tell the user to run `/go-work <slug>` in a new session.
 

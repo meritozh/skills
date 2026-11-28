@@ -13,7 +13,7 @@ The feature doc is the record of the work. It is updated in place, as a `draft` 
 
 ## Procedure
 
-1. **Research today.** Before asking anything, find the feature's doc and code, and what depends on them. For a wide search, use subagents when the harness has them. Each brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`; keep only their conclusions, with file:line, in this thread. Every claim cites its file and line ([principles/show-the-evidence.md](principles/show-the-evidence.md)).
+1. **Research today.** Before asking anything, find the feature's doc and code, and what depends on them. For a wide search, use subagents when the harness has them, on the facts row of [references/models.md](references/models.md). Each brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`; keep only their conclusions, with file:line, in this thread. Every claim cites its file and line ([principles/show-the-evidence.md](principles/show-the-evidence.md)).
 
    ```bash
    ls docs/feature/ docs/spec/

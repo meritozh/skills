@@ -88,7 +88,7 @@
 
 ## 用生成引擎起方向
 
-需要主 Agent 起新概念时，按下面的独立概念流程执行。派出的每个概念子 Agent 和评审者，提示词第一行都是 `Read <absolute path of this skill's directory>/references/worker.md before anything else.`。用户已经给定完整概念时不重起；入口已经指定概念专项时，采用专项的产出，不重复派通用概念子 Agent，但仍由主 Agent 选择并执行独立把关。
+需要主 Agent 起新概念时，按下面的独立概念流程执行。概念子 Agent 按 [models.md](models.md) 的候选方案行选模型，把关的评审者按判断行（概念出自 astra 时用 `claude-opus-5-5`）；派出的每个概念子 Agent 和评审者，提示词第一行都是 `Read <absolute path of this skill's directory>/references/worker.md before anything else.`。用户已经给定完整概念时不重起；入口已经指定概念专项时，采用专项的产出，不重复派通用概念子 Agent，但仍由主 Agent 选择并执行独立把关。
 
 ### 独立概念生成与把关
 

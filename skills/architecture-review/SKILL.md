@@ -57,7 +57,7 @@ A monorepo or multi-repo adds the contracts between packages or repos. A domain 
 
 Read the whole codebase at module and import level. Read function by function where a break costs most: the entry paths, the core every feature passes through, the code that changes most ([references/tools.md](references/tools.md)), and anything a claim from step 2 names. Say in the report which modules were read closely and which were skimmed.
 
-With subagents, send the wide reading to them ([principles/guard-the-context.md](principles/guard-the-context.md)): one per subsystem or package, whose brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`, names its paths and a report file `<run>/<subsystem>.md` for its modules, imports, and entry points, and asks for a reply of the places worth reading closely, each with file and line, and the path. Open a report when a finding rests on it. The judgment in steps 5 and 6 stays in the main thread.
+With subagents, send the wide reading to them ([principles/guard-the-context.md](principles/guard-the-context.md)): one per subsystem or package, on the facts row of [references/models.md](references/models.md), whose brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`, names its paths and a report file `<run>/<subsystem>.md` for its modules, imports, and entry points, and asks for a reply of the places worth reading closely, each with file and line, and the path. Open a report when a finding rests on it. The judgment in steps 5 and 6 stays in the main thread.
 
 ## 5. Read against the rules
 

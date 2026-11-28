@@ -14,7 +14,7 @@ Show it, then go to step 2 without waiting.
 
 ## 2. Spawn sub-agents
 
-Spawn 3 or more parallel sub-agents, each with a fresh context and a radically different interface to produce.
+Spawn 3 or more parallel sub-agents on the candidates row of [models.md](models.md), each with a fresh context and a radically different interface to produce.
 
 Each brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.` Then the technical brief: file paths, coupling, dependency category, what sits behind the seam, SKILL.md's vocabulary, and the terms in `docs/GLOSSARY.md`. Give each a different constraint:
 

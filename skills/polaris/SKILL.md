@@ -13,7 +13,7 @@ The goal doc is the record of the work. It is written early as a `draft` with it
 
 ## Procedure
 
-1. **Research today.** Before asking anything, find what already exists toward the goal: what the project says it is, the goals and features that touch it, and the code. For a wide search, use subagents when the harness has them. Each brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`; keep only their conclusions, with file:line, in this thread. Every claim cites its file and line ([principles/show-the-evidence.md](principles/show-the-evidence.md)).
+1. **Research today.** Before asking anything, find what already exists toward the goal: what the project says it is, the goals and features that touch it, and the code. For a wide search, use subagents when the harness has them, on the facts row of [references/models.md](references/models.md). Each brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`; keep only their conclusions, with file:line, in this thread. Every claim cites its file and line ([principles/show-the-evidence.md](principles/show-the-evidence.md)).
 
    ```bash
    head -20 AGENTS.md README.md

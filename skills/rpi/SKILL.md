@@ -1,6 +1,6 @@
 ---
 name: rpi
-description: "Run one piece of work from the first conversation to the PR in T3 Code, with astra (the Codex astra model, via delegate_task) as fresh-eyed reviewer and builder. Three phases, one doc each: target and route (polaris, for work bigger than one feature), behavior and approach (feature-new or feature-iterate), and the implement spec (to-implement-spec), where a clear technical change such as a dependency upgrade starts. A UI feature gets its look from ui-design before the spec and a visual check after the build; a question only a run settles goes to prototype. astra battles each doc with batman, builds with go-work, and reviews with diff-review. Every doc goes through technical-writing. The flow loops: an objection, a blocked step, or a finding sends the work back to the doc that must change. The user confirms every move and every choice through the question tool. Side ideas go to note. Use when the user runs /rpi in T3 Code. Not outside T3 Code, for a bug (code-bugfix), or for a small reversible change."
+description: "Run one piece of work from the first conversation to the PR in T3 Code, with child agents (via delegate_task) as fresh-eyed reviewers and builders. Three phases, one doc each: target and route (polaris, for work bigger than one feature), behavior and approach (feature-new or feature-iterate), and the implement spec (to-implement-spec), where a clear technical change such as a dependency upgrade starts. A UI feature gets its look from ui-design before the spec and a visual check after the build; a question only a run settles goes to prototype. astra battles each doc with batman and reviews with diff-review; sol builds with go-work and fixes. Every doc goes through technical-writing. The flow loops: an objection, a blocked step, or a finding sends the work back to the doc that must change. The user confirms every move and every choice through the question tool. Side ideas go to note. Use when the user runs /rpi in T3 Code. Not outside T3 Code, for a bug (code-bugfix), or for a small reversible change."
 disable-model-invocation: true
 ---
 
@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 rpi is recursive project iterate: one piece of work goes round decide, battle, build, and review until it holds, and any stage can send it back up. Follow this skill only when the user ran `/rpi`. Never start it yourself.
 
-This session is the **conductor**. It hands every job that needs fresh eyes or a long build to **astra**.
+This session is the **conductor**. It hands every job that needs fresh eyes or a long build to a **child**, on the model [references/models.md](references/models.md) gives that job.
 
 ## Phases
 
@@ -25,14 +25,14 @@ Each phase writes one doc, which holds its settled answers and open questions. T
 
 ## Roles
 
-- **The conductor** (this session) talks with the user, writes the docs with the phase skills, and defends in a battle. It keeps the conclusions astra reports, checked against git, and never reads code diffs or build logs ([principles/guard-the-context.md](principles/guard-the-context.md)).
-- **astra** is a T3 Code child agent on the Codex provider's astra model. It does five jobs: prosecute a doc (batman), build a spec (go-work), check the built screens (ui-design), review the result (diff-review), and fix accepted findings. An agent a stage skill in this session would start, such as ui-design's concept agents and reviewer, also runs as an astra job, with that skill's brief. Each job is a new `delegate_task`. Its brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`, then holds paths and the job, and nothing of this conversation, not even its intent.
+- **The conductor** (this session) talks with the user, writes the docs with the phase skills, and defends in a battle. It keeps the conclusions the children report, checked against git, and never reads code diffs or build logs ([principles/guard-the-context.md](principles/guard-the-context.md)).
+- **The children** are T3 Code child agents. **astra** prosecutes a doc (batman), checks the built screens (ui-design), and reviews the result (diff-review). **sol** builds a spec (go-work) and fixes accepted findings. An agent a stage skill in this session would start, such as a feature skill's research agents or ui-design's concept agents and reviewer, also runs as a child, on its row in models.md, with that skill's brief. Each job is a new `delegate_task`. Its brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`, then holds paths and the job, and nothing of this conversation, not even its intent.
 - **The user** answers the deciding skills' questions, rules on every objection and finding, and confirms every move between stages.
 
 ## Stage skills
 
 - **In this session:** invoke each stage skill with the skill tool. Where it says to end a turn and wait, ask with the question tool instead and go on with the answer. Where it names the next skill for the user to run, run that skill yourself. A stage skill that is not installed stops the run: name `npx skills add meritozh/skills --skill '*' -g`.
-- **In astra:** after the worker line, a brief names its skill as `$<name>`, which Codex reads as an explicit invocation.
+- **In a child:** after the worker line, a brief names its skill as `$<name>`, which Codex reads as an explicit invocation.
 
 ## Checkpoints
 
@@ -44,7 +44,7 @@ A checkpoint that carries a ruling or a gate asks them in the same call. Nothing
 
 ## Setup
 
-1. **astra.** Call `orchestrator_capabilities` with `search: "astra"`. Take the provider whose models include an id ending in `-astra` and that can run a child task, and the newest such model (`gpt-6.2-astra` before `gpt-6-astra`). With none, say astra is unavailable and stop. Never fall back to another model or to native subagents. Keep the model's default options unless the user names an effort.
+1. **Models.** Call `orchestrator_capabilities` once, and confirm that every model in [references/models.md](references/models.md) is listed and can run a child task. With one missing, say which and stop. Never fall back to another model or to native subagents. Each child gets its row's effort unless the user names one.
 2. **The tree.** `git status --short --branch`. Name uncommitted changes that are not this work's docs, and never stage them.
 3. **Where the work stands.** Derive the next stage from the repo, not memory ([principles/make-operations-idempotent.md](principles/make-operations-idempotent.md)):
 
@@ -91,8 +91,8 @@ Recommend a size, with the reason. A goal whose route turns out to be one part b
                                                                                  ▼
 3 implement spec      to-implement-spec ◄── a clear technical change starts here
                       ──► ⚔ spec ──► [build gate]
-                      ──► astra go-work ──► astra visual check ⇄ astra fix (UI only)
-                      ──► astra diff-review ⇄ astra fix ──► [PR gate] ──► pr
+                      ──► sol go-work ──► astra visual check ⇄ sol fix (UI only)
+                      ──► astra diff-review ⇄ sol fix ──► [PR gate] ──► pr
 ```
 
 `⚔` is a [battle](#battle). Each arrow is a [checkpoint](#checkpoints). [Back edges](#back-edges) say where each failure goes. A [prototype](#prototype) can interrupt any question in phases 2 and 3. A technical change (`Feature: none`) and a feature with no user interface skip design and the visual check.
@@ -116,7 +116,7 @@ A battle after a doc changed attacks only the changed lines: the brief names the
 
 When a stage skill's question in phase 2 or 3 is one only a run can settle, such as whether a state model holds up or which interaction structure lets a user finish the task ([references/asking.md](references/asking.md)), its question offers `Prototype it` after the recommended answer. On that pick:
 
-1. Run `prototype` in this session on that one question. The user drives the prototype; astra cannot judge it for them. A question about how a screen looks is design, not a prototype.
+1. Run `prototype` in this session on that one question. The user drives the prototype; no child can judge it for them. A question about how a screen looks is design, not a prototype.
 2. Back on the work branch, put the verdict into the open question as the source of its options, citing the `prototype/<slug>` branch, and ask the question again.
 
 ## Design
@@ -129,6 +129,7 @@ For a feature whose doc names a screen, a page, or a component the user sees, af
 
 A feature-iterate that changes what a user sees runs this stage again on the changed screens.
 
+## Back edges
 
 When a stage fails, the checkpoint recommends going back to the doc that must change. Every doc after it is stale: re-check it in order before going forward.
 
@@ -143,11 +144,11 @@ When a stage fails, the checkpoint recommends going back to the doc that must ch
 | The spec cannot deliver a feature line as decided | the feature doc first (batman's rule), then `to-implement-spec` | ⚔ feature on the changed lines; ⚔ spec |
 | `go-work` blocked: the step cannot be done as written | `to-implement-spec`; landed steps stay | ⚔ spec on the changed steps; build gate |
 | `go-work` blocked: the feature is wrong | `feature-iterate` | ⚔ feature; `to-implement-spec`; ⚔ spec; build gate |
-| A visual finding: the screen misses `docs/design/<slug>.md` | [astra fix](#visual-check) | the visual check on the changed screens |
+| A visual finding: the screen misses `docs/design/<slug>.md` | [sol fix](#visual-check) | the visual check on the changed screens |
 | A visual finding: the direction is wrong | [design](#design) | `to-implement-spec` for the changed UI steps; build gate |
 | A visual or walkthrough finding: the behavior is wrong | `feature-iterate` | the whole chain from ⚔ feature |
 | A prototype verdict contradicts a `decided` feature doc | `feature-iterate` | ⚔ feature; and on from there |
-| A review finding: the code misses the docs | [astra fix](#review) | review the new diff |
+| A review finding: the code misses the docs | [sol fix](#review) | review the new diff |
 | A review finding: the docs are wrong | `feature-iterate`, which takes a new spec for the change | the whole chain from ⚔ feature |
 
 A stage that runs again changes only what the failure touched.
@@ -164,7 +165,7 @@ Then ask one question, `Build`: `Commit the docs and build (Recommended)`, `Chan
 
 1. On the default branch, `git switch -c <slug>`.
 2. Commit the goal, the feature doc, the design docs under `docs/design/`, the spec, `docs/GLOSSARY.md`, and `docs/NOTES.md`, whichever changed, as one docs commit. Stage only those paths. Record `start=$(git rev-parse HEAD)`.
-3. `delegate_task` to astra, `role: "implementation"`, `isolation: "shared"`, `title: "go-work: <slug>"`:
+3. `delegate_task` to sol, `role: "implementation"`, `isolation: "shared"`, `title: "go-work: <slug>"`:
 
    ```text
    Read <absolute path of this skill's directory>/references/worker.md before anything else.
@@ -193,7 +194,7 @@ For a feature with a user interface, after the build and before the review, so t
    ```
 
 2. Send the findings, then ask one question per finding: **fix** (the screen misses the design), **accept** (the user carries it), **change the design** ([design](#design)), or **change the docs** (`feature-iterate`), recommended first. A `redo` finding recommends change the design. A report that says a review did not run independently says so at the checkpoint; this session does not stand in for it.
-3. **Fix.** A new `delegate_task` to astra, `role: "implementation"`, `isolation: "shared"`:
+3. **Fix.** A new `delegate_task` to sol, `role: "implementation"`, `isolation: "shared"`:
 
    ```text
    Read <absolute path of this skill's directory>/references/worker.md before anything else.
@@ -220,7 +221,7 @@ For a feature with a user interface, after the build and before the review, so t
    ```
 
 2. Send the findings with the sign-off, then ask one question per finding: **fix** (the code misses the docs), **accept** (the user carries it), or **change the docs** (`feature-iterate`), recommended first. A clean review goes straight to the PR gate, which is its checkpoint.
-3. **Fix.** Record `fix_start=$(git rev-parse HEAD)`. A new `delegate_task` to astra, `role: "implementation"`, `isolation: "shared"`, naming the accepted findings and the round file:
+3. **Fix.** Record `fix_start=$(git rev-parse HEAD)`. A new `delegate_task` to sol, `role: "implementation"`, `isolation: "shared"`, naming the accepted findings and the round file:
 
    ```text
    Read <absolute path of this skill's directory>/references/worker.md before anything else.
@@ -241,7 +242,7 @@ When the review is clean or every finding is ruled, send `git log --oneline <sta
 End every turn that moves the run with the ledger, and write the same lines to `.scratch/rpi/<slug>/state.md`, each ⚔ there with the doc's short hash, plus one line per ruling and accepted risk:
 
 ```
-rpi · <slug> · astra: <model>
+rpi · <slug> · astra: <model> · sol: <model>
 goal     docs/polaris/<slug>.md   ⚔ holds after fixes
 feature  docs/feature/<slug>.md   ⚔ holds @ <short hash>
 spec     docs/spec/<slug>.md      ⚔ back to /to-implement-spec: 2 hand-offs
@@ -256,10 +257,10 @@ Leave out a line that does not apply yet. `.scratch/rpi/<slug>/` takes the slug 
 
 ## Rules
 
-- Never send a later astra round to a running child's thread.
-- One writer at a time ([principles/separate-shared-state.md](principles/separate-shared-state.md)). While astra builds or fixes, the conductor writes nothing. A prosecutor and a reviewer edit nothing.
+- Never send a later round to a running child's thread.
+- One writer at a time ([principles/separate-shared-state.md](principles/separate-shared-state.md)). While sol builds or fixes, the conductor writes nothing. A prosecutor and a reviewer edit nothing.
 - Between the user's answers, work without stopping. Ask only through the question tool, following [references/asking.md](references/asking.md): the stage skills' questions, every ruling, and every checkpoint. Never end a turn to wait for a reply in text.
 - The docs say what is true, not how the run got there: no meeting record, no roadmap, no dates or progress. The run's progress lives in the ledger and git. Every doc goes through `technical-writing` before it is battled. The stage skills run it. Run it yourself on sections you change outside a stage skill, such as an applied ruling.
 - An idea outside the current work, from the user, a battle, or a review, goes to `note` in one line, and the run goes on.
-- Never push, force-push, or merge outside the PR gate. Commit only the docs commit at the build gate. astra commits the code.
+- Never push, force-push, or merge outside the PR gate. Commit only the docs commit at the build gate. sol commits the code.
 - When the user stops, show the ledger and stop. `/rpi` later resumes from the repo and `state.md`.

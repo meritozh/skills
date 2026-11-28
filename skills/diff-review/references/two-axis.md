@@ -50,7 +50,7 @@ Each smell reads *what it is*, then *how to fix*:
 
 ## 4. Spawn both sub-agents
 
-Issue both calls together, in fresh context. Brief each with paths and commands, as [principles/guard-the-context.md](../principles/guard-the-context.md) says, starting with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`, then the diff command and the commit list.
+Issue both calls together, in fresh context, on the judgment row of [models.md](models.md). Brief each with paths and commands, as [principles/guard-the-context.md](../principles/guard-the-context.md) says, starting with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`, then the diff command and the commit list.
 
 **Standards prompt** adds the standards files found above, and the absolute path of this file with the heading `## 3. Standards sources` for the smell baseline. Task: per file or hunk, (a) every place the diff violates a documented standard, citing file and rule; (b) any baseline smell, named, with the hunk quoted. Documented-standard breaches can be hard; baseline smells are judgement calls. Under 400 words.
 

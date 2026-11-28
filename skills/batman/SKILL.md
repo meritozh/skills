@@ -62,7 +62,7 @@ Run files go in `.scratch/batman/<kind>-<slug>/`, `<kind>` being `goal`, `featur
 
 ### 2. Choose the prosecutor
 
-- **This session wrote or shaped the doc** (`polaris`, `to-features`, `feature-new`, `feature-iterate`, or `to-implement-spec` ran here, or it was talked through here), **and the harness has subagents.** The prosecutor is a fresh subagent, never a fork (a fork inherits this conversation). This session defends.
+- **This session wrote or shaped the doc** (`polaris`, `to-features`, `feature-new`, `feature-iterate`, or `to-implement-spec` ran here, or it was talked through here), **and the harness has subagents.** The prosecutor is a fresh subagent on the judgment row of [references/models.md](references/models.md), never a fork (a fork inherits this conversation). This session defends.
 - **This session wrote it, with no subagents.** Say in one line that the prosecution is anchored on the author, and that `/batman <slug>` in a new session gives fresh eyes. Unless the user stops you, prosecute here, reading the doc as written, not as remembered. The user defends.
 - **A new session.** Prosecute here; the user defends.
 
