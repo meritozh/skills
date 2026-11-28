@@ -1,0 +1,5 @@
+interface:
+  display_name: "PR"
+  short_description: "PR body: visual summary, evidence, merge danger"
+policy:
+  allow_implicit_invocation: true

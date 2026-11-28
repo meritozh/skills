@@ -1,8 +1,8 @@
 # Pointers
 
-Loaded from `architecture-review` when a step needs to find where to read. These commands point the reader at code. None of them judges it, and none of their numbers goes into a finding. Prefer tools already installed. `npx`, `pipx run`, and similar download and run third-party code: ask before using them when the environment restricts that.
+Loaded from `architecture-review` to find where to read. These commands point at code and judge nothing; none of their numbers goes into a finding. Prefer tools already installed. Ask before `npx`, `pipx run`, and similar when the environment restricts downloading code.
 
-Always pass `rg` a path. With no path and a stdin that is not a terminal, as in most agent shells, it reads stdin and hangs.
+Always pass `rg` a path, or it reads stdin and hangs in most agent shells.
 
 ## Size and entry points
 
@@ -14,7 +14,7 @@ rg -n --type-add 'src:*.{ts,tsx,js,mjs,rs,go,py,swift,kt,java}' -t src \
 
 ## Import graph
 
-The fastest way to see the layering a codebase actually has, and to find a cycle or a dependency that points outward.
+Shows the actual layering, cycles, and dependencies that point outward.
 
 | Language | Module graph | Cycles |
 | --- | --- | --- |
@@ -24,7 +24,7 @@ The fastest way to see the layering a codebase actually has, and to find a cycle
 | Python | `pydeps <package>` for a graph | `lint-imports` (import-linter) contracts |
 | Java, Kotlin | `jdeps -summary <jar or classes dir>` | ArchUnit rules in tests |
 
-Fallback for any language: list import lines and reduce them to module pairs.
+Fallback for any language: reduce import lines to module pairs.
 
 ```bash
 rg -n --no-heading '^\s*(import|from|use|require|#include)\b' <src-dir> | head -100
@@ -36,7 +36,7 @@ rg -n --no-heading '^\s*(import|from|use|require|#include)\b' <src-dir> | head -
 rg -n -w -e '<callerA>' -e '<callerB>' <shared-dir>
 ```
 
-Each hit is a place to read: a shared module that names a caller, or branches on one.
+Each hit is a place to read.
 
 ## What changes most
 
@@ -45,4 +45,4 @@ git log --since='1 year ago' --no-merges --format= --name-only | grep -v '^$' \
   | sort | uniq -c | sort -rn | head -20
 ```
 
-Read these closely first. The count says where to look, not what is wrong.
+Read these closely first.

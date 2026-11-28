@@ -1,36 +1,36 @@
 # Conditional Review Patterns
 
-Load only the sections whose trigger appears in the diff. These are hard stops when the described failure can reach users; otherwise report them as advisory.
+Load only the sections whose trigger is in the diff. Each is a hard stop when the failure can reach users, advisory otherwise.
 
 ## Recurring or hard-to-observe bugs
 
-For a recurring visual, layout, timing, or stateful-UI bug, do not accept another tuned constant as durable coverage. Pull the decision into a pure function and test the violated invariant, such as nonzero width, half-open hit regions, or bounded offsets. Runtime inspection proves one instance; the invariant prevents recurrence.
+For a recurring visual, layout, timing, or stateful-UI bug, reject another tuned constant: pull the decision into a pure function and test the violated invariant (nonzero width, half-open hit regions, bounded offsets).
 
-Do not demand a fake seam. If a shallow helper cannot exercise the real failure at its call site, report `no correct test seam` as the architectural defect. A pure function covers one wrong decision. It does not cover future callers bypassing a guard. For a silent, costly primitive such as direct deletion, raw privilege escalation, or an unbounded external command, add a source-invariant test that enumerates call sites and rejects raw usage outside an explicit allowlist.
+Do not demand a fake seam: if a shallow helper cannot exercise the real failure at its call site, report `no correct test seam`. For future callers bypassing a guard on a silent, costly primitive (direct deletion, raw privilege escalation, an unbounded external command), add a source-invariant test that enumerates call sites and rejects raw usage outside an explicit allowlist.
 
 ## Captured output and asynchronous completion
 
-When code branches on an error message or captured command output, probe what the string contains at runtime. A subprocess using inherited stdio may show diagnostics in the terminal while `error.message` contains only the command line. Prefer structured facts such as exit codes or known targets over reparsing prose.
+When code branches on an error message or captured output, probe what the string holds at runtime: with inherited stdio, `error.message` may hold only the command line. Prefer exit codes or known targets over reparsing prose.
 
-Flag fixed `sleep`, `asyncAfter`, `setTimeout`, frame counts, or guessed timeouts that stand in for an observable completion signal. They vary across CPU speed, display refresh rate, and networks. Drive the next step from callbacks, navigation completion, frame changes, state flags, or wall-clock state as appropriate.
+Flag a fixed `sleep`, `asyncAfter`, `setTimeout`, frame count, or guessed timeout that stands in for an observable completion signal. Drive the next step from callbacks, navigation completion, frame changes, state flags, or wall-clock state.
 
 ## Simplification and deletion
 
-For prose, rule, skill, or guidance consolidation, read the deletions back and classify every removed behavior as `folded into X`, `redundant with Y`, or `behavior removed`. List behavior-removed entries explicitly. Deletion volume is not evidence of a good pass.
+For prose, rule, skill, or guidance consolidation, read the deletions back and classify every removed behavior as `folded into X`, `redundant with Y`, or `behavior removed`, listing the last explicitly. Deletion volume proves nothing.
 
-For dead-code or YAGNI claims, search the whole repository: entrypoints, docs, tests, generated dispatch tables, scripts, CI, packaging allowlists, manifests, and dynamic lookup patterns. Separate test-only from production references and chase data written but only read indirectly. If a dev tool is merely exposed by the wrong package or mirror, tighten distribution rather than deleting the tool. Partial search scope cannot justify deletion.
+For a dead-code or YAGNI claim, search the whole repository: entrypoints, docs, tests, generated dispatch tables, scripts, CI, packaging allowlists, manifests, and dynamic lookup patterns. Separate test-only from production references, and chase data read only indirectly. A dev tool exposed by the wrong package needs tighter distribution, not deletion.
 
 ## History-sensitive normalization
 
-When a diff restores a recently removed symbol, string, asset, enum case, localization entry, or config field, confirm current main still consumes it. A parity test or stale rule is not proof of life.
+When a diff restores a recently removed symbol, string, asset, enum case, localization entry, or config field, confirm current main still consumes it; a parity test or stale rule is not proof.
 
-Before making an outlier match its siblings, inspect the change or comment that introduced the divergence. The asymmetry may deliberately avoid a known defect; normalization must preserve that protection.
+Before making an outlier match its siblings, read the change or comment that introduced it; keep any protection the asymmetry gives.
 
 ## Non-atomic replacement of user files
 
-When a diff writes to a path the user already has (`curl -o`, `>`, `tee`, open-truncate-write), ask what survives a failure partway through. Truncating the destination first means a dropped connection, timeout, or non-zero exit leaves a corrupt file and no original. Require staging into a sibling temp file, swapped in only once the content is complete.
+When a diff writes to a path the user already has (`curl -o`, `>`, `tee`, open-truncate-write), truncating first leaves a corrupt file and no original after a failure partway. Require staging into a sibling temp file, swapped in once complete.
 
-Staging covers the paths the code tests for. It does not cover signals: with no trap, an interrupt mid-write can both strand the temp file and let the shell run past the interrupt to install partial content. A fetch running with `-fsSL`, `2>/dev/null`, or a swallowed exit code compounds this by telling the user nothing about what broke or what was left intact.
+Staging does not cover signals: with no trap, an interrupt can strand the temp file and let the shell install partial content. `-fsSL`, `2>/dev/null`, or a swallowed exit code also hide what broke and what was left intact.
 
 ## Destructive matcher breadth
 
@@ -41,28 +41,36 @@ For recursion, mass deletion, traversal, ID-prefix wildcards, or fallback regex 
 - user-confirmation paths; and
 - whether the guard lives inside the deletion primitive rather than only at one caller.
 
-Ask for the narrowest evidence authorizing deletion. Exact identifiers and exact paths can pass. Display names, vendor prefixes, common tokens, and user labels cannot safely authorize neighboring deletion.
+Only exact identifiers and exact paths authorize deletion, not display names, vendor prefixes, common tokens, or user labels.
 
 ## Duplicated derivations
 
-Flag a classification, ordering, threshold, count, or eligibility rule computed independently in two places. Summary/list, preview/executor, score/explanation, and ordering/control pairs drift after the first one-sided change. Require one constant or pure function and have both consumers use it. When one side changes, search for its sibling.
+Flag a classification, ordering, threshold, count, or eligibility rule computed independently in two places (summary/list, preview/executor, score/explanation). Require one constant or pure function both use.
 
 ## Test surface fidelity
 
-A test is not coverage when it pins a helper that production never reaches or asserts the literal source form of a command/config string instead of the shipped entry point. Ask whether it fails on the unfixed code and whether users execute the asserted path. If either answer is no, the test is a finding. Then ask the two questions a red-green run cannot answer. What can the assertion not see: a matcher scoped to tagged instances reads an untagged one as exempt rather than as a blind spot, an input set built before the producer's own transformation never contains what production emits, and a parity check comparing two copies to each other is blind to what both are missing. What benign change turns it red: an anchor on exact wording, on a positional slice, or on one spelling of a rule usually written another way survives the removal it exists to catch and fails on a rewrite. Anchor on the fact, the identifier, or the enclosing structure.
+Judge each test by [principles/test-behavior.md](../principles/test-behavior.md). A test that pins a helper production never reaches, asserts the source form of a command or config string instead of the shipped entry point, passes on the unfixed code, or runs a path users never execute is a finding.
+
+A red-green run misses two blind spots:
+
+- **What the assertion cannot see.** A matcher scoped to tagged instances reads an untagged one as exempt. An input set built before the producer's own transformation never contains what production emits. A parity check comparing two copies is blind to what both miss.
+- **What benign change turns it red.** An anchor on exact wording, a positional slice, or one spelling of a rule usually written another way survives the removal it exists to catch and fails on a rewrite. Anchor on the fact, the identifier, or the enclosing structure.
 
 ## Never-shipped migrations
 
-Reject migration scaffolding, version-gated defaults, or old-key carry-forward logic when the underlying preference, schema, or feature first appears in the current unreleased work. Compare with the last published tag. If the key did not ship, use the default path; migration is dead-on-arrival complexity.
+Reject migration scaffolding, version-gated defaults, or old-key carry-forward logic when the preference, schema, or feature first appears in the current unreleased work. Compare with the last published tag; if the key did not ship, use the default path.
 
 ## Unknown identifiers
 
-Search every new function, type, variable, asset, command target, and config key that the diff assumes already exists. No result outside the new diff means the dependency is unproven. Dynamic registries require checking their generation or lookup path rather than trusting a name match.
+Search every function, type, variable, asset, command target, and config key the diff assumes exists; no hit outside the diff leaves it unproven. For a dynamic registry, check its generation or lookup path, not a name match.
 
 ## Dependency changes
 
-Verify lockfile consistency in the project's declared environment. Check the full manifest, overrides, resolver configuration, and dependency diff, then run the project's frozen/locked verification. Regenerate in an isolated checkout only to investigate a concrete discrepancy, using the complete proposed inputs and declared toolchain. Equal bytes do not prove provenance; differences require explanation, not an assumption of hand-editing. Confirm that the resolved dependency graph implements the requested change.
+Verify lockfile consistency in the declared environment: the full manifest, overrides, resolver configuration, and dependency diff, then the frozen/locked verification. Regenerate in an isolated checkout only to investigate a concrete discrepancy, with the complete inputs and declared toolchain. Equal bytes do not prove provenance; explain a difference rather than assume hand-editing. Confirm the resolved graph implements the requested change.
 
-Automated security PRs get two extra checks their scanner does not do. First, whole-file reserialization: bots that rewrite a manifest can silently escape non-ASCII (emoji, CJK) or reorder keys, so diff the manifest against base in full rather than only the version line. Second, reachability: confirm the package is actually built into the shipped artifact (`cargo tree -i <pkg> --target all`, or the equivalent import/feature check) before repeating the advisory's severity, since an inert lockfile entry is not a live vulnerability in this project.
+Automated security PRs get two checks their scanner does not do:
 
-When a version pin exists, find out why before moving anything near it: `git log -S'<pinned-name>' -- <manifest>` usually names the bug it was added for. A bump that satisfies the advisory but leaves a companion pin at its old version can be worse than not bumping at all.
+- **Whole-file reserialization.** Bots that rewrite a manifest can escape non-ASCII (emoji, CJK) or reorder keys, so diff the manifest against base in full, not only the version line.
+- **Reachability.** Confirm the package is built into the shipped artifact (`cargo tree -i <pkg> --target all`, or the equivalent import/feature check) before repeating the advisory's severity.
+
+Before moving anything near a version pin, find out why it exists: `git log -S'<pinned-name>' -- <manifest>` usually names the bug. A bump that satisfies the advisory but leaves a companion pin at its old version can be worse than no bump.

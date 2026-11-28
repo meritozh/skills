@@ -1,0 +1,5 @@
+interface:
+  display_name: "Show Me"
+  short_description: "The smallest visual that makes the point"
+policy:
+  allow_implicit_invocation: true

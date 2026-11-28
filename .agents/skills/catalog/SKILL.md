@@ -1,6 +1,6 @@
 ---
 name: catalog
-description: Manage this skills collection. Add or remove an upstream skill in catalog.json, create a first-party skill under skills/, vendor remotes with sync, or check status. Use when the user wants to change the collection, add a skill from another repo, create their own skill here, run /catalog, or asks 加一个 skill / 同步合集 / 这个合集里有什么.
+description: Manage this skills collection. Create, rename, or remove a skill under skills/, adapt a skill from another repo, change install groups, share a file between skills, regenerate the README and configs with sync, check status, or install. Use when the user wants to change the collection, run /catalog, or asks 加一个 skill / 删掉一个 skill / 这个合集里有什么.
 metadata:
   internal: true
 ---
@@ -9,16 +9,15 @@ metadata:
 
 Repo-local meta skill for maintaining this collection. It lives in `.agents/skills/catalog` so agents working in this repo can invoke it, and `npx skills add` will not ship it with the public set.
 
-`catalog.json` is the only list of what belongs in the collection. Remote skills are copied into `skills/` so they can be read in git. First-party collection skills are written under `skills/` and are never overwritten by sync.
+Every directory in `skills/` with a `SKILL.md` is a published skill, maintained here. Nothing is synced from other repos.
 
 ## Read first
 
-- `catalog.json` — intent: which remotes, which skill names, which agents `install` targets
-- `sources.lock.json` — provenance of vendored skills (created by sync)
-- `AGENTS.md` — rules for first-party vs vendored
-- `NOTICE.md` — upstream licenses
+- `catalog.json`: install agents, `groupings`, and `shared` files
+- `AGENTS.md`: the repo's rules
+- `NOTICE.md`: where adapted skills came from and under which license
 
-Do not vendor by hand. Do not edit `~/.agents/.skill-lock.json`. Do not delete skills that status marks as extra on the machine; this CLI never prunes the global agent store.
+Do not edit `~/.agents/.skill-lock.json`. Do not delete skills already installed on the machine; this CLI never prunes the global agent store.
 
 ## Commands
 
@@ -27,56 +26,54 @@ Run from the repo root.
 ```bash
 node scripts/cli.mjs status
 node scripts/cli.mjs sync --dry-run
-node scripts/cli.mjs sync
-node scripts/cli.mjs sync --local      # shared files, README, configs; no remotes
+node scripts/cli.mjs sync              # shared files, README index, group configs
 node scripts/cli.mjs install --dry-run
 node scripts/cli.mjs install
+node --test scripts/cli.test.mjs
 ```
 
-`update` is an alias of `sync`. After a real `sync`, the vendored trees are git changes; show the diff and stop unless the user asked to commit.
+`sync` only changes this git repo. Show the diff and stop unless the user asked to commit.
 
-## Add an upstream skill
+## Create a skill
 
-1. Confirm the source (`owner/repo` or a git URL) and the skill name (`npx skills add <source> --list` if unknown).
-2. Add the name to that source's `skills` array in `catalog.json`. Create the source object if it is new.
-3. If the name already exists as a first-party directory in `skills/` or is listed under another source, stop and say so. Rename or drop one claim.
-4. `node scripts/cli.mjs sync --dry-run`, then `sync`.
-5. `node scripts/cli.mjs status` — the new name must be `ok`.
+1. Name: lowercase, digits, hyphens; 2–64 characters; must match the directory name and be unused in `skills/`.
+2. Create `skills/<name>/SKILL.md` with `name` and `description` frontmatter. `description` states what it does and when to use it, and is quoted when it contains `: ` or ` #`.
+3. Put helpers in `scripts/`, `references/`, or `agents/` next to `SKILL.md`.
+4. Add the name to a group in `catalog.json` `groupings`. A skill another skill invokes goes in the same group, so installing one group brings both.
+5. `node scripts/cli.mjs sync`, then `status`: the skill must be `ok`.
 
-## Remove an upstream skill from the collection
+## Adapt a skill from another repo
 
-1. Delete the name from `catalog.json`.
-2. Run `sync`. The CLI deletes that vendored directory and its lock entry.
-3. If the user still wants the files as their own fork, do **not** run sync after only editing the catalog. Instead: remove the name from `sources.lock.json`, remove it from the remote `skills` array, leave `skills/<name>/` in place. It becomes first-party. Then later syncs will refuse to overwrite it.
+1. Read the upstream skill and its license. Do not copy the upstream tree in; write this repo's version under `skills/<name>/`.
+2. Put the upstream license, with its copyright lines and a line saying what was adapted, in `skills/<name>/LICENSE`.
+3. Add a paragraph to `NOTICE.md`: the source, copyright, license, and what changed.
+4. Continue with "Create a skill" from step 4.
 
-## Create a first-party skill
+## Remove a skill
 
-1. Name: lowercase, digits, hyphens; 2–64 characters; must match the directory name.
-2. Create `skills/<name>/SKILL.md` with `name` and `description` frontmatter. `description` states what it does and when to use it.
-3. Put helpers in `scripts/` or `references/` next to `SKILL.md`.
-4. Do not pick a name listed under a remote source in `catalog.json`.
-5. `source: "."` with `skills: ["*"]` already includes every first-party skill. No catalog edit.
-6. `node scripts/cli.mjs status` should list it under First-party.
+1. Delete `skills/<name>/`.
+2. Remove the name from `groupings` and from every `shared` entry in `catalog.json`.
+3. Grep the other skills for the name (`` `<name>` ``, `/<name>`) and fix each mention.
+4. Drop its paragraph from `NOTICE.md` if it had one.
+5. `sync`, then `status`.
 
-## Share a file between first-party skills
+## Share a file between skills
 
 Each skill installs on its own, so a skill never points into another skill's directory. A file several skills need is copied into each.
 
 1. Put the one source at `shared/<path>`, where `<path>` is where it sits inside each skill (`references/glossary.md`).
-2. Add `{ "path": "<path>", "skills": [...] }` to `shared` in `catalog.json`. Only first-party skills; a vendored skill belongs to its upstream.
-3. `node scripts/cli.mjs sync --local`, then `status`: every copy must be `ok`.
+2. Add `{ "path": "<path>", "skills": [...] }` to `shared` in `catalog.json`.
+3. `node scripts/cli.mjs sync`, then `status`: every copy must be `ok`.
 
-To change the file, edit `shared/<path>` and run `sync --local`. A copy edited in place shows as `differs`, `install` refuses, and the next sync overwrites it.
+To change the file, edit `shared/<path>` and run `sync`. A copy edited in place shows as `differs`, `install` refuses, and the next sync overwrites it.
 
 ## Install onto agents
-
-`sync` only updates this git repo. Installing onto Claude / Codex / Cursor / Grok:
 
 ```bash
 node scripts/cli.mjs install
 ```
 
-That runs `npx skills add <this-repo> --skill '*' -g`. Grok also reads `~/.agents/skills`, so do not add `-a grok`.
+That runs `npx skills add <this-repo> --skill '*' -g` for the agents in `catalog.json`. Grok also reads `~/.agents/skills`, so do not add `-a grok`.
 
 One-line install from a published clone of this repo:
 

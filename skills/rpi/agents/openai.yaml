@@ -1,0 +1,5 @@
+interface:
+  display_name: "RPI"
+  short_description: "Recursive project iterate: goal to PR in T3 Code, with astra"
+policy:
+  allow_implicit_invocation: false

@@ -1,5 +1,4 @@
 .DS_Store
-.cache/
 .agents/*
 !.agents/skills/
 .agents/skills/*

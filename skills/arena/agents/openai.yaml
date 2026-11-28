@@ -1,0 +1,5 @@
+interface:
+  display_name: "Arena"
+  short_description: "Parallel candidates, judged and grafted into one"
+policy:
+  allow_implicit_invocation: false
