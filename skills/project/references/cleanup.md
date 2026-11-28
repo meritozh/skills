@@ -1,8 +1,9 @@
 # Cleanup
 
-Intermediate artifacts are not part of the work. Create them where they cannot be committed, and remove them before the task ends.
+Intermediate artifacts are not part of the work. Create them where they cannot be committed, and remove them when the work they serve is done.
 
-- Scratch goes outside the repo, under `$TMPDIR` (else `/tmp`): throwaway scripts, harnesses, probes, captured logs, screenshots, reports, and temporary worktrees. When a tool must write inside the repo, use `.scratch/`, which is gitignored.
+- Scratch goes in `.scratch/<skill>/<slug>/` at the repo root, which is gitignored, with `<slug>` naming the feature, spec, or branch the work serves: throwaway scripts, harnesses, probes, and screenshots. Save other output there only when something reads it back: a later session resumes from it, several agents share it, or a long log is searched more than once. Output read once is piped through `tail` or `rg`, not saved. Nothing outside `.scratch/` reads from it or links to it, and it holds no decision a later reader needs. Delete your directory when its work is done (the spec archived, the branch merged); never another run's.
+- Temporary worktrees go under `$TMPDIR` (else `/tmp`), never in the repo, so test runners and file watchers do not pick up a second copy of the code.
 - Tag each temporary debug line with `[DEBUG-` and a short hex id, such as `[DEBUG-a4f2]`, so one search finds them all. A diagnostic worth keeping goes behind the project's debug flag instead.
 - Before each commit and before the task ends, check:
 

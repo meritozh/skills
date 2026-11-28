@@ -16,7 +16,7 @@ Files to read: <the frozen file list, or this reviewer's share of it>.
 Reply in the persona's Output format.
 ```
 
-A skeptic's or angle's brief names its one finding to refute, or its angle, in place of the persona file.
+A skeptic's or angle's brief names its one finding to refute, or its angle, in place of the persona file. A skeptic replies `holds`, `refuted`, or `downgraded to <severity>`, with one line of evidence.
 
 ## Merging and verifying
 

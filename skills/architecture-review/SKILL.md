@@ -30,6 +30,8 @@ git rev-parse --abbrev-ref HEAD; git rev-parse HEAD; git status --porcelain | wc
 
 Say that uncommitted work was reviewed as it stood.
 
+Run files (agent reports, tool output, notes) go in `.scratch/architecture-review/<slug>/` of the repo you run from, as [references/scratch.md](references/scratch.md) says, when `git check-ignore -q .scratch/x` shows it ignored. Otherwise put them in `${TMPDIR:-/tmp}/<date>-<repo>-architecture-review/`: the review changes nothing in the repo, `.gitignore` included. Below, `<run>` is that directory. A pointer from [references/tools.md](references/tools.md) whose output runs long, such as an import graph or `cargo tree`, writes to `<run>/<name>.log`; `rg` the log for what you need.
+
 ## 2. Claims and entry points
 
 Read README, `AGENTS.md` or `CLAUDE.md`, `docs/` (skip `docs/spec/archived/`), and any architecture or design notes. Write each design promise in one line ("plugins never import the core"), marked `written` with its file and line. Then infer the claims the structure implies (directory names, layer names, a `core/` beside `features/`), marked `inferred` with the paths it follows from ([principles/show-the-evidence.md](principles/show-the-evidence.md)). A broken claim ranks above a broken universal rule.
@@ -55,7 +57,7 @@ A monorepo or multi-repo adds the contracts between packages or repos. A domain 
 
 Read the whole codebase at module and import level. Read function by function where a break costs most: the entry paths, the core every feature passes through, the code that changes most ([references/tools.md](references/tools.md)), and anything a claim from step 2 names. Say in the report which modules were read closely and which were skimmed.
 
-With subagents, send the wide reading to them ([principles/guard-the-context.md](principles/guard-the-context.md)): one per subsystem or package, whose brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`, names its paths, and asks for its modules, imports, entry points, and the places worth reading closely, each with file and line. The judgment in steps 5 and 6 stays in the main thread.
+With subagents, send the wide reading to them ([principles/guard-the-context.md](principles/guard-the-context.md)): one per subsystem or package, whose brief starts with `Read <absolute path of this skill's directory>/references/worker.md before anything else.`, names its paths and a report file `<run>/<subsystem>.md` for its modules, imports, and entry points, and asks for a reply of the places worth reading closely, each with file and line, and the path. Open a report when a finding rests on it. The judgment in steps 5 and 6 stays in the main thread.
 
 ## 5. Read against the rules
 
@@ -145,4 +147,4 @@ Match the section structure below. Subsection titles name this codebase.
 
 Skip a subsection only when it does not apply, and say why.
 
-Save it outside the repo: `$TMPDIR`, else `/tmp`, else `%TEMP%` on Windows, file `<date>-<repo>-architecture-review.html`, or a path the user names that is not under `docs/`. Do not add it to the repo. Open it (`open` on macOS, `xdg-open` on Linux, `start` on Windows) and give the absolute path.
+Save it outside the repo: `$TMPDIR`, else `/tmp`, else `%TEMP%` on Windows, file `<date>-<repo>-architecture-review.html`, or a path the user names that is not under `docs/`. Do not add it to the repo. Open it (`open` on macOS, `xdg-open` on Linux, `start` on Windows) and give the absolute path. Then delete `<run>`, unless the user asks to keep it.

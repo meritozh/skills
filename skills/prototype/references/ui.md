@@ -35,7 +35,7 @@ Write the plan in one line at the top of the prototype's main file:
 Hold each variant to:
 
 - the page's purpose and the data it already has;
-- the project's component library and styling (Tailwind, shadcn, MUI, plain CSS, whatever it uses), and the tokens in `docs/design-system/DESIGN.md` when the repo has one;
+- the project's component library and styling (Tailwind, shadcn, MUI, plain CSS, whatever it uses), and the tokens in `docs/design/DESIGN.md` when the repo has one;
 - a clear component name, such as `VariantA`, `VariantB`, `VariantC`.
 
 Variants differ in **structure**: layout, information hierarchy, the primary action. Not in color or copy. Three slightly different card grids are wallpaper, not a prototype. When two drafts come out alike, redo one with an explicit constraint, such as "no card grid".

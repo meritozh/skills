@@ -14,7 +14,7 @@ When you start it without `/project`, say so in one line, with the reason. When 
 
 Work at the git repo root. This skill owns two sections of `AGENTS.md`: `## Repo` for facts and `## Principles` for rules. `CLAUDE.md` is a relative symlink to `AGENTS.md`.
 
-Not for this skill: a choice for the task at hand only (follow it and write nothing); how one feature behaves, or a term for `docs/GLOSSARY.md` (`feature-new`, `feature-iterate`); a long-range direction (`polaris`) or cutting it into features (`to-features`); an implement spec (`to-implement-spec` writes it, `go-work` carries it out); a visual style (`design-system`, in `docs/design-system/DESIGN.md`); a diff review (`diff-review`), a bug (`code-bugfix`), or a whole-codebase review (`architecture-review`); a personal preference such as reply language or tone (the user's global agent file).
+Not for this skill: a choice for the task at hand only (follow it and write nothing); how one feature behaves, or a term for `docs/GLOSSARY.md` (`feature-new`, `feature-iterate`); a long-range direction (`polaris`) or cutting it into features (`to-features`); an implement spec (`to-implement-spec` writes it, `go-work` carries it out); a visual style or a screen's design (`ui-design`, in `docs/design/`); a diff review (`diff-review`), a bug (`code-bugfix`), or a whole-codebase review (`architecture-review`); a personal preference such as reply language or tone (the user's global agent file).
 
 ## What belongs in AGENTS.md
 
@@ -183,7 +183,7 @@ Fold an old-shape `## Project status`, `## Status rules`, or `## Work` into `## 
 
 Leave out the opening line, a row, a subsection, or the whole `## Repo` when nothing in it passes the filter. Every built-in principle is always present.
 
-Create `docs/feature/` when missing, and add `.scratch/` to `.gitignore` when not ignored yet (`git check-ignore -q .scratch/x || echo '.scratch/' >> .gitignore`).
+Create `docs/feature/` when missing, and add `.scratch/` to `.gitignore` when not ignored yet (`git check-ignore -q .scratch/x || echo '.scratch/' >> .gitignore`), for the files skills read back later ([references/scratch.md](references/scratch.md)).
 
 **Update in place.** Replace text that is no longer true. Do not append how a rule changed, and do not add a second file for the same principle.
 

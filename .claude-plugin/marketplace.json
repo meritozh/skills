@@ -25,8 +25,7 @@
         "./skills/show-me",
         "./skills/code-bugfix",
         "./skills/architecture-review",
-        "./skills/design-system",
-        "./skills/design-system-adopt"
+        "./skills/ui-design"
       ]
     }
   ]

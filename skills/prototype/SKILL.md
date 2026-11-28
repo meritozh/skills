@@ -1,6 +1,6 @@
 ---
 name: prototype
-description: "Build throwaway code that answers one design question: a single self-contained HTML file that pushes a state model or business logic through the cases that are hard to reason about on paper, or several structurally different UI variants on one route, switched by a ?variant= param and a floating bar. Records the verdict and keeps the prototype on a throwaway branch, out of the main line. Use when the user wants to check whether a state model or logic holds up, or to see what a UI could look like before committing to it (做个原型, 试一下这个状态机, 出几版界面看看). Not for production code, a decided feature (to-implement-spec, go-work), or the design system (design-system)."
+description: "Build throwaway code that answers one design question: a single self-contained HTML file that pushes a state model or business logic through the cases that are hard to reason about on paper, or several structurally different UI variants on one route, switched by a ?variant= param and a floating bar. Records the verdict and keeps the prototype on a throwaway branch, out of the main line. Use when the user wants to check whether a state model or logic holds up, or to see what a UI could look like before committing to it (做个原型, 试一下这个状态机, 出几版界面看看). Not for production code, a decided feature (to-implement-spec, go-work), or a screen's visual design (ui-design)."
 ---
 
 # prototype
@@ -31,7 +31,7 @@ Ask when the question is ambiguous: a wrong pick wastes the whole prototype. Whe
 
 ## 3. Hand it over
 
-Open the file for the user, or give the URL and the command that starts it. The useful moments are "wait, that should not be possible" and "I want the header from B with the sidebar from C": those are the bugs in the idea, and the design they want. When they ask for another action, scenario, or variant, add it.
+Open the file for the user, or give the URL and the command that starts it. A dev server you start writes its output to `.scratch/prototype/<slug>/server.log` ([references/scratch.md](references/scratch.md)); read its tail only when the page fails. The useful moments are "wait, that should not be possible" and "I want the header from B with the sidebar from C": those are the bugs in the idea, and the design they want. When they ask for another action, scenario, or variant, add it.
 
 ## 4. Capture it when done
 
@@ -47,7 +47,7 @@ When the prototype has answered its question:
    git switch -
    ```
 
-   When a file mixes the user's own changes with prototype code, ask before staging it. Do not push unless asked.
+   When a file mixes the user's own changes with prototype code, ask before staging it. Do not push unless asked. Stop the dev server you started and delete `.scratch/prototype/<slug>/`.
 3. **The decision**, which goes to the skill that owns it: name `feature-new` or `feature-iterate` for a behavior, `architect` or `to-implement-spec` for a shape, with the verdict and the branch name. When the user asks to fold it into the real code now, rewrite it properly there; prototype code was written without tests or error handling. The pure logic module from a logic prototype is the exception: it was written to be lifted.
 4. **The issue.** When the work has an issue, offer to leave a comment that points to the branch and states the verdict. Post it only when the user agrees.
 

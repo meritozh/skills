@@ -10,7 +10,7 @@ User-invoked only: follow this skill only when the user ran `/code-bugfix`. When
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
-A diff review is `diff-review`, a whole-codebase review `architecture-review`, and a change to how the product looks across screens `design-system`. When exploring an area, first read its `docs/feature/` file, its open spec in `docs/spec/` (not `archived/`), and `docs/GLOSSARY.md`.
+A diff review is `diff-review`, a whole-codebase review `architecture-review`, and a change to how the product looks `ui-design`. When exploring an area, first read its `docs/feature/` file, its open spec in `docs/spec/` (not `archived/`), and `docs/GLOSSARY.md`.
 
 ## Ground rules
 
@@ -20,7 +20,9 @@ A diff review is `diff-review`, a whole-codebase review `architecture-review`, a
 
 ## Workflow
 
-Run steps 1 to 7 in order. Do not change product code before step 4 is done; steps 1 to 4 may add a test, a harness, or a probe. When a row in [Special cases](#special-cases) matches, load it before step 1: it changes how the loop is built, not whether you build one.
+Run steps 1 to 7 in order. Do not change product code before step 4 is done; steps 1 to 4 may add a test, a harness, or a probe.
+
+Quote only the lines of command output that carry the signal. A slow suite or bisect whose output you will search more than once writes a log to `.scratch/code-bugfix/<slug>/`, as [references/scratch.md](references/scratch.md) says. When the hunt ends **blocked** or carries over to another session, write `state.md` there: the loop command, each hypothesis with its status and the probe that settled it, and each failed fix with its premise, one line each. The next session resumes from it. Delete the directory when the status is **resolved**. When a row in [Special cases](#special-cases) matches, load it before step 1: it changes how the loop is built, not whether you build one.
 
 ## 1. Build the loop
 
@@ -176,7 +178,7 @@ Keep the bookkeeping in `git bisect`, including when you test a suspect commit b
 
 ### Reference mode
 
-List every reported and visible symptom in the user's words. Name the reference (last good commit, old build, fixture, screenshot), define the pass/fail check before editing, then name the exact delta to it. Do not turn a broken render, race, font pipeline, or state path into "style polish". Pure taste about the product's look, with no broken path: tell the user to run `/design-system`, and stop.
+List every reported and visible symptom in the user's words. Name the reference (last good commit, old build, fixture, screenshot), define the pass/fail check before editing, then name the exact delta to it. Do not turn a broken render, race, font pipeline, or state path into "style polish". Pure taste about the product's look, with no broken path: tell the user to run `/ui-design`, and stop.
 
 ## Hard rules
 

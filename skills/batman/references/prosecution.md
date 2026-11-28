@@ -17,7 +17,7 @@ rg -il '<each key term of the doc>' docs              # other docs that use its 
 A file that does not exist is not an objection.
 
 - **Goal doc:** every feature doc its `Builds on` and `## Features` link, with its Status and `Not this`; the other active goals' `Not this` (`rg -l '^Status: active' docs/polaris`); [polaris-doc.md](polaris-doc.md).
-- **Feature doc:** the feature docs it names or that share its terms; the `Not this` of the goal linking it (`rg -l '<slug>' docs/polaris`); `docs/design-system/DESIGN.md` when it has a user interface; [feature-doc.md](feature-doc.md).
+- **Feature doc:** the feature docs it names or that share its terms; the `Not this` of the goal linking it (`rg -l '<slug>' docs/polaris`); `docs/design/DESIGN.md` when it has a user interface; [feature-doc.md](feature-doc.md).
 - **Implement spec:** its feature doc, whole; every other open spec; `### Commands` and the manifests defining the commands its steps run (package scripts, `Makefile`, `justfile`); `DESIGN.md` when a step builds a user interface.
 
 Then the code. Find every name, path, number, command, "today it does", and "same as" in the doc:

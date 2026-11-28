@@ -23,7 +23,7 @@ Each brief starts with `Read <absolute path of this skill's directory>/reference
 - Optimize for the most common caller: the default case is trivial.
 - A dependency crosses a real seam: design around ports and adapters.
 
-Each sub-agent replies with:
+Each brief names a report file, `.scratch/to-implement-spec/<slug>/design-<n>.md` ([scratch.md](scratch.md)), for the full design:
 
 1. Interface: types, methods, params, invariants, ordering, error modes.
 2. A usage example.
@@ -31,8 +31,10 @@ Each sub-agent replies with:
 4. Dependency strategy and adapters.
 5. Trade-offs: where leverage is high and where thin.
 
+Each sub-agent replies with its entry points as code, one line on where its leverage is high and where thin, and the path.
+
 ## 3. Present and compare
 
-Present the designs one at a time, then compare them in prose on depth, locality, and seam placement.
+Present the designs one at a time from the replies, then compare them in prose on depth, locality, and seam placement. Read a report in full for the design you recommend, a hybrid you propose, and any the user asks about.
 
 Recommend one design and say why, with the condition under which the runner-up would win. If pieces combine, propose the hybrid.

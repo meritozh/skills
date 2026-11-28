@@ -58,6 +58,8 @@ git status --short -- <doc>
 
   Battle only the unlanded steps and the interfaces they use. Landed steps are `diff-review`'s.
 
+Run files go in `.scratch/batman/<kind>-<slug>/`, `<kind>` being `goal`, `feature`, or `spec`, following [references/scratch.md](references/scratch.md). Its `state.md` holds one line per battle (number, doc hash, verdict) and one per objection (`#<n> [<severity>] <item>: <answer> → <outcome>`), updated after each of steps 3 to 7.
+
 ### 2. Choose the prosecutor
 
 - **This session wrote or shaped the doc** (`polaris`, `to-features`, `feature-new`, `feature-iterate`, or `to-implement-spec` ran here, or it was talked through here), **and the harness has subagents.** The prosecutor is a fresh subagent, never a fork (a fork inherits this conversation). This session defends.
@@ -77,12 +79,13 @@ Read <absolute path of this skill's references/prosecution.md> and follow it: re
 [Spec with landed steps only:] Steps <numbers> have landed. Battle only the other steps and the interfaces they use.
 Do not edit any file. Do not soften an objection to be fair, and do not add a weak one to look strict.
 
-Reply with the objections, then one line: lenses: <lenses worked> | read: <docs and code read>.
+Write the objections, then the lenses line, to .scratch/batman/<kind>-<slug>/prosecution-<battle>.md.
+Reply with the counts (N blocker, N major, N minor), one line per objection (#<n> [<severity>] <item>  (<file:line>)), the lenses line, and the path.
 ```
 
 ### 3. Prosecute
 
-Follow [references/prosecution.md](references/prosecution.md), or wait for the fresh prosecutor. Do not filter, merge, or soften its objections; refute one that fails the gate as such.
+Follow [references/prosecution.md](references/prosecution.md), or wait for the fresh prosecutor and read its report file. Do not filter, merge, or soften its objections; refute one that fails the gate as such.
 
 ### 4. Defend
 
@@ -95,14 +98,14 @@ The defender answers every objection with exactly one of:
 | Open | The doc is silent on a choice nobody made | A recommended answer and its reason, for the user to rule |
 | Out of scope | The doc rightly leaves it out | The `Not this` line that excludes it, or the doc it belongs in: how to build it is the spec's, what a user meets is the feature doc's |
 
-- **This session defends:** answer every objection in one pass. Refute only with a citation, concede only with the text. Do not concede to end sooner, or defend a line because you wrote it.
+- **This session defends:** answer every objection in one pass, written to `defense-<battle>.md`. Refute only with a citation, concede only with the text. Do not concede to end sooner, or defend a line because you wrote it.
 - **The user defends:** send the objections, then ask one question per objection. For a group answer ("fix the minors"), write and show each replacement text before applying. Ask again only about an objection left unanswered.
 
 ### 5. Press
 
 Batman answers each refutation, out-of-scope answer, and fix once: **accept**, or **press** with a sharper scenario, evidence the citation misses the case, or how the fix's text still fails. Open answers go to the user unpressed.
 
-- With a fresh prosecutor, continue the same subagent when the harness can, or else brief a new one with only the worker line, the doc path, the reference, the objections, and the answers.
+- With a fresh prosecutor, continue the same subagent when the harness can, or else brief a new one with only the worker line, the doc path, the reference, and the paths of the prosecution and defense files. Either way, it writes each press to `press-<battle>.md` and replies with one line per objection: `#<n> accept | press: <the point, in one line>`.
 - One press per objection. A dispute that survives it goes to the user; when the user defends, their answer to the press is the ruling.
 
 ### 6. Rule
@@ -138,9 +141,11 @@ Do not commit. Show what changed.
 
 ### 8. Again
 
-A second `/batman` on the same doc in the same session battles only the changed lines, and never re-raises an objection refuted or overruled.
+A second `/batman` on the same doc in the same session battles only the changed lines, and never re-raises an objection refuted or overruled. While `state.md` exists, take the last hash and those objections from it, not from the conversation.
 
 A third battle that still finds new blockers means rework: write down the premise the doc keeps failing on ([principles/attack-the-premise.md](principles/attack-the-premise.md)) and name `/polaris`, `/feature-iterate`, or `/to-implement-spec`, with that premise as its starting point.
+
+Delete `.scratch/batman/<kind>-<slug>/` once the verdict is `holds` or `holds after fixes`. Any other verdict keeps it for the next battle.
 
 ## Output
 

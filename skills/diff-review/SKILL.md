@@ -11,7 +11,7 @@ Prefix your first line with 🥷 inline, not as its own paragraph. Do not trigge
 
 Find what would hurt after this diff merges. The surface is the changed hunks, untracked files that belong to the change, and a sibling only when the diff fixes one instance of a shape. Other files are context, not findings.
 
-Report only: never edit, commit, push, comment, merge, or close anything. A bug is `code-bugfix`, a whole-codebase review `architecture-review`, an unconfirmed feature or change `feature-new` or `feature-iterate`, an implement spec `to-implement-spec`, repo principles `project`.
+Report only: never edit, commit, push, comment, merge, or close anything. The review writes only its round files, under `.scratch/diff-review/<slug>/`, where `<slug>` is the branch name with `/` replaced by `-` (for a PR, its head branch), as [references/scratch.md](references/scratch.md) says. A bug is `code-bugfix`, a whole-codebase review `architecture-review`, an unconfirmed feature or change `feature-new` or `feature-iterate`, an implement spec `to-implement-spec`, repo principles `project`.
 
 Work steps 1 to 9 in order. For "review since X", a pinned commit, branch, or tag, or "standards versus spec", run step 1, then [references/two-axis.md](references/two-axis.md) in place of steps 2 to 9.
 
@@ -156,7 +156,7 @@ Open with the verdict and the base..head reviewed. Then findings by bug class, h
 
 An invariant the diff adds that the docs do not hold yet is doc debt. Updating `AGENTS.md` is `project`.
 
-From the second round, review only the new diff and never re-report a finding already reported.
+Write each round's report, findings and sign-off, to `.scratch/diff-review/<slug>/round-<n>.md`. A first round removes older `round-*.md` files there. From the second round, review only the new diff, read the earlier round files for what was already reported (a fresh agent, such as an `rpi` astra job, has no other record), and never re-report a finding already reported. Delete the directory once the branch merges.
 
 - A class that returns in a second round: suggest the structural fix at its source ([principles/encode-lessons.md](principles/encode-lessons.md)).
 - A third round that still finds new problems goes back to the step 5 route verdict, which names the premise the fixes keep failing on, written down and tested first ([principles/attack-the-premise.md](principles/attack-the-premise.md)).

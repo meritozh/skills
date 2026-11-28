@@ -1,6 +1,6 @@
 ---
 name: show-me
-description: "Show the current topic, or a topic another skill hands over, with the smallest visual that makes the point: pseudocode, a call tree, a component tree, a file tree, a Mermaid diagram, a diff-shaped sketch of what changes, or one focused HTML page when Markdown cannot carry it. Every name in the visual is read from the code, not recalled. Use when the user asks to show, draw, diagram, or visualize how code, a flow, a structure, or a change fits together (画个图, 给我看看, 可视化, 怎么串起来的), and when another skill such as pr or architect needs a visual. Not for typesetting a document, charting data, or a design system (design-system)."
+description: "Show the current topic, or a topic another skill hands over, with the smallest visual that makes the point: pseudocode, a call tree, a component tree, a file tree, a Mermaid diagram, a diff-shaped sketch of what changes, or one focused HTML page when Markdown cannot carry it. Every name in the visual is read from the code, not recalled. Use when the user asks to show, draw, diagram, or visualize how code, a flow, a structure, or a change fits together (画个图, 给我看看, 可视化, 怎么串起来的), and when another skill such as pr or architect needs a visual. Not for typesetting a document, charting data, or designing a screen (ui-design)."
 ---
 
 # show-me
@@ -112,7 +112,7 @@ export function applyDiscounts(cart: Cart, codes: DiscountCode[]): PricedCart {
 For a visual UI, a layout, a comparison of states, or a concept too dense for Mermaid, write one focused HTML file: a diagram, an infographic, or a short slide deck, whichever fits the point. Chat destination only.
 
 - One self-contained file: CSS and script inline, no build step, nothing to install.
-- Match the product. Read `docs/design-system/DESIGN.md` when the repo has one; otherwise take the colors, type, spacing, and components from the product's own styles.
+- Match the product. Read `docs/design/DESIGN.md` when the repo has one; otherwise take the colors, type, spacing, and components from the product's own styles.
 - Real labels and real data from the code, never lorem ipsum.
 - Works on desktop and on a phone.
 - Write it to `${TMPDIR:-/tmp}/show-me-<topic>.html`, outside the repo, unless the user asks to keep it somewhere. Open it and look at it before you show it, as [principles/prove-it-works.md](principles/prove-it-works.md) says: every label renders, nothing overlaps, and it fits a phone. Then open it for the user: the harness's HTML preview when it has one, otherwise `open <file>` on macOS or `xdg-open <file>` on Linux. Name the path.

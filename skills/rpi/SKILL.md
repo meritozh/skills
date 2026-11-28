@@ -12,7 +12,7 @@ This session is the **conductor**. It hands every job that needs fresh eyes or a
 
 ## Phases
 
-Each phase writes one doc, which holds its settled answers and open questions. The run's progress lives in the [ledger](#ledger) and in git, never in a doc.
+Each phase writes one doc, which holds its settled answers and open questions. The run's progress lives in the [ledger](#ledger) and in git, never in a doc. Run files follow [references/scratch.md](references/scratch.md).
 
 | Phase | Job | Skill | Doc | Done when |
 | --- | --- | --- | --- | --- |
@@ -62,11 +62,11 @@ A checkpoint that carries a ruling or a gate asks them in the same call. Nothing
    | An active goal with no `## Features` | `to-features` |
    | An active goal with a feature line not yet decided | that line's `feature-new` or `feature-iterate` |
    | A feature doc `decided`, no open spec | `to-implement-spec` |
-   | An open spec with no landed step | battle the spec, unless the ledger in this conversation says it holds |
+   | An open spec with no landed step | battle the spec, unless the ledger says it holds at the spec's current hash |
    | An open spec with some steps landed | the build gate, which resumes `go-work` |
    | A spec archived by commits not yet reviewed | review |
 
-   Recommend the row that fits.
+   Recommend the row that fits. Then read the ledger, `.scratch/rpi/<slug>/state.md` (`ls .scratch/rpi`), for verdicts, rulings, and accepted risks; where it disagrees with the repo, the repo wins.
 
 ## Route
 
@@ -99,9 +99,9 @@ Take a goal's feature lines one at a time, in `After` order, each from its featu
 Run `batman` with astra as the prosecutor:
 
 1. **Pin the doc.** `git hash-object <doc>`. The doc may be uncommitted.
-2. **Prosecute.** `delegate_task` with the astra target, `role: "review"`, `isolation: "shared"`, `title: "batman: <doc>"`, and batman's prosecutor brief (batman step 2) as the task, with the absolute path of batman's `references/prosecution.md`. Then follow the `next` it returns. Do not poll.
+2. **Prosecute.** `delegate_task` with the astra target, `role: "review"`, `isolation: "shared"`, `title: "batman: <doc>"`, and batman's prosecutor brief (batman step 2) as the task, with the absolute path of batman's `references/prosecution.md` and batman's report file. Then follow the `next` it returns. Do not poll.
 3. **Defend** every objection in one pass, as batman step 4 says.
-4. **Press.** A new `delegate_task` with the worker line, the doc path, the reference, the objections, and the answers, and nothing else (batman step 5). One press round.
+4. **Press.** A new `delegate_task` with batman step 5's press brief, and nothing else. One press round.
 5. **Rule.** Send the ruling turn in batman's Output shape, then ask for the rulings as batman step 6 says. A battle with nothing to rule still ends at its checkpoint, which shows the verdict.
 6. **Apply** as batman step 7 says.
 
@@ -148,7 +148,7 @@ Then ask one question, `Build`: `Commit the docs and build (Recommended)`, `Chan
 
    You are the coordinator of this run. The spec, the feature doc, and the glossary are committed. When a step is blocked, finish the steps already running, stop, and report why.
 
-   Reply with go-work's final report: git log --oneline <start>..HEAD, any blocked step and its reason, and the final check.
+   Reply in two lines: done | blocked at step <n>: <why>, then the final check and its exit code.
    ```
 
 4. Check the report against git ([principles/prove-it-works.md](principles/prove-it-works.md)): `git log --format='%h %s %(trailers:key=Spec-Step,valueonly)' <start>..HEAD`, and whether the spec moved to `docs/spec/archived/`. A blocked step goes to [Back edges](#back-edges).
@@ -163,22 +163,22 @@ Then ask one question, `Build`: `Commit the docs and build (Recommended)`, `Chan
    $diff-review <start>..HEAD
 
    The feature is docs/feature/<slug>.md (or, with Feature: none, the target in the spec's summary). It was built from docs/spec/archived/<file>. Report only.
+
+   Reply with the verdict and sign-off, one line per finding (#<n> [<severity>] <file:line> <title>), and the path of the round file diff-review writes.
    ```
 
 2. Send the findings with the sign-off, then ask one question per finding: **fix** (the code misses the docs), **accept** (the user carries it), or **change the docs** (`feature-iterate`), recommended first. A clean review goes straight to the PR gate, which is its checkpoint.
-3. **Fix.** Record `fix_start=$(git rev-parse HEAD)`. A new `delegate_task` to astra, `role: "implementation"`, `isolation: "shared"`, with the accepted findings quoted whole:
+3. **Fix.** Record `fix_start=$(git rev-parse HEAD)`. A new `delegate_task` to astra, `role: "implementation"`, `isolation: "shared"`, naming the accepted findings and the round file:
 
    ```text
    Read <absolute path of this skill's directory>/references/worker.md before anything else.
 
-   Fix these review findings in this checkout. For each: write the test that fails on the current code, through the interface a caller uses, run it red, fix the code, run it green. One commit per finding class, an imperative subject under 72 characters. Do not edit docs/.
-
-   <findings, quoted from the review>
+   Fix review findings <numbers> of .scratch/diff-review/<slug>/round-<n>.md in this checkout. For each: write the test that fails on the current code, through the interface a caller uses, run it red, fix the code, run it green. One commit per finding class, an imperative subject under 72 characters. Do not edit docs/.
 
    Reply with one line per finding: fixed <hash> | could not: <why>, then the check you ran and its exit code.
    ```
 
-4. Review again with a new astra job on `<fix_start>..HEAD`, saying it is round 2 and listing the findings already reported, which it must not report again. When a third round still finds new problems, show diff-review's route verdict, with the premise the fixes keep failing on ([principles/attack-the-premise.md](principles/attack-the-premise.md)), and let the user choose between the docs and a rework.
+4. Review again with a new astra job on `<fix_start>..HEAD`, saying it is round 2: diff-review reads the earlier round files and does not report their findings again. When a third round still finds new problems, show diff-review's route verdict, with the premise the fixes keep failing on ([principles/attack-the-premise.md](principles/attack-the-premise.md)), and let the user choose between the docs and a rework.
 
 ## PR gate
 
@@ -186,7 +186,7 @@ When the review is clean or every finding is ruled, send `git log --oneline <sta
 
 ## Ledger
 
-End every turn that moves the run with the ledger:
+End every turn that moves the run with the ledger, and write the same lines to `.scratch/rpi/<slug>/state.md`, each ⚔ there with the doc's short hash, plus one line per ruling and accepted risk:
 
 ```
 rpi · <slug> · astra: <model>
@@ -198,7 +198,7 @@ review   round 1: 1 high, 2 medium | clean
 next     <the stage that runs next>
 ```
 
-Leave out a line that does not apply yet.
+Leave out a line that does not apply yet. `.scratch/rpi/<slug>/` takes the slug of the run's first doc. Delete `.scratch/rpi/<slug>/` when no feature line of the goal is left. diff-review deletes its own directory once the branch merges.
 
 ## Rules
 
@@ -208,4 +208,4 @@ Leave out a line that does not apply yet.
 - The docs say what is true, not how the run got there: no meeting record, no roadmap, no dates or progress. The run's progress lives in the ledger and git. Every doc goes through `technical-writing` before it is battled. The stage skills run it. Run it yourself on sections you change outside a stage skill, such as an applied ruling.
 - An idea outside the current work, from the user, a battle, or a review, goes to `note` in one line, and the run goes on.
 - Never push, force-push, or merge outside the PR gate. Commit only the docs commit at the build gate. astra commits the code.
-- When the user stops, show the ledger and stop. `/rpi` later resumes from the repo.
+- When the user stops, show the ledger and stop. `/rpi` later resumes from the repo and `state.md`.

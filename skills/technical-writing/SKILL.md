@@ -1,6 +1,6 @@
 ---
 name: technical-writing
-description: "Write or rewrite a technical doc so a tired engineer understands it on the first read: one Diátaxis mode per doc, sentences to the reader in the Google developer style, one instruction per sentence (STE), no sentence open to two readings (Global English), then unslop. Knows the docs this collection writes (goal, feature doc, implement spec, glossary, notes, AGENTS.md, PR body, commit message), the mode of each, and that none of them is a meeting record or a roadmap. Keeps every anchor a skill reads. Use when the user asks to write, rewrite, or review a doc, README, RFC, PR description, or commit message for clarity (改写文档, 写清楚, 文档太乱), and from the skills that write docs (polaris, feature-new, feature-iterate, to-implement-spec, to-features, pr, rpi) before a doc leaves them. Not for product UI copy, or for deciding what a doc says, which is the skill that owns it."
+description: "Write or rewrite a technical doc so a tired engineer understands it on the first read: one Diátaxis mode per doc, sentences to the reader in the Google developer style, one instruction per sentence (STE), no sentence open to two readings (Global English), then unslop. Knows the docs this collection writes (goal, feature doc, implement spec, glossary, notes, AGENTS.md, PR body, commit message), the mode of each, and that none of them is a meeting record or a roadmap. Keeps every anchor a skill reads. Use when the user asks to write, rewrite, or review a doc, README, RFC, PR description, or commit message for clarity (改写文档, 写清楚, 文档太乱), and from the skills that write docs (polaris, feature-new, feature-iterate, to-implement-spec, to-features, ui-design, pr, rpi) before a doc leaves them. Not for product UI copy, or for deciding what a doc says, which is the skill that owns it."
 ---
 
 # technical-writing
@@ -34,6 +34,8 @@ One doc, one mode. When a doc needs a second mode, split it, or keep the second 
 | `docs/polaris/<slug>.md` | explanation | anyone deciding what to build next | why this goal, what reaching it looks like, and why this route over the others |
 | `docs/feature/<slug>.md` | reference, with `## Decisions` as its one explanation section | a builder, a reviewer, a support engineer | how the feature behaves, item by item, as a user meets it |
 | `docs/spec/<slug>.md` | how-to | the agent who builds it | commands and interfaces, never narration |
+| `docs/design/DESIGN.md` | reference | anyone building or reviewing a screen | the tokens, components, and rules every screen follows |
+| `docs/design/<task>.md` | explanation | anyone changing that screen | the chosen direction, and why it fits this product |
 | `docs/GLOSSARY.md` | reference | everyone | one definition per term |
 | `docs/NOTES.md` | a list | the next digest | one plain sentence per idea |
 | `AGENTS.md` | reference | an agent new to the repo | commands, layout, and rules |

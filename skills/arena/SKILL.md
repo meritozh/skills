@@ -12,6 +12,8 @@ User-invoked only: follow this skill only when the user ran `/arena`. When the w
 
 Open a todo list, or the harness's plan, with one entry per phase before launching anything: Frame, Fan out, Cross-judge, Pick, Graft, Verify.
 
+Files the candidates, the judge, and you all read go in `.scratch/arena/<slug>/`, as [references/scratch.md](references/scratch.md) says: each candidate's rationale and the judge's report.
+
 ## A. Frame
 
 Every candidate gets the same brief: the brief is the contract.
@@ -22,7 +24,7 @@ Every candidate gets the same brief: the brief is the contract.
    - When the harness can run subagents on other models, seat different model families: different training gives different shapes. When a model is unavailable, take the nearest of the same family or drop the seat, keep at least two, and say so.
    - Otherwise run your own model several times.
    - Give each seat one direction as an added line in its brief, and keep the rest shared: the user's named design directions when they want those compared, otherwise, when seats share one model family, a different structural one (where the state lives, where the boundary falls, who calls whom).
-4. **The places.** Each candidate gets its own worktree or directory, and no two share one, as [principles/separate-shared-state.md](principles/separate-shared-state.md) says. For code, a detached worktree: `git worktree add --detach "${TMPDIR:-/tmp}/arena-<slug>-<n>" HEAD`. Otherwise a directory, `${TMPDIR:-/tmp}/arena-<slug>/candidate-<n>/`. A worktree sees only commits: when the task depends on uncommitted work, say so and ask whether to commit it first.
+4. **The places.** Each candidate gets its own worktree or directory, and no two share one, as [principles/separate-shared-state.md](principles/separate-shared-state.md) says. For code, a detached worktree: `git worktree add --detach "${TMPDIR:-/tmp}/arena-<slug>-<n>" HEAD`. Otherwise a directory, `.scratch/arena/<slug>/candidate-<n>/`. A worktree sees only commits: when the task depends on uncommitted work, say so and ask whether to commit it first.
 
 ## B. Fan out
 
@@ -34,7 +36,7 @@ Read <absolute path of this skill's directory>/references/worker.md before anyth
 <the brief from Frame>
 
 Work only in <path>. Produce the artifact there. For code, make one local commit in that worktree.
-Then write <path>/RATIONALE.md: the shape you chose in three to five lines, the alternatives you considered, and why you rejected each.
+Then write <repo>/.scratch/arena/<slug>/rationale-<n>.md: the shape you chose in three to five lines, the alternatives you considered, and why you rejected each.
 Reply with the path, the commit hash if any, and one line on the shape.
 ```
 
@@ -42,13 +44,13 @@ When a candidate produces nothing, go on with the rest and note the dropout. Wit
 
 ## C. Cross-judge
 
-After every candidate has finished, launch one read-only judge. Seat it from a model family other than yours when the harness offers one; when you do not know your own model, say the check did not run. Its brief starts with the same worker line, then gives the brief, the rubric, and the candidate paths labelled only `candidate-1` to `candidate-N`, never by the model that made them. Ask for a score on each criterion for each candidate, a line of evidence for each score (`file:line` or a quote), and a recommended base. A score that rests on a measured number reports its run count, spread, and what bounds it, as [principles/explain-the-number.md](principles/explain-the-number.md) says.
+After every candidate has finished, launch one read-only judge. Seat it from a model family other than yours when the harness offers one; when you do not know your own model, say the check did not run. Its brief starts with the same worker line, then gives the brief, the rubric, and the candidate paths labelled only `candidate-1` to `candidate-N`, never by the model that made them. Ask for a score on each criterion for each candidate, a line of evidence for each score (`file:line` or a quote), and a recommended base, all written to `.scratch/arena/<slug>/judge.md`; the reply is the recommended base, the leading candidate per criterion, and the path. A score that rests on a measured number reports its run count, spread, and what bounds it, as [principles/explain-the-number.md](principles/explain-the-number.md) says.
 
 It runs while you do D. When no judge can run, skip it and say so.
 
 ## D. Pick a base
 
-Read every candidate end to end, with its `RATIONALE.md`, before picking. Score each one criterion by criterion with evidence, not on an overall feel. Then compare with the judge. Agreement on the base confirms the pick. Disagreement means one of you is biased or the rubric was ambiguous: read both rationales, decide, and name the criterion that split you.
+Read every candidate end to end, with its rationale, before picking. Score each one criterion by criterion with evidence, not on an overall feel. Then compare with the judge. Agreement on the base confirms the pick. Disagreement means one of you is biased or the rubric was ambiguous: read the judge's evidence for that criterion in `judge.md` and both rationales, decide, and name the criterion that split you.
 
 Pick the base a future maintainer can extend most easily without breaking its invariants. When two tie, take the cleaner boundary or the smaller interface, then the smaller change.
 
@@ -67,7 +69,7 @@ Verify the synthesized artifact as [principles/prove-it-works.md](principles/pro
 
 When verification finds a problem the arena missed, either the frame was wrong (frame again, run again) or a candidate had caught it and the graft missed it (back to E). Do not paper over it. When two grafts have failed the same check, follow [principles/attack-the-premise.md](principles/attack-the-premise.md) before a third.
 
-Remove every worktree this run added (`git worktree remove --force <path>`, then `git worktree prune`) and its temp directories once the user no longer wants to read the losing candidates. Name them in the note until then.
+Remove every worktree this run added (`git worktree remove --force <path>`, then `git worktree prune`) and `.scratch/arena/<slug>/` once the user no longer wants to read the losing candidates. Name them in the note until then.
 
 ## Output
 

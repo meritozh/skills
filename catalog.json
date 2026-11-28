@@ -2,13 +2,13 @@
   "global": true,
   "agents": ["claude-code", "codex", "cursor"],
   "notGrouped": "bottom",
-  "notSkills": ["design-style", "review", "settings", "tmp"],
+  "notSkills": ["review", "settings", "tmp"],
   "groupings": [
     {
       "name": "engineering",
       "title": "Engineering",
       "description": "The development lifecycle: rules, goals, features, specs, building, review, and fixes.",
-      "skills": ["project", "polaris", "to-features", "feature-new", "feature-iterate", "prototype", "to-implement-spec", "architect", "arena", "batman", "go-work", "diff-review", "pr", "rpi", "note", "technical-writing", "unslop", "show-me", "code-bugfix", "architecture-review", "design-system", "design-system-adopt"]
+      "skills": ["project", "polaris", "to-features", "feature-new", "feature-iterate", "prototype", "to-implement-spec", "architect", "arena", "batman", "go-work", "diff-review", "pr", "rpi", "note", "technical-writing", "unslop", "show-me", "code-bugfix", "architecture-review", "ui-design"]
     }
   ],
   "shared": [
@@ -30,7 +30,7 @@
     },
     {
       "path": "references/asking.md",
-      "skills": ["polaris", "to-features", "feature-new", "feature-iterate", "to-implement-spec", "batman", "go-work", "diff-review", "pr", "rpi", "note"]
+      "skills": ["polaris", "to-features", "feature-new", "feature-iterate", "to-implement-spec", "batman", "go-work", "diff-review", "pr", "rpi", "note", "ui-design"]
     },
     {
       "path": "references/polaris-doc.md",
@@ -38,7 +38,11 @@
     },
     {
       "path": "references/worker.md",
-      "skills": ["polaris", "feature-new", "feature-iterate", "to-implement-spec", "architect", "arena", "batman", "go-work", "diff-review", "rpi", "architecture-review"]
+      "skills": ["polaris", "feature-new", "feature-iterate", "to-implement-spec", "architect", "arena", "batman", "go-work", "diff-review", "rpi", "architecture-review", "ui-design"]
+    },
+    {
+      "path": "references/scratch.md",
+      "skills": ["polaris", "feature-new", "feature-iterate", "to-implement-spec", "architect", "arena", "batman", "go-work", "diff-review", "rpi", "architecture-review", "ui-design", "code-bugfix", "prototype", "project", "to-features"]
     },
     {
       "path": "principles/attack-the-premise.md",
@@ -46,7 +50,7 @@
     },
     {
       "path": "principles/prove-it-works.md",
-      "skills": ["prototype", "architect", "arena", "go-work", "diff-review", "pr", "rpi", "show-me", "code-bugfix", "design-system", "design-system-adopt"]
+      "skills": ["prototype", "architect", "arena", "go-work", "diff-review", "pr", "rpi", "show-me", "code-bugfix"]
     },
     {
       "path": "principles/explain-the-number.md",
@@ -58,15 +62,15 @@
     },
     {
       "path": "principles/subtract-before-you-add.md",
-      "skills": ["project", "polaris", "to-features", "feature-new", "feature-iterate", "to-implement-spec", "architect", "code-bugfix", "architecture-review", "design-system", "design-system-adopt"]
+      "skills": ["project", "polaris", "to-features", "feature-new", "feature-iterate", "to-implement-spec", "architect", "code-bugfix", "architecture-review"]
     },
     {
       "path": "principles/migrate-then-delete.md",
-      "skills": ["feature-iterate", "to-implement-spec", "architect", "architecture-review", "design-system-adopt"]
+      "skills": ["feature-iterate", "to-implement-spec", "architect", "architecture-review"]
     },
     {
       "path": "principles/sequence-verifiable-units.md",
-      "skills": ["to-implement-spec", "go-work", "design-system-adopt"]
+      "skills": ["to-implement-spec", "go-work"]
     },
     {
       "path": "principles/make-operations-idempotent.md",
@@ -82,11 +86,11 @@
     },
     {
       "path": "principles/experience-first.md",
-      "skills": ["polaris", "to-features", "feature-new", "feature-iterate", "prototype", "design-system"]
+      "skills": ["polaris", "to-features", "feature-new", "feature-iterate", "prototype"]
     },
     {
       "path": "principles/compare-real-options.md",
-      "skills": ["polaris", "feature-new", "feature-iterate", "prototype", "to-implement-spec", "architect", "arena", "design-system"]
+      "skills": ["polaris", "feature-new", "feature-iterate", "prototype", "to-implement-spec", "architect", "arena"]
     },
     {
       "path": "principles/guard-the-context.md",
@@ -98,11 +102,11 @@
     },
     {
       "path": "principles/show-the-evidence.md",
-      "skills": ["polaris", "to-features", "feature-new", "feature-iterate", "to-implement-spec", "architect", "arena", "batman", "go-work", "diff-review", "pr", "rpi", "show-me", "code-bugfix", "architecture-review", "design-system"]
+      "skills": ["polaris", "to-features", "feature-new", "feature-iterate", "to-implement-spec", "architect", "arena", "batman", "go-work", "diff-review", "pr", "rpi", "show-me", "code-bugfix", "architecture-review", "ui-design"]
     },
     {
       "path": "principles/LICENSE",
-      "skills": ["project", "polaris", "to-features", "feature-new", "feature-iterate", "prototype", "to-implement-spec", "architect", "arena", "batman", "go-work", "diff-review", "pr", "rpi", "show-me", "code-bugfix", "architecture-review", "design-system", "design-system-adopt"]
+      "skills": ["project", "polaris", "to-features", "feature-new", "feature-iterate", "prototype", "to-implement-spec", "architect", "arena", "batman", "go-work", "diff-review", "pr", "rpi", "show-me", "code-bugfix", "architecture-review", "ui-design"]
     }
   ]
 }

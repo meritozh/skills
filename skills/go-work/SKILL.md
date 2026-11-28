@@ -21,7 +21,7 @@ Keep the coordinator's context small ([principles/guard-the-context.md](principl
 
 - **The coordinator** holds the spec, the step list, and a few lines per step. It does not read code, print diffs, or keep logs.
 - **The spec is never edited during the run.** Progress lives in git: each step's commit ends with the trailer `Spec-Step: <slug>#<n>`, so a stopped run resumes in a new session from `git log`.
-- **Command output stays short.** Run a check as `<check> > "${TMPDIR:-/tmp}/go-work-<slug>.log" 2>&1; echo "exit=$?"`, and read only the tail of a failure (`tail -40`).
+- **Run files** go in `.scratch/go-work/<slug>/` at the repo root, following [references/scratch.md](references/scratch.md): each check's output as `<name>.log`, which only a failure's tail is read from, and `state.md`, one line per step (landed `<hash>`, blocked and why, running in which worktree) plus every `note:` a later step needs. Update `state.md` after each report. It is a cache: git wins, and on a mismatch fix `state.md`.
 
 ## Runner
 
@@ -50,7 +50,7 @@ git rev-parse HEAD                     # the run's start point
 
 ### 2. Find what landed
 
-State comes from git ([principles/make-operations-idempotent.md](principles/make-operations-idempotent.md)). Run this on every start, including a resume.
+State comes from git ([principles/make-operations-idempotent.md](principles/make-operations-idempotent.md)). Run this on every start, including a resume, then read `state.md` for the notes of landed steps.
 
 ```bash
 base=$(git log -1 --diff-filter=A --format=%H -- docs/spec/<slug>.md)    # the commit that added this spec
@@ -88,7 +88,7 @@ Land step <n> of the implement spec docs/spec/<slug>.md.
 Read the spec once. Follow AGENTS.md; read it only if it is not already in your context. Do exactly step <n>, with the interfaces, data, and tests the spec gives for it. Steps <landed numbers> have landed. Do not redo them or start another step.
 - Do not edit the spec. When the step cannot be done as written (an interface does not fit, a test cannot pass, the step needs a change the spec does not name), stop without committing and say why.
 - Each test you add follows <absolute path of this skill's principles/test-behavior.md>. Its expected values come from the spec, not from the code.
-- Run the step's Check with its output to a log file. Read only the tail of a failure.
+- Run the step's Check with its output to <repo root>/.scratch/go-work/<slug>/step-<n>.log. Read only the tail of a failure.
 - Stage only this step's files. Make one commit: an imperative subject under 72 characters, a blank line, then the trailer `Spec-Step: <slug>#<n>`. The subject says what the step changes, in glossary terms, as `technical-writing` gives a commit message.
 - Do not create branches or touch another worktree.
 
@@ -98,22 +98,25 @@ check: <command> exit <code>
 note: <only what a later step must know, such as a name that differs from the spec>
 ```
 
+`<repo root>` is the absolute path of this checkout, also for a step in a temporary worktree.
+
 ### 4. Take each report
 
 A report is a claim ([principles/prove-it-works.md](principles/prove-it-works.md)):
 
 - **Verify the commit** without reading its diff: `git show --stat --format='%h %s%n%(trailers:key=Spec-Step,valueonly)' <hash>`. The trailer is there, and the files fit the step.
-- **Run the step's Check here** on the landed commit. For a parallel step, first bring it into this worktree in step-number order: `git cherry-pick <hash>`. On a conflict, `git cherry-pick --abort`, and run that step again here on the new `HEAD`. Then remove its worktree: `git worktree remove --force <path>`.
+- **Run the step's Check here** on the landed commit, its output to `check-<n>.log`. For a parallel step, first bring it into this worktree in step-number order: `git cherry-pick <hash>`. On a conflict, `git cherry-pick --abort`, and run that step again here on the new `HEAD`. Then remove its worktree: `git worktree remove --force <path>`.
 - **A Check that fails here** goes back once with the log tail: to the same subagent when the harness can continue one, else to a new one. The fix amends that commit.
 - **A second failure** blocks the step. Before any third attempt, follow [principles/attack-the-premise.md](principles/attack-the-premise.md). A premise that the spec states is a wrong spec, and goes to `to-implement-spec`.
 - **A blocked step** ends the run. Let running steps finish, bring in the ones that landed, and stop. Report the reason and the steps still open. Do not work around it.
-- **Keep only the report lines.** Do not re-read the spec.
+- **Keep only the report lines**, and add them to `state.md`. Do not re-read the spec.
 
 ### 5. Finish
 
 When the last step has landed:
 
-1. Run the check before commit on the whole tree, quietly. On a failure, stop and report the log tail.
+1. Run the check before commit on the whole tree, its output to `final.log`. On a failure, stop and report the log tail.
 2. Amend the last step's commit so it also closes the spec: set the feature doc's Status to `shipped`, and run `git mv docs/spec/<slug>.md docs/spec/archived/<YYYY-MM-DD>-<slug>.md`, dated today. When `docs/spec/archived/.ignore` is missing, create it holding `*`. Then `git commit --amend --no-edit`; when that commit is already pushed, make a new commit instead. A spec with `Feature: none` is only archived.
 3. Remove every worktree this run added (`git worktree list`), then run `git worktree prune`.
 4. Report `git log --oneline <start>..HEAD`, any blocked step and its reason, and the final check. The next step is `/diff-review` on `<start>..HEAD`. Do not push.
+5. Delete `.scratch/go-work/<slug>/`. A blocked run keeps it for the resume.

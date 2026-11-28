@@ -34,7 +34,7 @@ Stop at the list. Do not write feature docs, specs, or code. Setting or changing
 5. **Check coverage.** Every part has at least one feature, and every feature serves one part. Each part's `Done when` is reached by its features and nothing more. A part no feature can cover, such as a data migration or a vendor contract: name it, and ask whether it becomes a step in one feature's spec or the route changes in `polaris`.
 6. **Align the terms.** Name each feature in glossary terms. A new noun follows "Before adding a term" in [references/glossary.md](references/glossary.md). A conflict becomes a question.
 
-Ask about the cut points: where a part splits, which feature comes first, and whether a line is new or iterate when the search is not conclusive. Ask with the question tool, following [references/asking.md](references/asking.md), each question with your recommended answer first and its reason. When the user stops early, list the open items and write nothing.
+Ask about the cut points: where a part splits, which feature comes first, and whether a line is new or iterate when the search is not conclusive. Ask with the question tool, following [references/asking.md](references/asking.md), each question with your recommended answer first and its reason. When the user stops early, list the open items and write nothing to the goal. Keep the draft list and its open items in `.scratch/to-features/<slug>/draft.md` ([references/scratch.md](references/scratch.md)); a later run on this goal starts from it, and the goal doc wins where they disagree.
 
 For a part "visits sync after reconnecting":
 
@@ -70,6 +70,7 @@ Show the settled output, then ask once whether to write the list into the goal. 
 
 1. Write it into the goal doc's `## Features`, in the form in [references/polaris-doc.md](references/polaris-doc.md). Lines already there keep their numbers; new lines take new ones.
 2. Update `docs/GLOSSARY.md` with each new term and each resolved conflict, following [references/glossary.md](references/glossary.md).
+3. Delete `.scratch/to-features/<slug>/`.
 
 The next step is `/feature-new` or `/feature-iterate` with the first undecided line, in order. Each one, once decided, turns its line into a link.
 
